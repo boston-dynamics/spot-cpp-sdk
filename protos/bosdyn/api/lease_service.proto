@@ -1,0 +1,40 @@
+// Copyright (c) 2021 Boston Dynamics, Inc.  All rights reserved.
+//
+// Downloading, reproducing, distributing or otherwise using the SDK Software
+// is subject to the terms and conditions of the Boston Dynamics Software
+// Development Kit License (20191101-BDSDK-SL).
+
+syntax = "proto3";
+
+package bosdyn.api;
+
+option java_outer_classname = "LeaseServiceProto";
+
+import "bosdyn/api/lease.proto";
+
+// LeaseService provides Leases of shared resources to clients.
+// An example of a shared resource is the set of leg motors on Spot, which
+// has the resource name of "body".
+// Clients can delegate out the Leases they receive from the LeaseService
+// to additional clients or services by generating sub-leases.
+// Leases obtained from the LeaseService may be revoked if the Lease holder
+// does not check in frequently to the LeaseService, or if another client
+// force-acquires a Lease.
+service LeaseService {
+
+    // Acquire a lease to a specific resource if the resource is available.
+    rpc AcquireLease(AcquireLeaseRequest) returns (AcquireLeaseResponse);
+
+    // Take a lease for a specific resource even if another client has a lease.
+    rpc TakeLease(TakeLeaseRequest) returns (TakeLeaseResponse);
+
+    // Return a lease to the LeaseService.
+    rpc ReturnLease(ReturnLeaseRequest) returns (ReturnLeaseResponse);
+
+    // List state of all leases managed by the LeaseService.
+    rpc ListLeases(ListLeasesRequest) returns (ListLeasesResponse);
+
+    // Retain possession of a lease.
+    rpc RetainLease(RetainLeaseRequest) returns (RetainLeaseResponse);
+
+}

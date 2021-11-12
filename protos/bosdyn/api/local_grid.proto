@@ -1,0 +1,210 @@
+// Copyright (c) 2021 Boston Dynamics, Inc.  All rights reserved.
+//
+// Downloading, reproducing, distributing or otherwise using the SDK Software
+// is subject to the terms and conditions of the Boston Dynamics Software
+// Development Kit License (20191101-BDSDK-SL).
+
+syntax = "proto3";
+
+package bosdyn.api;
+option java_outer_classname = "LocalGridProto";
+
+import "bosdyn/api/geometry.proto";
+import "bosdyn/api/header.proto";
+import "google/protobuf/timestamp.proto";
+
+// Representation of an available type of local grid.
+message LocalGridType {
+    string name = 1;
+}
+
+// LocalGrids are requested by LocalGridType string name.
+message LocalGridRequest {
+    string local_grid_type_name = 1;
+}
+
+// Information about the dimensions of the local grid, including the number of grid cells and
+// the size of each cell.
+message LocalGridExtent {
+    // Size of each side of the individual cells in the local grid (in meters).
+    // The area of a grid cell will be (cell_size x cell_size).
+    double cell_size = 2;
+
+    // Number of cells along x extent of local grid (number of columns in local grid/ the local
+    // grid width). Note, that the (num_cells_x)x(num_cells_y) represents the total number of grid
+    // cells in the local grid.
+    int32 num_cells_x = 3;
+
+    // Number of cells along y extent of local grid (number of rows in local grid).
+    // Note, that the (num_cells_x)x(num_cells_y) represents the totla number of grid
+    // cells in the local grid.
+    int32 num_cells_y = 4;
+
+    // Previous fields in the protobuf that are now reserved.
+    reserved 1;
+}
+
+// A grid-based local grid structure, which can represent different kinds of data, such as terrain
+// or obstacle data.
+message LocalGrid {
+    // The human readable string name that is used to identify the type of local grid data.
+    string local_grid_type_name = 1;
+
+    // The time at which the local grid data was computed and last valid at.
+    google.protobuf.Timestamp acquisition_time = 30;
+
+    // A tree-based collection of transformations, which will include the transformations to each of
+    // the returned local grids in addition to transformations to the common frames ("vision", "body", "odom").
+    // All transforms within the snapshot are at the acquistion time of the local grid.
+    FrameTreeSnapshot transforms_snapshot = 31;
+
+    // The frame name for the local grid data. This frame refers to the corner of cell (0, 0), such that
+    // the map data is in the +x, +y quadrant.
+    // The cell data is packed in x-y order, so the cell at:
+    //   data[xi + extent.num_cells_x * yj]
+    // has its center at position:
+    //   {(xi + 0.5) * extent.cell_size, (yj + 0.5) * extent.cell_size}.
+    string frame_name_local_grid_data = 11;
+
+    // Location, size and resolution of the local grid.
+    LocalGridExtent extent = 3;
+
+    // Describes the data type of a cell.
+    enum CellFormat {
+        // Not specified -- not a valid value.
+        CELL_FORMAT_UNKNOWN = 0;
+
+        // Each cell of the local grid is encoded as a little-endian 32-bit floating point number.
+        CELL_FORMAT_FLOAT32 = 1;
+
+        // Each cell of the local grid is encoded as a little-endian 64-bit floating point number.
+        CELL_FORMAT_FLOAT64 = 2;
+
+        // Each cell of the local grid is encoded as a signed 8-bit integer.
+        CELL_FORMAT_INT8 = 3;
+
+        // Each cell of the local grid is encoded as an unsigned 8-bit integer.
+        CELL_FORMAT_UINT8 = 4;
+
+        // Each cell of the local grid is encoded as a little-endian signed 16-bit integer.
+        CELL_FORMAT_INT16 = 5;
+
+        // Each cell of the local grid is encoded as a little-endian unsigned 16-bit integer.
+        CELL_FORMAT_UINT16 = 6;
+
+        // Only reserving these values for now, until they are used.
+
+        // Each cell of the local grid is encoded as a little-endian signed 32-bit integer.
+        // CELL_FORMAT_INT32 = 7;
+
+        // Each cell of the local grid is encoded as a little-endian unsigned 32-bit integer.
+        // CELL_FORMAT_UINT32 = 8;
+
+        // Each cell of the local grid is encoded as a little-endian signed 64-bit integer.
+        // CELL_FORMAT_INT64 = 9;
+
+        // Each cell of the local grid is encoded as an unsigned 64-bit integer.
+        // CELL_FORMAT_UINT64 = 10;
+
+        // Structure-based pixels would follow these.
+    }
+    // The data type of all individual cells in the local grid.
+    CellFormat cell_format = 4;
+
+    // Encoding used for storing the local grid.
+    enum Encoding {
+        // Not specified -- not a valid value.
+        ENCODING_UNKNOWN = 0;
+
+        // Cells are stored packed uncompressed.
+        ENCODING_RAW = 1;
+
+        // Run-length encoding: repeat counts stored in rle_counts.
+        ENCODING_RLE = 2;
+    }
+    // The encoding for the 'data' field of the local grid message.
+    Encoding encoding = 5;
+
+    // The encoded local grid representation.
+    // Cells are encoded according to the encoding enum, and are stored in in row-major order (x-major).
+    // This means that the data field has data entered row by row. The grid cell located at (i, j) will be
+    // at the (index = i * num_cells_x + j) within the data array.
+    bytes data = 6;
+
+    // RLE pixel repetition counts: use data[i] repeated rle_counts[i] times when decoding the
+    // bytes data field.
+    repeated int32 rle_counts = 7;
+
+    // The scale for the cell value data; only valid if it is a non-zero number.
+    double cell_value_scale = 8;
+
+    // A fixed value offset that is applied to each value of the cell data.
+    // Actual values in local grid are: (({value from data} * cell_value_scale) + cell_value_offset).
+    double cell_value_offset = 9;
+}
+
+// The local grid response message will contain either the local grid or an error status.
+message LocalGridResponse {
+    // The type name of the local grid included in this response.
+    string local_grid_type_name = 1;
+
+    enum Status {
+        // Not specified -- not a valid value.
+        STATUS_UNKNOWN = 0;
+
+        // LocalGrid was returned successfully.
+        STATUS_OK = 1;
+
+        // The requested local grid-type is unknown.
+        STATUS_NO_SUCH_GRID = 2;
+
+        // The request local grid data is not available at this time.
+        STATUS_DATA_UNAVAILABLE = 3;
+
+        // The local grid data was not valid for some reason.
+        STATUS_DATA_INVALID = 4;
+    }
+    // Status of the request for the individual local grid.
+    Status status = 2;
+
+    // The requested local grid data.
+    LocalGrid local_grid = 3;
+}
+
+
+// The GetLocalGridTypes request message asks to the local grid types.
+message GetLocalGridTypesRequest {
+    // Common request header.
+    RequestHeader header = 1;
+}
+
+// The GetLocalGridTypes response message returns to get all known string names for local grid types.
+message GetLocalGridTypesResponse {
+    // Common response header.
+    ResponseHeader header = 1;
+
+    // The list of available local grid types.
+    repeated LocalGridType local_grid_type = 2;
+}
+
+// The GetLocalGrid request message can request for multiple different types of local grids at one time.
+message GetLocalGridsRequest {
+    // Common request header.
+    RequestHeader header = 1;
+
+    // Specifications of the requested local grids.
+    repeated LocalGridRequest local_grid_requests = 2;
+}
+
+// The GetLocalGrid response message replies with all of the local grid data for the requested types, and
+// a numerical count representing the amount of status errors that occurred when getting this data.
+message GetLocalGridsResponse {
+    // Common response header.
+    ResponseHeader header = 1;
+
+    // Response of local grid or error status for each requested local grid.
+    repeated LocalGridResponse local_grid_responses = 2;
+
+    // The number of individual local grids requests which could not be satisfied.
+    int32 num_local_grid_errors = 3;
+}

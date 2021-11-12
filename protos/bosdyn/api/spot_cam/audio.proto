@@ -1,0 +1,168 @@
+// Copyright (c) 2021 Boston Dynamics, Inc.  All rights reserved.
+//
+// Downloading, reproducing, distributing or otherwise using the SDK Software
+// is subject to the terms and conditions of the Boston Dynamics Software
+// Development Kit License (20191101-BDSDK-SL).
+
+syntax = "proto3";
+
+package bosdyn.api.spot_cam;
+
+option java_outer_classname = "AudioProto";
+
+import "bosdyn/api/header.proto";
+import "bosdyn/api/data_chunk.proto";
+
+import "google/protobuf/wrappers.proto";
+
+// Identifier for a playable sound.
+message Sound {
+    //internally, sounds are stored in a flat table. This name is the
+    //identifier of a sound effect
+    string name = 1;
+}
+
+// Request for all sounds present on the robot.
+message ListSoundsRequest {
+    // Common request header.
+    bosdyn.api.RequestHeader header = 1;
+}
+
+// List of all sounds present on the robot.
+message ListSoundsResponse {
+    // Common response header.
+    bosdyn.api.ResponseHeader header = 1;
+    // All sounds currently loaded.
+    repeated Sound sounds = 2;
+}
+
+// Set the desired volume level of the system.
+message SetVolumeRequest {
+    // Common request header.
+    bosdyn.api.RequestHeader header = 1;
+    //volume, as a percentage of maximum.
+    float volume = 2;
+}
+
+// Result of changing the system volume level.
+message SetVolumeResponse {
+    // Common response header.
+    bosdyn.api.ResponseHeader header = 1;
+}
+
+// Query the current volume level of the system.
+message GetVolumeRequest {
+    // Common request header.
+    bosdyn.api.RequestHeader header = 1;
+}
+
+// Provides the current volume level of the system.
+message GetVolumeResponse {
+    // Common response header.
+    bosdyn.api.ResponseHeader header = 1;
+    //volume, as a percentage of maximum.
+    float volume = 2;
+}
+
+// Begin playing a loaded sound from the robot's speakers.
+message PlaySoundRequest {
+    // Common request header.
+    bosdyn.api.RequestHeader header = 1;
+    // The sound identifier as uploaded by LoadSoundRequest or listed in ListSoundsResponse.
+    Sound sound = 2;
+    // If the gain field is populated, then volume of the sound is
+    // multiplied by this value.  Does not modify the system volume level.
+    google.protobuf.FloatValue gain = 3;
+}
+
+// Result of staring playback of a sound.
+message PlaySoundResponse {
+    // Common response header.
+    bosdyn.api.ResponseHeader header = 1;
+}
+
+// Remove a loaded sound from the library of loaded sounds.
+message DeleteSoundRequest {
+    // Common request header.
+    bosdyn.api.RequestHeader header = 1;
+    // The sound identifier as uploaded by LoadSoundRequest or listed in ListSoundsResponse.
+    Sound sound = 2;
+}
+
+// Result of deleting a sound from the library.
+message DeleteSoundResponse {
+    // Common response header.
+    bosdyn.api.ResponseHeader header = 1;
+}
+
+// Load a new sound onto the robot for future playback.
+message LoadSoundRequest {
+    // Common request header.
+    bosdyn.api.RequestHeader header = 1;
+    // Identifier for the sound.
+    // If the same identifier is used as a previously loaded sound, that sound will be overwritten with the new data.
+    Sound sound = 2;
+    // WAV bytes to be joined.
+    bosdyn.api.DataChunk data = 3;
+}
+
+// Result of uploading a sound.
+message LoadSoundResponse {
+    // Common response header.
+    bosdyn.api.ResponseHeader header = 1;
+}
+
+// Audio capture channel
+enum AudioCaptureChannel {
+    AUDIO_CHANNEL_UNKNOWN = 0;
+    AUDIO_CHANNEL_INTERNAL_MIC = 1;
+    AUDIO_CHANNEL_EXTERNAL_MIC = 2;
+}
+
+// Request to set the audio capture channel
+message SetAudioCaptureChannelRequest {
+    bosdyn.api.RequestHeader header = 1;
+    AudioCaptureChannel channel = 2;
+}
+
+// Result of setting the audio capture channel
+message SetAudioCaptureChannelResponse {
+    bosdyn.api.ResponseHeader header = 1;
+}
+
+// Request to get the audio capture channel
+message GetAudioCaptureChannelRequest {
+    bosdyn.api.RequestHeader header = 1;
+}
+
+// Result of getting the audio capture channel
+message GetAudioCaptureChannelResponse {
+    bosdyn.api.ResponseHeader header = 1;
+    AudioCaptureChannel channel = 2;
+}
+
+// Request to set the audio capture channel
+message SetAudioCaptureGainRequest {
+    bosdyn.api.RequestHeader header = 1;
+    AudioCaptureChannel channel = 2;
+    // Gain for microphone, range from 0.0 to 1.0
+    double gain = 3;
+}
+
+// Result of setting the audio capture gain
+message SetAudioCaptureGainResponse {
+    bosdyn.api.ResponseHeader header = 1;
+}
+
+// Request to get the audio capture channel
+message GetAudioCaptureGainRequest {
+    bosdyn.api.RequestHeader header = 1;
+    AudioCaptureChannel channel = 2;
+}
+
+// Result of getting the audio capture gain
+message GetAudioCaptureGainResponse {
+    bosdyn.api.ResponseHeader header = 1;
+    // Gain for microphone, range from 0.0 to 1.0
+    double gain = 2;
+}

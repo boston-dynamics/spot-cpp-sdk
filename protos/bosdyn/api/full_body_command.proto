@@ -1,0 +1,87 @@
+// Copyright (c) 2021 Boston Dynamics, Inc.  All rights reserved.
+//
+// Downloading, reproducing, distributing or otherwise using the SDK Software
+// is subject to the terms and conditions of the Boston Dynamics Software
+// Development Kit License (20191101-BDSDK-SL).
+
+syntax = "proto3";
+
+package bosdyn.api;
+
+option java_outer_classname = "FullBodyCommandProto";
+
+import "bosdyn/api/basic_command.proto";
+import "bosdyn/api/payload_estimation.proto";
+import "google/protobuf/any.proto";
+
+
+// The robot command message to specify a basic command that requires full control of the entire
+// robot to be completed.
+message FullBodyCommand {
+
+    // The full body request must be one of the basic command primitives.
+    message Request {
+
+        // Only one full body command can be requested at a time.
+        oneof command {
+
+            // Command to stop the robot.
+            StopCommand.Request stop_request = 1;
+
+            // Command to freeze all joints of the robot.
+            FreezeCommand.Request freeze_request = 2;
+
+            // Command to self-right the robot to a ready position.
+            SelfRightCommand.Request selfright_request = 3;
+
+            // Command to safely power off the robot.
+            SafePowerOffCommand.Request safe_power_off_request = 4;
+
+            // Command to put the robot in a position to easily change the battery.
+            BatteryChangePoseCommand.Request battery_change_pose_request = 5;
+
+            // Command to perform payload mass property estimation
+            PayloadEstimationCommand.Request payload_estimation_request = 6;
+
+            // Command to perform full body constrained manipulation moves
+            ConstrainedManipulationCommand.Request constrained_manipulation_request = 7;
+        }
+
+        // Robot specific command parameters.
+        google.protobuf.Any params = 100;
+    }
+
+    // The feedback for the fully body command that will provide information on the progress
+    // of the robot command.
+    message Feedback {
+
+        // The feedback message associated with the requested command. Some commands may have
+        // an empty feedback message if they do not provide any updates/progress.
+        oneof feedback {
+
+            // Feedback for the stop command request.
+            StopCommand.Feedback stop_feedback = 1;
+
+            // Feedback for the freeze command request.
+            FreezeCommand.Feedback freeze_feedback = 2;
+
+            // Feedback for the self-right command request.
+            SelfRightCommand.Feedback selfright_feedback = 3;
+
+            // Feedback for the safe power off command request.
+            SafePowerOffCommand.Feedback safe_power_off_feedback = 4;
+
+            // Feedback for the battery change pose command request.
+            BatteryChangePoseCommand.Feedback battery_change_pose_feedback = 5;
+
+            // Feedback for the payload estimation command request.
+            PayloadEstimationCommand.Feedback payload_estimation_feedback = 6;
+
+            // Feedback for the constrained manipulation command request
+            ConstrainedManipulationCommand.Feedback constrained_manipulation_feedback = 7;
+
+        }
+
+        RobotCommandFeedbackStatus.Status status = 100;
+    }
+}

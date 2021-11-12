@@ -1,0 +1,188 @@
+// Copyright (c) 2021 Boston Dynamics, Inc.  All rights reserved.
+//
+// Downloading, reproducing, distributing or otherwise using the SDK Software
+// is subject to the terms and conditions of the Boston Dynamics Software
+// Development Kit License (20191101-BDSDK-SL).
+
+syntax = "proto3";
+
+package bosdyn.api;
+option java_outer_classname = "PayloadRegistrationProto";
+
+import "bosdyn/api/payload.proto";
+import "bosdyn/api/header.proto";
+import "bosdyn/api/robot_id.proto";
+
+// The RegisterPayload request message contains the payload information and secret to be
+// able to register it to the directory.
+message RegisterPayloadRequest {
+    // Common request header.
+    RequestHeader header = 1;
+
+    // The payload to register, which must have, at minimum, GUID specified correctly.
+    // The admin console can be used to verify that the payload definition is valid
+    // after registration.
+    Payload payload = 2;
+
+    // A private string provided by the payload to verify identity for auth.
+    string payload_secret = 3;
+}
+
+// The RegisterPayload response message contains the status of whether the payload was successfully
+// registered to the directory.
+message RegisterPayloadResponse {
+    // Common response header.
+    ResponseHeader header = 1;
+
+    enum Status {
+        // UNKNOWN should never be used. An internal PayloadRegistrationService issue has happened if UNKNOWN is set.
+        STATUS_UNKNOWN = 0;
+
+        // Success.  The new service record is available.
+        STATUS_OK = 1;
+
+        // RegisterPayload failed because a payload with this GUID already exists.
+        STATUS_ALREADY_EXISTS = 2;
+    }
+    // Return status for the request.
+    Status status = 2;
+}
+
+// Update the payload definition of the payload with matching GUID. The existing payload must
+// have a secret set and the request must provide the secret for access.
+// GUID and is_authorized fields are immutable and cannot be updated.
+message UpdatePayloadVersionRequest {
+    // Common request header.
+    RequestHeader header = 1;
+
+    // Payload credentials.
+    PayloadCredentials payload_credentials = 5;
+
+    // The GUID of the payload to be updated.
+    string payload_guid = 2 [deprecated = true];
+
+    // The payload secret for the specified payload.
+    string payload_secret = 3 [deprecated = true];
+
+    // The new software version that the payload is being updated to.
+    SoftwareVersion updated_version = 4;
+}
+
+// The UpdatePayloadVersion response message contains the status of whether the update was successful.
+message UpdatePayloadVersionResponse {
+    // Common response header.
+    ResponseHeader header = 1;
+
+    enum Status {
+        // UNKNOWN should never be used. An internal PayloadRegistrationService issue has happened if UNKNOWN is set.
+        STATUS_UNKNOWN = 0;
+
+        // Success.  The payload version has been updated.
+        STATUS_OK = 1;
+
+        // UpdatePayload failed because a payload with this GUID does not yet exist.
+        STATUS_DOES_NOT_EXIST = 2;
+
+        // UpdatePayload failed because the paylod guid & secret do not match any registered payloads.
+        STATUS_INVALID_CREDENTIALS = 3;
+    }
+    // Return status for the request.
+    Status status = 2;
+}
+
+// Request a user token from the robot
+// A token will only be provided after the registered payload has been enabled by an admin.
+// The returned user token will have limited access to the services necessary for a simple payload.
+message GetPayloadAuthTokenRequest {
+    // Common request header.
+    RequestHeader header = 1;
+
+    // Payload credentials.
+    PayloadCredentials payload_credentials = 4;
+
+    // The GUID to identify which payload to get the auth token for.
+    string payload_guid = 2 [deprecated = true];
+
+    // The payload secret for the specified payload.
+    string payload_secret = 3 [deprecated = true];
+}
+
+// The GetPayloadAuthToken response message that returns the token for the payload.
+message GetPayloadAuthTokenResponse {
+    // Common response header.
+    ResponseHeader header = 1;
+
+    enum Status {
+        // UNKNOWN should never be used. An internal PayloadRegistrationService issue has happened if UNKNOWN is set.
+        STATUS_UNKNOWN = 0;
+
+        // Success.  The token is available.
+        STATUS_OK = 1;
+
+        // GetPayloadAuthToken failed because the paylod guid & secret do not match any registered payloads.
+        STATUS_INVALID_CREDENTIALS = 2;
+
+        // GetPayloadAuthToken failed because the paylod has not been authorized by an admin.
+        STATUS_PAYLOAD_NOT_AUTHORIZED = 3;
+
+    }
+    // Return status for the request.
+    Status status = 2;
+
+    // A limited-access user token provided on successful payload registration
+    string token = 3;
+}
+
+// Attach/detach the payload with the matching GUID. The existing payload must
+// have a secret set and the request must provide the secret for access.
+// GUID is immutable and cannot be updated.
+message UpdatePayloadAttachedRequest {
+    // Common request header.
+    RequestHeader header = 1;
+
+    // Payload credentials, used to identify the payload and authorize the changes. 
+    PayloadCredentials payload_credentials = 2;
+
+    enum Request {
+        REQUEST_UNKNOWN = 0;
+        REQUEST_ATTACH = 1;
+        REQUEST_DETACH = 2;
+    }
+    // Attach or detach the payload.
+    Request request = 3;
+}
+
+// The UpdatePayloadAttached response message contains the status of whether the update was successful.
+message UpdatePayloadAttachedResponse {
+    // Common response header.
+    ResponseHeader header = 1;
+
+    enum Status {
+        // UNKNOWN should never be used. An internal PayloadRegistrationService issue has happened if UNKNOWN is set.
+        STATUS_UNKNOWN = 0;
+
+        // Success.  The payload version has been updated.
+        STATUS_OK = 1;
+
+        // UpdatePayloadAttached failed because a payload with this GUID does not yet exist.
+        STATUS_DOES_NOT_EXIST = 2;
+
+        // UpdatePayloadAttached failed because the paylod guid & secret do not match any registered payloads.
+        STATUS_INVALID_CREDENTIALS = 3;
+
+        // UpdatePayloadAttached failed because the requested payload has not yet been authorized.
+        // Authorize the payload in the webserver first, then try again.
+        STATUS_PAYLOAD_NOT_AUTHORIZED = 4;
+    }
+    // Return status for the request.
+    Status status = 2;
+}
+
+// PayloadCredentials are used to authorize a payload. 
+message PayloadCredentials {
+    // The GUID of the payload.
+    string guid = 1;
+
+    // The secret of the payload.
+    string secret = 2;
+}

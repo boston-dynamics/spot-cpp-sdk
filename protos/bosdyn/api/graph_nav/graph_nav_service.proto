@@ -1,0 +1,58 @@
+// Copyright (c) 2021 Boston Dynamics, Inc.  All rights reserved.
+//
+// Downloading, reproducing, distributing or otherwise using the SDK Software
+// is subject to the terms and conditions of the Boston Dynamics Software
+// Development Kit License (20191101-BDSDK-SL).
+
+syntax = "proto3";
+
+package bosdyn.api.graph_nav;
+
+option java_outer_classname = "GraphNavServiceProto";
+
+import "bosdyn/api/graph_nav/graph_nav.proto";
+
+// The GraphNav service service is a place-based localization and locomotion service. The service can
+// be used to get/set the localization, upload and download the current graph nav maps, and send navigation
+// requests to move around the map.
+service GraphNavService {
+    // Trigger a manual localization. Typically done to provide the initial localization.
+    rpc SetLocalization (SetLocalizationRequest) returns (SetLocalizationResponse) {}
+
+    // Tell GraphNav to navigate/traverse a given route.
+    rpc NavigateRoute (NavigateRouteRequest) returns (NavigateRouteResponse) {}
+
+    // Tell GraphNav to navigate to a waypoint along a route it chooses.
+    rpc NavigateTo (NavigateToRequest) returns (NavigateToResponse) {}
+
+    // Tell GraphNav to navigate to a goal with respect to the current anchoring.
+    rpc NavigateToAnchor (NavigateToAnchorRequest) returns (NavigateToAnchorResponse) {}
+
+    // Get feedback on active navigation command.
+    rpc NavigationFeedback (NavigationFeedbackRequest) returns (NavigationFeedbackResponse) {}
+
+    // Get the localization status and data.
+    rpc GetLocalizationState (GetLocalizationStateRequest) returns (GetLocalizationStateResponse) {}
+
+    // Clears the local graph structure. Also erases any snapshots currently in RAM.
+    rpc ClearGraph(ClearGraphRequest) returns (ClearGraphResponse) {}
+
+    // Download the graph structure.
+    rpc DownloadGraph(DownloadGraphRequest) returns (DownloadGraphResponse) {}
+
+    // Upload the full list of waypoint IDs, graph topology and other small info.
+    rpc UploadGraph (UploadGraphRequest) returns (UploadGraphResponse) {}
+
+    // Uploads large waypoint snapshot as a stream for a particular waypoint.
+    rpc UploadWaypointSnapshot (stream UploadWaypointSnapshotRequest) returns (UploadWaypointSnapshotResponse) {}
+
+    // Uploads large edge snapshot as a stream for a particular edge.
+    rpc UploadEdgeSnapshot (stream UploadEdgeSnapshotRequest) returns (UploadEdgeSnapshotResponse) {}
+
+    // Download waypoint data from the server. If the snapshot exists in disk cache, it will be loaded.
+    rpc DownloadWaypointSnapshot (DownloadWaypointSnapshotRequest) returns (stream DownloadWaypointSnapshotResponse) {}
+
+    // Download edge data from the server. If the snapshot exists in disk cache, it will be loaded.
+    rpc DownloadEdgeSnapshot (DownloadEdgeSnapshotRequest) returns (stream DownloadEdgeSnapshotResponse) {}
+
+}

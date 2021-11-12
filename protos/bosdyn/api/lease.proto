@@ -1,0 +1,289 @@
+// Copyright (c) 2021 Boston Dynamics, Inc.  All rights reserved.
+//
+// Downloading, reproducing, distributing or otherwise using the SDK Software
+// is subject to the terms and conditions of the Boston Dynamics Software
+// Development Kit License (20191101-BDSDK-SL).
+
+syntax = "proto3";
+
+package bosdyn.api;
+option java_outer_classname = "LeaseProto";
+
+import "bosdyn/api/header.proto";
+
+// Leases are used to verify that a client has exclusive access to a shared
+// resources. Examples of shared resources are the motors for a robot, or
+// indicator lights on a robot.
+// Leases are initially obtained by clients from the LeaseService. Clients
+// then attach Leases to Commands which require them. Clients may also
+// generate sub-Leases to delegate out control of the resource to other
+// services.
+message Lease {
+    // The resource that the Lease is for.
+    string resource = 1;
+
+    // The epoch for the Lease. The sequences field are scoped to a particular epoch.
+    // One example of where this can be used is to generate a random epoch
+    // at LeaseService startup.
+    string epoch = 2;
+
+    // Logical vector clock indicating when the Lease was generated.
+    repeated uint32 sequence = 3;
+
+    // The set of different clients which have sent/receieved the lease.
+    repeated string client_names = 4;
+}
+
+
+// Lease resources can be divided into a hierarchy of sub-resources that can
+// be commanded together. This message describes the hierarchy of a resource.
+message ResourceTree {
+    // The name of this resource.
+    string resource = 1;
+
+    // Sub-resources that make up this resource.
+    repeated ResourceTree sub_resources = 2;
+}
+
+// Details about who currently owns the Lease for a resource.
+message LeaseOwner {
+    string client_name = 1; // The name of the client application.
+    string user_name = 2; // The name of the user.
+}
+
+// Result for when a Lease is used - for example, in a LeaseRetainer, or
+// associated with a command.
+message LeaseUseResult {
+    enum Status {
+        // An internal issue occurred.
+        STATUS_UNKNOWN = 0;
+
+        // The Lease was accepted.
+        STATUS_OK = 1;
+
+        // The Lease is invalid.
+        STATUS_INVALID_LEASE = 2;
+
+        // The Lease is older than the current lease, and rejected.
+        STATUS_OLDER = 3;
+
+        // The Lease holder did not check in regularly enough, and the Lease is stale.
+        STATUS_REVOKED = 4;
+
+        // The Lease was for an unmanaged resource.
+        STATUS_UNMANAGED = 5;
+
+        // The Lease was for the wrong epoch.
+        STATUS_WRONG_EPOCH = 6;
+    }
+    Status status = 1;
+
+    // The current lease owner.
+    LeaseOwner owner = 2;
+
+    // The lease which was attempted for use.
+    Lease attempted_lease = 3;
+
+    // The previous lease, if any, which was used.
+    Lease previous_lease = 4;
+
+    // The "latest"/"most recent" lease known to the system.
+    Lease latest_known_lease = 5;
+
+    // Represents the latest "leaf" resources of the hierarchy.
+    repeated Lease latest_resources = 6;
+}
+
+// The AcquireLease request message which sends which resource the lease should be for.
+message AcquireLeaseRequest {
+    // Common request header.
+    RequestHeader header = 1;
+
+    // The resource to obtain a Lease for.
+    string resource = 2;
+}
+
+// The AcquireLease response returns the lease for the desired resource if it could be obtained.
+// If a client is returned a new lease, the client should initiate a
+// RetainLease bidirectional streaming request immediately after completion
+// of AcquireLease.
+message AcquireLeaseResponse {
+    // Common response Header.
+    ResponseHeader header = 1;
+
+    enum Status {
+        // UNKNOWN should never be used. An internal LeaseService issue has happened
+        // if UNKNOWN is set.
+        STATUS_UNKNOWN = 0;
+
+        // AcquireLease was successful.The lease field will be populated with the new
+        // lease for the resource. The client is expected to call the RetainLease method
+        // immediately after.
+        STATUS_OK = 1;
+
+        // AcquireLease failed since the resource has already been claimed.
+        // The TakeLease method may be used to forcefully grab the lease.
+        STATUS_RESOURCE_ALREADY_CLAIMED = 2;
+
+        // AcquireLease failed since the resource is not known to LeaseService.
+        // The ListLeaseResources method may be used to list all known
+        // resources.
+        STATUS_INVALID_RESOURCE = 3;
+
+        // The LeaseService is not authoritative - so Acquire should not work.
+        STATUS_NOT_AUTHORITATIVE_SERVICE = 4;
+    }
+    // Return status for the request.
+    Status status = 2;
+
+    // The lease for the resource. Only set if status field == STATUS_OK.
+    Lease lease = 3;
+
+    // The owner for the lease. Set if status field == OK or status field == RESOURCE_ALREADY_CLAIMED.
+    LeaseOwner lease_owner = 4;
+}
+
+// The TakeLease request message which sends which resource the lease should be for.
+message TakeLeaseRequest {
+    // Common request header.
+    RequestHeader header = 1;
+
+     // The resource to obtain a Lease for.
+    string resource = 2;
+}
+
+// The TakeLease response returns the lease for the desired resource if it could be obtained.
+// In most cases if the resource is managed by the LeaseService, TakeLease
+// will succeed. However, in the future policies may be introduced which will prevent
+// TakeLease from succeeding and clients should be prepared to handle that
+// case.
+// If a client obtains a new lease, the client should initiate a
+// RetainLease bidirectional streaming request immediately after completion
+// of TakeLease.
+message TakeLeaseResponse {
+    // Common response header.
+    ResponseHeader header = 1;
+
+    enum Status {
+        // UNKNOWN should never be used. An internal LeaseService issue has happened if UNKNOWN is set.
+        STATUS_UNKNOWN = 0;
+
+        // TakeLease was successful. The lease field will be populated with the
+        // new lease for the resource. The client is expected to call the RetainLease
+        // method immediately after.
+        STATUS_OK = 1;
+
+        // TakeLease failed since the resource is not known to LeaseService.
+        // The ListLeaseResources method may be used to list all known
+        // resources.
+        STATUS_INVALID_RESOURCE = 2;
+
+        // The LeaseService is not authoritative - so Acquire should not work.
+        STATUS_NOT_AUTHORITATIVE_SERVICE = 3;
+    }
+    // Return status for the request.
+    Status status = 2;
+
+    // The lease for the resource. Only set if status field == STATUS_OK.
+    Lease lease = 3;
+
+    // The owner for the lease. Set if status field == STATUS_OK.
+    LeaseOwner lease_owner = 4;
+}
+
+// The ReturnLease request message will be sent to the LeaseService. If the lease
+// is currently active for the resource, the LeaseService will invalidate the lease.
+// Future calls to AcquireLease by any client will now succeed.
+message ReturnLeaseRequest {
+    // Common request header.
+    RequestHeader header = 1;
+
+    // The Lease to return back to the LeaseService.
+    Lease lease = 2;
+}
+
+// The ReturnLease response message
+message ReturnLeaseResponse {
+    // Common response header.
+    ResponseHeader header = 1;
+
+    enum Status {
+        // UNKNOWN should never be used. An internal LeaseService issue has happened if UNKNOWN is set.
+        STATUS_UNKNOWN = 0;
+
+        // ReturnLease was successful.
+        STATUS_OK = 1;
+
+        // ReturnLease failed because the resource covered by the lease
+        // is not being managed by the LeaseService.
+        STATUS_INVALID_RESOURCE = 2;
+
+        // ReturnLease failed because the lease was not the active lease.
+        STATUS_NOT_ACTIVE_LEASE = 3;
+
+
+        // The LeaseService is not authoritative - so Acquire should not work.
+        STATUS_NOT_AUTHORITATIVE_SERVICE = 4;
+    }
+    // Return status for the request.
+    Status status = 2;
+}
+
+// The ListLease request message asks for information about any known lease resources.
+message ListLeasesRequest {
+    // Common request header.
+    RequestHeader header = 1;
+    // Include the full data of leases in use, if available.
+    // Defaults to false to receive basic information.
+    bool include_full_lease_info = 2;
+}
+
+// Describes all information about a sepcific lease: including the resource it covers, the
+// active lease, and which application is the owner of a lease.
+message LeaseResource {
+    // The resource name.
+    string resource = 1;
+
+    // The active lease, if any.
+    Lease lease = 2;
+
+    // The Lease Owner, if there is a Lease.
+    LeaseOwner lease_owner = 3;
+}
+
+// The ListLease response message returns all known lease resources from the LeaseService.
+message ListLeasesResponse {
+    // Common response header.
+    ResponseHeader header = 1;
+
+    // The resources managed by the LeaseService.
+    repeated LeaseResource resources = 2;
+
+    // Provide the hierarchical lease structure.
+    // A resource can encapsulate multiple sub-resources.
+    // For example, the "body" lease may include control of the legs, arm, and gripper.
+    ResourceTree resource_tree = 3;
+}
+
+// The RetainLease request will inform the LeaseService that the application contains to hold
+// ownership of this lease. Lease holders are expected to be reachable and alive. If enough time
+// has passed since the last RetainLeaseRequest, the LeaseService will revoke the lease.
+message RetainLeaseRequest {
+    // Common request header.
+    RequestHeader header = 1;
+
+    // The Lease to retain ownership over. May also be a "super" lease of the lease to retain
+    // ownership over.
+    Lease lease = 2;
+}
+
+// The RetainLease response message sends the result of the attempted RetainLease request, which
+// contains whether or not the lease is still owned by the application sending the request.
+message RetainLeaseResponse {
+    // Common response header.
+    ResponseHeader header = 1;
+    // Result of using the lease.
+    LeaseUseResult lease_use_result = 2;
+}
+
+

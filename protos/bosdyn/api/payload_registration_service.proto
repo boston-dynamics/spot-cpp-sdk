@@ -1,0 +1,25 @@
+// Copyright (c) 2021 Boston Dynamics, Inc.  All rights reserved.
+//
+// Downloading, reproducing, distributing or otherwise using the SDK Software
+// is subject to the terms and conditions of the Boston Dynamics Software
+// Development Kit License (20191101-BDSDK-SL).
+
+syntax = "proto3";
+
+package bosdyn.api;
+
+option java_outer_classname = "PayloadRegistrationServiceProto";
+
+import "bosdyn/api/payload_registration.proto";
+
+// This service provides a way to register new payloads.
+service PayloadRegistrationService {
+    // Register a payload with the directory.
+    rpc RegisterPayload(RegisterPayloadRequest) returns (RegisterPayloadResponse);
+    // Update the version for the registered payload.
+    rpc UpdatePayloadVersion(UpdatePayloadVersionRequest) returns (UpdatePayloadVersionResponse);
+    // Get the authentication token information associated with a given payload.
+    rpc GetPayloadAuthToken(GetPayloadAuthTokenRequest) returns (GetPayloadAuthTokenResponse);
+    // Tell the robot whether the specified payload is attached..
+    rpc UpdatePayloadAttached(UpdatePayloadAttachedRequest) returns (UpdatePayloadAttachedResponse);
+}

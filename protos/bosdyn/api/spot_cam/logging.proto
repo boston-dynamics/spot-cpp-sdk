@@ -1,0 +1,277 @@
+// Copyright (c) 2021 Boston Dynamics, Inc.  All rights reserved.
+//
+// Downloading, reproducing, distributing or otherwise using the SDK Software
+// is subject to the terms and conditions of the Boston Dynamics Software
+// Development Kit License (20191101-BDSDK-SL).
+
+syntax = "proto3";
+
+package bosdyn.api.spot_cam;
+
+option java_outer_classname = "LoggingProto";
+
+import "bosdyn/api/spot_cam/camera.proto";
+import "bosdyn/api/header.proto";
+import "bosdyn/api/data_chunk.proto";
+import "bosdyn/api/image.proto";
+import "bosdyn/api/geometry.proto";
+import "google/protobuf/timestamp.proto";
+
+// A representation of a stored data acquisition.
+message Logpoint {
+    // Possible types of media that can be stored.
+    enum RecordType {
+        STILLIMAGE = 0;
+    }
+    // Possible stages of data acquisition.
+    enum LogStatus {
+        FAILED = 0;
+        QUEUED = 1; //the logpoint has been queued to be downloaded from the renderer
+        COMPLETE = 2; // the logpoint is written to the disk
+        UNKNOWN = -1;
+    }
+    enum QueueStatus{
+        QUEUED_UNKNOWN = 0;
+        QUEUED_RENDER = 1; // The logpoint has been queued to be downloaded from the renderer
+        QUEUED_DISK = 2;   // The logpoint is in general ram, and will be written to the disk when resources allow
+    }
+    // Unique identifier for a data acquisition event.
+    string name = 1;
+    // Type of data held in this log point.
+    RecordType type = 2;
+    // Current stage of acquisition.
+    LogStatus status = 3;
+    // Only filled out when status == QUEUED
+    QueueStatus queue_status = 8;
+    // An arbitrary string to be stored with the log data.
+    string tag = 4;
+    // Time of acquisition.
+    google.protobuf.Timestamp timestamp=5;
+    // Description of image format.
+    message ImageParams {
+        int32 width = 1;
+        int32 height = 2;
+        bosdyn.api.Image.PixelFormat format = 3;
+    }
+    // Image format of the stored data.
+    ImageParams image_params=6;
+    // Data describing the camera intrinsics and extrinsics for a window of the image.
+    message Calibration {
+        int32 xoffset=1;
+        int32 yoffset=2;
+        int32 width=3;
+        int32 height=4;
+        string base_frame_name = 7;
+        // 'base_tfrom_sensor' defines the transform from the specific camera to the named base from.
+        // This is deprecated in favor of 'base_tform_sensor' which follows the intended naming convention
+        // and FrameTree directionality convention of the Spot system as defined in geometry.proto.
+        SE3Pose base_tfrom_sensor = 5[deprecated=true];
+        // The transform from the named base frame to this specific camera
+        SE3Pose base_tform_sensor = 8;
+        bosdyn.api.spot_cam.Camera.PinholeIntrinsics intrinsics=6;
+    }
+    // Camera data for all sub-images contained within the image data.
+    repeated Calibration calibration=7;
+}
+
+// Delete a log point from the store.
+message DeleteRequest {
+    // Common request header.
+    bosdyn.api.RequestHeader header = 1;
+    // Log point to delete.  Only the name is used.
+    Logpoint point = 2;
+}
+
+// Response to a deletion with any errors that occurred.
+message DeleteResponse {
+    // Common response header.
+    bosdyn.api.ResponseHeader header = 1;
+}
+
+// Request for status about the current stage of data acquisition.
+message GetStatusRequest {
+    // Common request header.
+    bosdyn.api.RequestHeader header = 1;
+    // Log point to query.  Only the name is used.
+    Logpoint point = 2;
+}
+
+// Provide an update on the stage of data acquisition.
+message GetStatusResponse {
+    // Common response header.
+    bosdyn.api.ResponseHeader header = 1;
+
+    // The logpoint returned here can be used to add a tag to the Logpoint later
+    Logpoint point = 2;
+}
+
+// Retrieve the binary data associated with a log point.
+message RetrieveRequest {
+    // Common request header.
+    bosdyn.api.RequestHeader header = 1;
+    // Log point to retrieve.  Only the name is used.
+    Logpoint point = 2;
+}
+
+// Provide the data stored at a log point.
+// Store() dictates what processing happens in this response.
+// c0 -> c4 will return the raw (rgb24) fisheye image of the camera at that index.
+// Storing a panorama will process the data into a stitched image.
+message RetrieveResponse {
+    // Common response header.
+    bosdyn.api.ResponseHeader header = 1;
+    // Log point retrieved.
+    Logpoint logpoint = 2;
+    // Data chunk bytes field should be concatenated together to recover the binary data.
+    DataChunk data = 3;
+}
+
+
+// Retrieve the binary data associated with a log point, with no processing applied.
+// Storing a panorama will retrieve tiled individual images.
+// For IR, the temperature at each pixel is 0.1 * the int value in Kelvin.
+message RetrieveRawDataRequest {
+    // Common request header.
+    bosdyn.api.RequestHeader header = 1;
+    // Log point to retrieve.  Only the name is used.
+    Logpoint point = 2;
+}
+
+message RetrieveRawDataResponse {
+    // Common response header.
+    bosdyn.api.ResponseHeader header = 1;
+    // Log point retrieved.
+    Logpoint logpoint = 2;
+    // Data chunk bytes field should be concatenated together to recover the binary data.
+    DataChunk data = 3;
+}
+
+// Trigger a data acquisition.
+message StoreRequest {
+    // Common request header.
+    bosdyn.api.RequestHeader header = 1;
+    // Which camera to capture.
+    Camera camera = 2;
+    // Type of data capture to perform.
+    Logpoint.RecordType type = 3;
+    // Metadata to associate with the store.
+    string tag = 4;
+}
+
+// Result of data acquisition trigger.
+message StoreResponse {
+    // Common response header.
+    bosdyn.api.ResponseHeader header = 1;
+
+    // The log point returned here can be used to add a tag to the Logpoint later
+    // It will very likely be in th 'QUEUED' state.
+    Logpoint point = 2;
+}
+
+// Add tag metadata to an existing log point.
+message TagRequest {
+    // Common request header.
+    bosdyn.api.RequestHeader header = 1;
+    // Logpoint to add metadata to. Name and tag are used.
+    Logpoint point = 2;
+}
+
+// Result of adding tag metadata to a log point.
+message TagResponse {
+    // Common response header.
+    bosdyn.api.ResponseHeader header = 1;
+}
+
+// Request the available cameras.
+message ListCamerasRequest {
+    // Common request header.
+    bosdyn.api.RequestHeader header = 1;
+}
+
+// Provide the list of available cameras.
+message ListCamerasResponse {
+    // Common response header.
+    bosdyn.api.ResponseHeader header = 1;
+
+    // List of all cameras which can be used in a StoreRequest.
+    repeated Camera cameras = 2;
+}
+
+// List all available log points, whether they have completed or not.
+message ListLogpointsRequest {
+    // Common request header.
+    bosdyn.api.RequestHeader header = 1;
+}
+
+// Provide all log points in the system.
+message ListLogpointsResponse {
+    // Common response header.
+    bosdyn.api.ResponseHeader header = 1;
+    // List of all the individual log points concatenated into a list.
+    // This stream may take a long time to complete if there are a lot of stored images.
+    repeated Logpoint logpoints = 2;
+}
+
+// Set encryption for the disk.
+message SetPassphraseRequest {
+    // Common request header.
+    bosdyn.api.RequestHeader header = 1;
+
+    // A passphrase is a human-readable string used to generate
+    // an encryption key. An empty passphrase disables encryption.
+
+    // If the encryption key is set, everything new written to the drive gets encrypted. this includes
+
+    // 1) the sql database
+    // 2) logged data
+    // 3) audio files uploaded with the Audio service
+    // 4) probably other stuff that I haven't thought of
+
+    // If it's called repeatedly (with different keys), old data will
+    // still be on the disk, but unreadable, so new data will be
+    // written with the new key. the only exception is this; when
+    // encryption is off and a key is written, the sql database gets
+    // encrypted with the new key; old log and audio data remains
+    // unencrypted however.
+
+    // After setting the passphrase, please reboot the system to
+    // remount the encrypted filesystem layer.
+    string passphrase = 2;
+}
+
+// Response from setting the disk encryption.
+// After setting the passphrase, please reboot the system to
+// remount the encrypted filesystem layer.
+message SetPassphraseResponse {
+    // Common response header.
+    bosdyn.api.ResponseHeader header = 1;
+}
+
+// Change debug logging settings on the SpotCam.
+message DebugRequest {
+    // Common request header.
+    bosdyn.api.RequestHeader header = 1;
+    // Set true to enable logging of temperature data;
+    bool enable_temperature = 2;
+    // Set true to enable logging of humidity data;
+    bool enable_humidity = 3;
+    // Set true to enable logging of BIT events;
+    // BIT events are always recorded to volatile memory
+    // and can be viewed (and cleared) with the Health service,
+    // but this enables writing them to disk.
+    bool enable_BIT = 4;
+    // Set true to enable logging of Shock data;
+    // this is on by default.
+    bool enable_shock = 5;
+    // Set to true to enable logging of system load stats
+    // cpu, gpu, memory, and network utilization
+    bool enable_system_stat = 6;
+    // Nowow a BIT, set true to enable logging of led driver status.
+    // bool enable_led_stat = 7;
+}
+
+// Response with any errors for debug setting changes.
+message DebugResponse {
+    // Common response header.
+    bosdyn.api.ResponseHeader header = 1;
+}
