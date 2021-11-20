@@ -41,10 +41,10 @@ The Boston Dynamics Spot C++ SDK works with most operating systems including:
 
 On Linux, install all the system requirements with the command:
 ```cmd
-sudo apt-get update && apt-get -y install build-essential git g++ pkg-config cmake curl tar zip unzip zlib1g-dev libssl-dev
+sudo apt-get update && apt-get -y install build-essential git g++ pkg-config curl tar zip unzip zlib1g-dev libssl-dev
 ```
 
-**Windows users:** Install Microsoft Visual Studio, git and CMake manually.
+On Windows, install Microsoft Visual Studio and git manually.
 
 ### C++ requirements
 
@@ -52,13 +52,15 @@ Spot C++ SDK works with gcc and Microsoft Visual Studio.
 
 ### Install C++ SDK dependencies
 
-The C++ SDK depends on gRPC, Protobuf and Eigen. Protobuf is included in gRPC. The instructions below use `vcpkg` to install these dependencies. All commands need to be run on a Linux/MacOS/Windows terminal.
+The C++ SDK depends on gRPC, Protobuf, Eigen and CLI11. Protobuf is included in gRPC. The instructions below use `vcpkg` to install these dependencies. All commands need to be run on a Linux/Windows terminal.
 
 1) Clone vcpkg. The checkout hash below specifies the one used for testing internally. This version of vcpkg installs the dependency versions:
     - gRPC 1.33.1
     - Protobuf 3.14.0
     - Eigen 3.3.9
     - CLI11 1.9.1
+
+It also downloads cmake in the location `downloads/tools/{CMAKE_VERSION}/{CMAKE_VERSION}/bin/cmake`, which is needed to build the SDK. Please add that folder to your PATH to simplify running cmake on the terminal.
 
 ```cmd
 git clone https://github.com/microsoft/vcpkg
@@ -106,8 +108,6 @@ Or download a zipfile distribution:
 
 ### Compile and install the C++ SDK
 
-**On Linux:**
-
 To install the C++ SDK in a folder <SDK_install_path>, follow the steps below. Replace <vcpkg_install_path> with the folder where `vcpkg` is installed and <SDK_clone_path> with the folder where the SDK is cloned.
 
 ```
@@ -115,21 +115,34 @@ cd <SDK_clone_path>
 cd cpp
 mkdir build
 cd build
-cmake ../ -DCMAKE_TOOLCHAIN_FILE=<vcpkg_install_path>/scripts/buildsystems/vcpkg.cmake -DCMAKE_INSTALL_PREFIX=<SDK_install_path>
+cmake ../ -DCMAKE_TOOLCHAIN_FILE=<vcpkg_install_path>/scripts/buildsystems/vcpkg.cmake -DCMAKE_INSTALL_PREFIX=<SDK_install_path> -DCMAKE_FIND_PACKAGE_PREFER_CONFIG=TRUE
+```
+
+The `cmake` commands need the flag `-DCMAKE_FIND_PACKAGE_PREFER_CONFIG=TRUE`, which instructs cmake to use its own version of find package instructions, instea of the one provided by the dependency. This is necessary for the protobuf dependency, which generates three versions of the find package instructions:
+- The cmake version, which we need to use
+- The Protobuf version, which is included in the Protobuf vcpkg installation
+- The gRPC version, which is included in the gRPC vcpkg installation, and it might be identical to the version above.
+
+The `cmake` command can also overwrite the following variables by passing them to the `cmake` command line with a `-D` prefix:
+- `CMAKE_BUILD_TYPE`: String variable to determine build type. The default value for this variable is "Release".
+- `BUILD_SHARED_LIBS`: Boolean ON/OFF variable to turn on the build of shared libraries. The default value for this variable is ON. *Shared libraries currently are only supported on Linux.* This limitation is temporary and will be addressed in future releases.
+- `BUILD_CHOREOGRAPHY_LIBS`: Boolean ON/OFF variable to turn on the build of choreography libraries. The default value for this variable is ON.
+
+
+**On Linux:**
+
+Build the SDK using the `make` command below.
+```
 make -j6 install
 ```
 
 The `make` command generates a lot of deprecation warnings during the compiling of the classes generated from the protobuf definitions. This is expected as the protobuf definitions contain `deprecated` flags for fields that will not be supported in future versions of the SDK.
 
-The `cmake` command can also overwrite the following variables by passing them to the `cmake` command line with a `-D` prefix:
-- `CMAKE_BUILD_TYPE`: String variable to determine build type. The default value for this variable is "Release".
-- `BUILD_SHARED_LIBS`: Boolean ON/OFF variable to turn on the build of shared libraries. The default value for this variable is ON.
-- `BUILD_CHOREOGRAPHY_LIBS`: Boolean ON/OFF variable to turn on the build of choreography libraries. The default value for this variable is ON.
-
 
 **On Windows:**
 
-*  Open the `vcproj` file in the build folder in Microsoft Visual Studio.
+*  Open the `sln` file in the build folder in Microsoft Visual Studio.
+*  Remove `libprotobuf.dll` library dependencies in the targets example executables `hello_spot`, `basic_robot_command`, `get_image` and `spot_cam`. Go to the properties of each target, then select `Configuration Properties`, then `Linker`, then `Input` and then edit the `Additional Dependencies` and remove the `libprotobuf.dll` entry from the list.
 *  Right click on INSTALL target and select `Build`.
 
 ## Verify you can command and query Spot
@@ -149,6 +162,8 @@ If you have just unboxed your Spot robot, you will find a sticker inside the bat
 
 NOTE: The following examples assume username "user" and password "password."
 
+After creating the login credentials, store them in environment variables `BOSDYN_CLIENT_USERNAME` and `BOSDYN_CLIENT_PASSWORD`. You can also pass the credentials to the SDK example applications using the command-line arguments `--username` and `--password`.
+
 ### Ping Spot
 
 1. Power on Spot by holding the power button down until the fans start. Wait for the fans to turn off (10-20 seconds).
@@ -162,10 +177,13 @@ $ ping 192.168.80.3
 
 ### Run hello_spot example
 
-Issue the following command to run the hello_spot example:
+Issue the following command to run the hello_spot example from the SDK install `bin/` folder:
 
 ```shell
-$ ./hello_spot
+# with `BOSDYN_CLIENT_USERNAME` and `BOSDYN_CLIENT_PASSWORD` environment variables set:
+$ ./hello_spot 192.168.80.3
+# without `BOSDYN_CLIENT_USERNAME` and `BOSDYN_CLIENT_PASSWORD` environment variables set:
+$ ./hello_spot 192.168.80.3 --username {USER} --password {PASSWORD}
 ```
 
 If this worked for you, SUCCESS! You are now successfully communicating with Spot via C++!  Note that the output returned shows your Spot robot's unique serial number, its nickname and robot type (Boston Dynamics has multiple robots), software version, and install date.

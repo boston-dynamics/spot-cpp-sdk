@@ -15,12 +15,17 @@ find_package(Eigen3 REQUIRED)
 find_package(gRPC REQUIRED)
 find_package(CLI11 REQUIRED)
 include_directories(SYSTEM $<TARGET_PROPERTY:gRPC::grpc++,INTERFACE_INCLUDE_DIRECTORIES>)
+get_target_property(grpc_cpp_plugin_location gRPC::grpc_cpp_plugin LOCATION)
 include_directories(SYSTEM $<TARGET_PROPERTY:CLI11::CLI11,INTERFACE_INCLUDE_DIRECTORIES>)
 
 # Command-line arguments:
 set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build." FORCE)
 option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
 option(BUILD_CHOREOGRAPHY_LIBS "Boolean to control whether choreography proto libraries are built" ON)
+
+IF (NOT UNIX)
+    SET(BUILD_SHARED_LIBS OFF CACHE BOOL "Build using shared libraries" FORCE)
+ENDIF (NOT UNIX)
 
 
 ### API protos LIBRARY ###
@@ -39,7 +44,6 @@ if (BUILD_SHARED_LIBS)
     ${PROTOBUF_INCLUDE_DIRS}
     ${protos_OUTPUT_DIR}
   )
-  get_target_property(grpc_cpp_plugin_location gRPC::grpc_cpp_plugin LOCATION)
   protobuf_generate(TARGET bosdyn_api LANGUAGE cpp
     IMPORT_DIRS ${API_protos_PATH} 
     PROTOC_OUT_DIR ${protos_OUTPUT_DIR})
@@ -90,9 +94,9 @@ if (BUILD_SHARED_LIBS)
   target_link_libraries(bosdyn_choreography_protos PUBLIC bosdyn_api)
   target_include_directories(bosdyn_choreography_protos PUBLIC
     ${PROTOBUF_INCLUDE_DIRS}
+    ${protos_OUTPUT_DIR}
     ${choreography_protos_OUTPUT_DIR}
   )
-  get_target_property(grpc_cpp_plugin_location gRPC::grpc_cpp_plugin LOCATION)
   protobuf_generate(TARGET bosdyn_choreography_protos LANGUAGE cpp
     IMPORT_DIRS ${API_choreography_protos_PATH} ${API_protos_PATH}
     PROTOC_OUT_DIR ${choreography_protos_OUTPUT_DIR})
@@ -110,6 +114,7 @@ set_target_properties(bosdyn_choreography_protos_static PROPERTIES LIBRARY_OUTPU
 target_link_libraries(bosdyn_choreography_protos_static PUBLIC bosdyn_api)
 target_include_directories(bosdyn_choreography_protos_static PUBLIC
   ${PROTOBUF_INCLUDE_DIRS}
+  ${protos_OUTPUT_DIR}
   ${choreography_protos_OUTPUT_DIR}
 )
 get_target_property(grpc_cpp_plugin_location gRPC::grpc_cpp_plugin LOCATION)

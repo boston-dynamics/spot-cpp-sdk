@@ -34,7 +34,8 @@ bosdyn::common::Status run(const ::bosdyn::client::CommonCLIArgs& args,
     }
     std::unique_ptr<bosdyn::client::Robot> robot = client_result.move();
 
-    if (auto status = robot->Authenticate(args.username, args.password); !status) {
+    auto status = robot->Authenticate(args.username, args.password);
+    if ( !status) {
         return status;
     }
     std::cout << "------Robot instance configured" << std::endl;
