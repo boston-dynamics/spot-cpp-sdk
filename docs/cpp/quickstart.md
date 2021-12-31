@@ -41,7 +41,7 @@ The Boston Dynamics Spot C++ SDK works with most operating systems including:
 
 On Linux, install all the system requirements with the command:
 ```cmd
-sudo apt-get update && apt-get -y install build-essential git g++ pkg-config curl tar zip unzip zlib1g-dev libssl-dev
+sudo apt-get update && sudo apt-get -y install build-essential git g++ pkg-config curl tar zip unzip zlib1g-dev libssl-dev
 ```
 
 On Windows, install Microsoft Visual Studio and git manually.
