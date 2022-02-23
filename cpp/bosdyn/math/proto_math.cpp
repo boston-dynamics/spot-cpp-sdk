@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Boston Dynamics, Inc.  All rights reserved.
+ * Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
  *
  * Downloading, reproducing, distributing or otherwise using the SDK Software
  * is subject to the terms and conditions of the Boston Dynamics Software
@@ -681,6 +681,21 @@ void SetDeprecatedFields(::bosdyn::api::SE3Covariance* covariance) {
     covariance->set_cov_zy(mat(5, 4));
     covariance->set_cov_zz(mat(5, 5));
     covariance->set_yaw_variance(mat(2, 2));
+}
+
+bool IntersectRayPlane(const bosdyn::api::Vec3& ray_point, const bosdyn::api::Vec3& ray_norm,
+                       const bosdyn::api::Plane& plane, bosdyn::api::Vec3* intersection_point) {
+    auto numerator = bosdyn::api::DotProduct(ray_point - plane.point(), plane.normal());
+    auto denominator = bosdyn::api::DotProduct(ray_norm, plane.normal());
+    if (abs(denominator) < kEqualityTolerance) {
+        return false;
+    }
+    auto t = -1 * numerator / denominator;
+    if (t < 0) {
+        return false;
+    }
+    *intersection_point = ray_point + t * ray_norm;
+    return true;
 }
 
 }  // namespace api

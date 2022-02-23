@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Boston Dynamics, Inc.  All rights reserved.
+ * Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
  *
  * Downloading, reproducing, distributing or otherwise using the SDK Software
  * is subject to the terms and conditions of the Boston Dynamics Software
@@ -267,7 +267,7 @@ void GraphNavClient::OnClearGraphComplete(
     ::bosdyn::api::graph_nav::ClearGraphResponse&& response, const grpc::Status& status,
     std::promise<ClearGraphResultType> promise) {
     ::bosdyn::common::Status ret_status = ProcessResponseWithLeaseAndGetFinalStatus<::bosdyn::api::graph_nav::ClearGraphResponse>(
-        status, response, SDKErrorCode::Success, m_lease_wallet.get());
+        status, response, response.status(), m_lease_wallet.get());
 
     promise.set_value({ret_status, std::move(response)});
 }
@@ -349,7 +349,7 @@ void GraphNavClient::OnUploadGraphComplete(
     std::promise<UploadGraphResultType> promise) {
     ::bosdyn::common::Status ret_status =
         ProcessResponseWithLeaseAndGetFinalStatus<::bosdyn::api::graph_nav::UploadGraphResponse>(
-            status, response, SDKErrorCode::Success, m_lease_wallet.get());
+            status, response, response.status(), m_lease_wallet.get());
 
     promise.set_value({ret_status, std::move(response)});
 }
@@ -412,7 +412,7 @@ void GraphNavClient::OnUploadWaypointSnapshotComplete(
     std::promise<UploadWaypointSnapshotResultType> promise) {
     ::bosdyn::common::Status ret_status =
         ProcessResponseWithLeaseAndGetFinalStatus<::bosdyn::api::graph_nav::UploadWaypointSnapshotResponse>(
-            status, response, SDKErrorCode::Success, m_lease_wallet.get());
+            status, response, response.status(), m_lease_wallet.get());
 
     promise.set_value({ret_status, std::move(response)});
 }
@@ -607,6 +607,7 @@ void GraphNavClient::OnDownloadEdgeSnapshotComplete(
 
     promise.set_value(MessageFromDataChunks<::bosdyn::api::graph_nav::EdgeSnapshot>(data_chunks));
 }
+
 
 ServiceClient::QualityOfService GraphNavClient::GetQualityOfService() const {
     return QualityOfService::NORMAL;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Boston Dynamics, Inc.  All rights reserved.
+ * Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
  *
  * Downloading, reproducing, distributing or otherwise using the SDK Software
  * is subject to the terms and conditions of the Boston Dynamics Software
@@ -19,9 +19,9 @@
 
 
 #ifdef _WIN32
-#define CONVERT_DURATION_FOR_GRPC(tp) std::chrono::duration_cast<std::chrono::microseconds>(tp)
+#    define CONVERT_DURATION_FOR_GRPC(tp) std::chrono::duration_cast<std::chrono::microseconds>(tp)
 #else
-#define CONVERT_DURATION_FOR_GRPC(tp) tp
+#    define CONVERT_DURATION_FOR_GRPC(tp) tp
 #endif
 
 namespace bosdyn {
@@ -103,7 +103,8 @@ typedef std::chrono::nanoseconds Duration;
 // TimePoint used as the default system_clock time_point type in the C++ SDK.
 typedef std::chrono::time_point<std::chrono::system_clock, ::bosdyn::common::Duration> TimePoint;
 
-inline ::bosdyn::common::Duration ProtobufDurationToDuration(const ::google::protobuf::Duration& duration) {
+inline ::bosdyn::common::Duration ProtobufDurationToDuration(
+    const ::google::protobuf::Duration& duration) {
     return ::bosdyn::common::Duration(DurationToNsec(duration));
 }
 

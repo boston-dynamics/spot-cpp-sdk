@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Boston Dynamics, Inc.  All rights reserved.
+ * Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
  *
  * Downloading, reproducing, distributing or otherwise using the SDK Software
  * is subject to the terms and conditions of the Boston Dynamics Software
@@ -20,10 +20,10 @@ LeaseKeepAlive::LeaseKeepAlive(LeaseClient* lease_client,
                                const std::string& resource,
                                ::bosdyn::common::Duration rpc_interval_time,
                                OnRetainLeaseFailure<LeaseKeepAlive> on_failure_fn)
-    : m_lease_client(lease_client),
+    : m_resource(resource),
+      m_lease_client(lease_client),
       m_rpc_interval(rpc_interval_time),
-      m_on_retain_lease_failure_func(on_failure_fn),
-      m_resource(resource) {
+      m_on_retain_lease_failure_func(on_failure_fn) {
     // Set the lease wallet. If none is provided, then set the lease wallet as the one
     // from the client.
     if (lease_wallet) {

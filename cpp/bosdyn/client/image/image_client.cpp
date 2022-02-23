@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Boston Dynamics, Inc.  All rights reserved.
+ * Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
  *
  * Downloading, reproducing, distributing or otherwise using the SDK Software
  * is subject to the terms and conditions of the Boston Dynamics Software
@@ -132,10 +132,12 @@ void ImageClient::OnGetImageComplete(MessagePumpCallBase* call, const ::bosdyn::
 void ImageClient::BuildImageRequest(::bosdyn::api::ImageRequest* request,
                                     const std::string& image_source_name,
                                     const double quality_percent,
-                                    const ::bosdyn::api::Image_Format& image_format) {
+                                    const ::bosdyn::api::Image_Format& image_format,
+                                    const double resize_ratio) {
     request->set_image_source_name(image_source_name);
     request->set_quality_percent(quality_percent);
     request->set_image_format(image_format);
+    request->set_resize_ratio(resize_ratio);
 }
 
 ServiceClient::QualityOfService ImageClient::GetQualityOfService() const {

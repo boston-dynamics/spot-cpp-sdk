@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Boston Dynamics, Inc.  All rights reserved.
+ * Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
  *
  * Downloading, reproducing, distributing or otherwise using the SDK Software
  * is subject to the terms and conditions of the Boston Dynamics Software
@@ -58,6 +58,7 @@ typedef Result<::bosdyn::api::graph_nav::WaypointSnapshot> DownloadWaypointSnaps
 
 // Return type for the DownloadEdgeSnapshot method.
 typedef Result<::bosdyn::api::graph_nav::EdgeSnapshot> DownloadEdgeSnapshotResultType;
+
 
 class GraphNavClient : public ServiceClient {
  public:
@@ -209,6 +210,7 @@ class GraphNavClient : public ServiceClient {
         return DownloadEdgeSnapshot(request, parameters);
     }
 
+
     // Sets the QualityOfService enum for the GraphNav client to be used for network selection
     // optimization.
     QualityOfService GetQualityOfService() const override;
@@ -327,6 +329,7 @@ class GraphNavClient : public ServiceClient {
         MessagePumpCallBase* call, const ::bosdyn::api::graph_nav::DownloadEdgeSnapshotRequest& request,
         std::vector<::bosdyn::api::graph_nav::DownloadEdgeSnapshotResponse>&& response,
         const grpc::Status& status, std::promise<DownloadEdgeSnapshotResultType> promise);
+
 };
 
 }  // namespace client

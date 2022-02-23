@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Boston Dynamics, Inc.  All rights reserved.
+ * Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
  *
  * Downloading, reproducing, distributing or otherwise using the SDK Software
  * is subject to the terms and conditions of the Boston Dynamics Software
@@ -92,7 +92,8 @@ class ImageClient : public ServiceClient {
 
     static void BuildImageRequest(::bosdyn::api::ImageRequest* image_request, const std::string& image_source_name,
                            double quality_percent = 75.0,
-                           const ::bosdyn::api::Image_Format& image_format = ::bosdyn::api::Image_Format_FORMAT_UNKNOWN);
+                           const ::bosdyn::api::Image_Format& image_format = ::bosdyn::api::Image_Format_FORMAT_UNKNOWN,
+                           const double resize_ratio = 0.0);
 
     std::unique_ptr<::bosdyn::api::ImageService::Stub> m_stub;
 

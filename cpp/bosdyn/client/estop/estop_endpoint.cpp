@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Boston Dynamics, Inc.  All rights reserved.
+ * Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
  *
  * Downloading, reproducing, distributing or otherwise using the SDK Software
  * is subject to the terms and conditions of the Boston Dynamics Software
@@ -22,12 +22,12 @@ EstopEndpoint::EstopEndpoint(EstopClient* estop_client, const std::string& name,
                              ::bosdyn::common::Duration estop_timeout, const std::string& role,
                              bool first_checkin,
                              ::bosdyn::common::Duration estop_cut_power_timeout)
-    : m_estop_client(estop_client),
-      m_endpoint_name(name),
+    : m_endpoint_name(name),
+      m_estop_client(estop_client),
       m_estop_timeout(estop_timeout),
-      m_endpoint_role(role),
       m_estop_cut_power_timeout(estop_cut_power_timeout),
-      m_locked_first_checkin(first_checkin) {}
+      m_locked_first_checkin(first_checkin),
+      m_endpoint_role(role) {}
 
 bool EstopEndpoint::GetFirstCheckIn() {
     std::lock_guard<std::mutex> lock(m_estop_endpoint_lock);
@@ -61,10 +61,6 @@ void EstopEndpoint::SetChallenge(int challenge) {
         new_endpoint.mutable_cut_power_timeout()->CopyFrom(
             google::protobuf::util::TimeUtil::NanosecondsToDuration(
                 m_estop_cut_power_timeout.count()));
-    } else {
-        new_endpoint.mutable_cut_power_timeout()->CopyFrom(
-            google::protobuf::util::TimeUtil::NanosecondsToDuration(
-                m_estop_timeout.count()));
     }
     return new_endpoint;
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Boston Dynamics, Inc.  All rights reserved.
+ * Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
  *
  * Downloading, reproducing, distributing or otherwise using the SDK Software
  * is subject to the terms and conditions of the Boston Dynamics Software
@@ -178,6 +178,10 @@ double Dist3d(const ::bosdyn::api::SE3Pose& A_T_B, const ::bosdyn::api::SE3Pose&
 
 // Determine whether the given pose is near the identity.
 bool IsIdentity(const ::bosdyn::api::SE3Pose& pose);
+
+// Calculate intersection between ray and plane, false if no intersection.
+bool IntersectRayPlane(const bosdyn::api::Vec3& ray_point, const bosdyn::api::Vec3& ray_norm,
+                       const bosdyn::api::Plane& plane, bosdyn::api::Vec3* intersection_point);
 
 }  // namespace api
 

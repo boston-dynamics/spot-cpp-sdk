@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Boston Dynamics, Inc.  All rights reserved.
+ * Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
  *
  * Downloading, reproducing, distributing or otherwise using the SDK Software
  * is subject to the terms and conditions of the Boston Dynamics Software
@@ -41,8 +41,7 @@ class MissionClient : public ServiceClient {
     LoadMissionResultType LoadMission(
         ::bosdyn::api::mission::LoadMissionRequest& request,
         const ::bosdyn::client::RPCParameters& parameters = ::bosdyn::client::RPCParameters(),
-        const std::vector<std::string>& desired_lease_resources = {
-            ::bosdyn::client::kBodyResource});
+        const std::vector<std::string>& desired_lease_resources = {::bosdyn::client::kBodyResource});
     std::shared_future<LoadMissionResultType> LoadMissionAsync(
         ::bosdyn::api::mission::LoadMissionRequest& request,
         const RPCParameters& parameters = RPCParameters(),

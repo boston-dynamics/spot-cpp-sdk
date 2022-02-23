@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Boston Dynamics, Inc.  All rights reserved.
+ * Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
  *
  * Downloading, reproducing, distributing or otherwise using the SDK Software
  * is subject to the terms and conditions of the Boston Dynamics Software
@@ -179,7 +179,7 @@ class RequestStreamCall : public MessagePumpCallBase {
     friend class MessagePump;
 
     explicit RequestStreamCall(grpc::CompletionQueue* cq)
-        : m_next_step(NextStep::WriteRequest), m_next_request_to_write(0) {
+        : m_next_request_to_write(0), m_next_step(NextStep::WriteRequest) {
         m_cq = cq;
         m_call_status = CallStatus::NotStarted;
         BOSDYN_ASSERT_PRECONDITION(m_cq != nullptr, "No completion queue.");
@@ -444,7 +444,7 @@ class RequestResponseStreamCall : public MessagePumpCallBase {
     friend class MessagePump;
 
     explicit RequestResponseStreamCall(grpc::CompletionQueue* cq)
-        : m_next_step(NextStep::WriteRequest), m_next_request_to_write(0) {
+        : m_next_request_to_write(0), m_next_step(NextStep::WriteRequest) {
         m_cq = cq;
         m_call_status = CallStatus::NotStarted;
         BOSDYN_ASSERT_PRECONDITION(m_cq != nullptr, "No completion queue.");

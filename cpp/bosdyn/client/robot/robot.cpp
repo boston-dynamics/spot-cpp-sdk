@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Boston Dynamics, Inc.  All rights reserved.
+ * Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
  *
  * Downloading, reproducing, distributing or otherwise using the SDK Software
  * is subject to the terms and conditions of the Boston Dynamics Software
@@ -37,10 +37,12 @@ Robot::Robot(const std::string& client_name, const bool bypass_proxy, ::bosdyn::
            {AuthClient::GetDefaultServiceName(), AuthClient::GetDefaultServiceAuthority()},
            {PayloadRegistrationClient::GetDefaultServiceName(),
             PayloadRegistrationClient::GetDefaultServiceAuthority()}}),
+      m_bypass_proxy(bypass_proxy),
       m_bootstrap_endpoints_by_name(
-          {{DirectoryClient::GetDefaultServiceName(), {"127.0.0.1", 65033, DirectoryClient::GetServiceType()}},
-           {DirectoryRegistrationClient::GetDefaultServiceName(), {"127.0.0.1", 65033, DirectoryRegistrationClient::GetServiceType()}}}),
-      m_bypass_proxy(bypass_proxy) {
+          {{DirectoryClient::GetDefaultServiceName(),
+               {"127.0.0.1", 65033, DirectoryClient::GetServiceType()}},
+           {DirectoryRegistrationClient::GetDefaultServiceName(),
+               {"127.0.0.1", 65033, DirectoryRegistrationClient::GetServiceType()}}}) {
     m_RPC_parameters.timeout = timeout;
     TokenCache* raw_token_cache = new TokenCache();
     m_token_cache = std::unique_ptr<TokenCache>(raw_token_cache);

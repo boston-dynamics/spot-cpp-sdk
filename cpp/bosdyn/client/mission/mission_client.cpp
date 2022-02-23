@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Boston Dynamics, Inc.  All rights reserved.
+ * Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
  *
  * Downloading, reproducing, distributing or otherwise using the SDK Software
  * is subject to the terms and conditions of the Boston Dynamics Software
@@ -67,8 +67,8 @@ LoadMissionResultType MissionClient::LoadMission(
 }
 
 std::shared_future<PauseMissionResultType> MissionClient::PauseMissionAsync(
-    ::bosdyn::api::mission::PauseMissionRequest& request, const ::bosdyn::client::RPCParameters& parameters,
-    const std::string& desired_lease_resource) {
+    ::bosdyn::api::mission::PauseMissionRequest& request,
+    const ::bosdyn::client::RPCParameters& parameters, const std::string& desired_lease_resource) {
     std::promise<PauseMissionResultType> response;
     std::shared_future<PauseMissionResultType> future = response.get_future();
     // Run a lease processor function to attempt to automatically apply a lease to the request if
