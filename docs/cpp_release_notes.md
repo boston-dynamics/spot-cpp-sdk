@@ -8,7 +8,12 @@ Development Kit License (20191101-BDSDK-SL).
 
 # Spot C++ SDK Release Notes
 
-## 3.1.0
+## Spot C++ SDK version 3.1.1 BETA
+
+No changes from 3.1.0.
+
+
+## Spot C++ SDK version 3.1.0 BETA
 
 Please refer to 3.1.0 section in [Python SDK documentation](https://dev.bostondynamics.com/docs/release_notes) for changes in the protobuf definitions in this release.
 
