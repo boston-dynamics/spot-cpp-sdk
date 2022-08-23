@@ -8,7 +8,7 @@
 
 
 #include "robot.h"
-
+#include <fstream>
 #include "bosdyn/client/auth/auth_client.h"
 #include "bosdyn/client/directory/directory_client.h"
 #include "bosdyn/client/directory_registration/directory_registration_client.h"
@@ -22,11 +22,13 @@
 #include "bosdyn/client/robot_state/robot_state_client.h"
 #include "bosdyn/client/service_client/channel.h"
 
+
 namespace bosdyn {
 
 namespace client {
 
-Robot::Robot(const std::string& client_name, const bool bypass_proxy, ::bosdyn::common::Duration timeout)
+Robot::Robot(const std::string& client_name, const bool bypass_proxy,
+             ::bosdyn::common::Duration timeout)
     : m_token_manager(nullptr),
       m_bootstrap_authorities_by_name(
           {{DirectoryClient::GetDefaultServiceName(),
@@ -39,10 +41,13 @@ Robot::Robot(const std::string& client_name, const bool bypass_proxy, ::bosdyn::
             PayloadRegistrationClient::GetDefaultServiceAuthority()}}),
       m_bypass_proxy(bypass_proxy),
       m_bootstrap_endpoints_by_name(
-          {{DirectoryClient::GetDefaultServiceName(),
-               {"127.0.0.1", 65033, DirectoryClient::GetServiceType()}},
+          
+          {
+          {DirectoryClient::GetDefaultServiceName(),
+            {"127.0.0.1", 65033, DirectoryClient::GetServiceType()}},
            {DirectoryRegistrationClient::GetDefaultServiceName(),
-               {"127.0.0.1", 65033, DirectoryRegistrationClient::GetServiceType()}}}) {
+            {"127.0.0.1", 65033, DirectoryRegistrationClient::GetServiceType()}}}),
+      m_secure_channel_port(443) {
     m_RPC_parameters.timeout = timeout;
     TokenCache* raw_token_cache = new TokenCache();
     m_token_cache = std::unique_ptr<TokenCache>(raw_token_cache);
@@ -71,9 +76,9 @@ void Robot::SetGlobalProcessorChains(const RequestProcessorChain& request_proces
     m_response_processor_chain = response_processor_chain;
 }
 
-::bosdyn::common::Status Robot::Authenticate(const std::string& username, const std::string& password) {
-    Result<AuthClient*> auth_service_client_result =
-        EnsureServiceClient<AuthClient>();
+::bosdyn::common::Status Robot::Authenticate(const std::string& username,
+                                             const std::string& password) {
+    Result<AuthClient*> auth_service_client_result = EnsureServiceClient<AuthClient>();
     if (!auth_service_client_result) {
         return auth_service_client_result.status;
     }
@@ -88,8 +93,7 @@ void Robot::SetGlobalProcessorChains(const RequestProcessorChain& request_proces
 }
 
 ::bosdyn::common::Status Robot::AuthenticateWithToken(const std::string& token) {
-    Result<AuthClient*> auth_service_client_result =
-        EnsureServiceClient<AuthClient>();
+    Result<AuthClient*> auth_service_client_result = EnsureServiceClient<AuthClient>();
     if (!auth_service_client_result) {
         return auth_service_client_result.status;
     }
@@ -104,10 +108,10 @@ void Robot::SetGlobalProcessorChains(const RequestProcessorChain& request_proces
 }
 
 ::bosdyn::common::Status Robot::SetupClient(ServiceClient* service_client,
-                                  const std::string& service_name,
-                                  const std::string& service_type,
-                                  std::shared_ptr<grpc::ChannelInterface> channel,
-                                  std::shared_ptr<MessagePump> message_pump) {
+                                            const std::string& service_name,
+                                            const std::string& service_type,
+                                            std::shared_ptr<grpc::ChannelInterface> channel,
+                                            std::shared_ptr<MessagePump> message_pump) {
     // Check that the ServiceClient was provided.
     BOSDYN_ASSERT_PRECONDITION(service_client != nullptr, "Cannot setup null service client.");
 
@@ -124,13 +128,13 @@ void Robot::SetGlobalProcessorChains(const RequestProcessorChain& request_proces
         channel = channel_result.response;
     }
 
-
-    // Make sure there is a MessagePump to use. If not, use the default message pump if available. Set this
-    // as part of the client.
+    // Make sure there is a MessagePump to use. If not, use the default message pump if available.
+    // Set this as part of the client.
     if (!message_pump) {
         if (!m_default_message_pump) {
-            return ::bosdyn::common::Status(SDKErrorCode::GenericSDKError,
-                        "No available MessagePump to use in EnsureServiceClient");
+            return ::bosdyn::common::Status(
+                SDKErrorCode::GenericSDKError,
+                "No available MessagePump to use in EnsureServiceClient");
         }
         message_pump = m_default_message_pump;
     }
@@ -138,7 +142,7 @@ void Robot::SetGlobalProcessorChains(const RequestProcessorChain& request_proces
 
     // Update the service client using the robot's processors and lease wallet.
     service_client->UpdateServiceFrom(m_request_processor_chain, m_response_processor_chain,
-                                    m_lease_wallet);
+                                      m_lease_wallet);
 
 
     service_client->SetComms(channel);
@@ -173,7 +177,7 @@ Result<std::shared_ptr<grpc::ChannelInterface>> Robot::EnsureChannel(
                 endpoint_iter = m_endpoints_by_name.find(service_name);
                 if (endpoint_iter == m_endpoints_by_name.end()) {
                     return {::bosdyn::common::Status(ClientCreationErrorCode::UnregisteredService,
-                                   "Could not find endpoint for " + service_name),
+                                                     "Could not find endpoint for " + service_name),
                             nullptr};
                 }
             }
@@ -182,8 +186,9 @@ Result<std::shared_ptr<grpc::ChannelInterface>> Robot::EnsureChannel(
         // service name matches the expected service type.
         if ((*endpoint_iter).second.service_type != service_type) {
             return {::bosdyn::common::Status(ClientCreationErrorCode::IncorrectServiceType,
-                    "Endpoint for " + service_name + " has service type " + (*endpoint_iter).second.service_type +
-                    ". The expected type is: " + service_type),
+                                             "Endpoint for " + service_name + " has service type " +
+                                                 (*endpoint_iter).second.service_type +
+                                                 ". The expected type is: " + service_type),
                     nullptr};
         }
 
@@ -205,7 +210,7 @@ Result<std::shared_ptr<grpc::ChannelInterface>> Robot::EnsureChannel(
             authority_iter = m_authorities_by_name.find(service_name);
             if (authority_iter == m_authorities_by_name.end()) {
                 return {::bosdyn::common::Status(SDKErrorCode::GenericSDKError,
-                               "Could not find authority for " + service_name),
+                                                 "Could not find authority for " + service_name),
                         nullptr};
             }
         }
@@ -222,11 +227,11 @@ Result<std::shared_ptr<grpc::ChannelInterface>> Robot::EnsureSecureChannel(
     }
 
     // Secure Channel doesn't exist, so create it.
-    std::shared_ptr<grpc::ChannelCredentials> creds = Channel::CreateSecureChannelCreds(
-        m_cert, std::bind(&Robot::GetUserToken, this));
+    std::shared_ptr<grpc::ChannelCredentials> creds =
+        Channel::CreateSecureChannelCreds(m_cert, std::bind(&Robot::GetUserToken, this));
 
     std::shared_ptr<grpc::ChannelInterface> channel =
-        Channel::CreateSecureChannel(m_network_address, 443, creds, authority);
+        Channel::CreateSecureChannel(m_network_address, m_secure_channel_port, creds, authority);
 
     m_channels[authority] = channel;
     return {::bosdyn::common::Status(SDKErrorCode::Success), channel};
@@ -265,7 +270,7 @@ void Robot::UpdateTokenCache(const std::string& username) {
 }
 
 ::bosdyn::common::Status Robot::SetupTokenCache(std::unique_ptr<TokenCache> token_cache,
-                              const std::string& unique_id) {
+                                                const std::string& unique_id) {
     if (!unique_id.empty()) m_serial_number = unique_id;
     if (m_serial_number.empty()) {
         Result<::bosdyn::api::RobotIdResponse> result = GetId();
@@ -363,10 +368,11 @@ Result<TimeSyncEndpoint*> Robot::StartTimeSyncAndGetEndpoint() {
     bool synced = time_sync_thread_res.response->WaitForSync(std::chrono::seconds(30));
     if (!synced) {
         return {::bosdyn::common::Status(SDKErrorCode::GenericSDKError,
-                       "ERROR, could not establish timesync in 30 seconds."),
+                                         "ERROR, could not establish timesync in 30 seconds."),
                 nullptr};
     }
-    return {::bosdyn::common::Status(SDKErrorCode::Success), time_sync_thread_res.response->GetEndpoint()};
+    return {::bosdyn::common::Status(SDKErrorCode::Success),
+            time_sync_thread_res.response->GetEndpoint()};
 }
 
 bool Robot::ShouldUseInsecureChannel(const std::string& service_name,
@@ -404,7 +410,8 @@ bool Robot::ShouldUseInsecureChannel(const std::string& service_name,
     return ::bosdyn::common::Status(SDKErrorCode::Success);
 }
 
-::bosdyn::common::Status Robot::PowerOnMotors(::bosdyn::common::Duration timeout, double update_frequency) {
+::bosdyn::common::Status Robot::PowerOnMotors(::bosdyn::common::Duration timeout,
+                                              double update_frequency) {
     Result<PowerClient*> power_client_result =
         EnsureServiceClient<PowerClient>(PowerClient::GetDefaultServiceName());
     if (!power_client_result) {
@@ -415,8 +422,9 @@ bool Robot::ShouldUseInsecureChannel(const std::string& service_name,
                                               update_frequency);
 }
 
-::bosdyn::common::Status Robot::PowerOffMotors(bool cut_immediately, ::bosdyn::common::Duration timeout,
-                             double update_frequency) {
+::bosdyn::common::Status Robot::PowerOffMotors(bool cut_immediately,
+                                               ::bosdyn::common::Duration timeout,
+                                               double update_frequency) {
     Result<PowerClient*> power_client_result =
         EnsureServiceClient<PowerClient>(PowerClient::GetDefaultServiceName());
     if (!power_client_result) {

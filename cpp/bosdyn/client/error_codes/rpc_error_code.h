@@ -36,6 +36,7 @@ enum class RPCErrorCode {
     TransientFailureError = 15,
     TooManyRequestsError = 16,
     NotFoundError = 17,
+    RetryableUnavailableError = 18,
 };
 
 const std::error_category& RPCErrorCategory();
@@ -43,11 +44,25 @@ const std::error_category& RPCErrorCategory();
 std::error_code make_error_code(RPCErrorCode);
 
 ::bosdyn::common::Status ConvertGRPCStatus(const grpc::Status& status);
+
 }  // namespace client
 }  // namespace bosdyn
 
 
+enum class RetryableRPCCondition {
+    // no 0
+    Retryable = 1,
+    Persistent = 2,
+};
+
+
 namespace std {
 template <>
-        struct is_error_code_enum<::bosdyn::client::RPCErrorCode> : true_type {};
+struct is_error_code_enum<::bosdyn::client::RPCErrorCode> : true_type {};
+
+template <>
+struct is_error_condition_enum<RetryableRPCCondition> : true_type {};
 }  // namespace std
+
+
+std::error_condition make_error_condition(RetryableRPCCondition);

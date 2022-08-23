@@ -21,8 +21,42 @@ struct RPCErrorCodeCategory : std::error_category {
 
 bool RPCErrorCodeCategory::equivalent(int valcode,
                                       const std::error_condition& cond) const noexcept {
-    if (cond == SuccessCondition::Success) return (valcode == 0);
+    if (cond == SuccessCondition::Success)
+        return (valcode == static_cast<int>(::bosdyn::client::RPCErrorCode::Success));
     if (cond == ErrorTypeCondition::RPCError) return true;
+    if (cond == RetryableRPCCondition::Retryable) {
+        switch (static_cast<::bosdyn::client::RPCErrorCode>(valcode)) {
+            case ::bosdyn::client::RPCErrorCode::ProxyConnectionError:
+            case ::bosdyn::client::RPCErrorCode::ResponseTooLargeError:
+            case ::bosdyn::client::RPCErrorCode::ServiceUnavailableError:
+            case ::bosdyn::client::RPCErrorCode::ServiceFailedDuringExecutionError:
+            case ::bosdyn::client::RPCErrorCode::TimedOutError:
+            case ::bosdyn::client::RPCErrorCode::UnableToConnectToRobotError:
+            case ::bosdyn::client::RPCErrorCode::TransientFailureError:
+            case ::bosdyn::client::RPCErrorCode::TooManyRequestsError:
+            case ::bosdyn::client::RPCErrorCode::RetryableUnavailableError:
+                return true;
+            default:
+                return false;
+        }
+    }
+    if (cond == RetryableRPCCondition::Persistent) {
+        switch (static_cast<::bosdyn::client::RPCErrorCode>(valcode)) {
+            case ::bosdyn::client::RPCErrorCode::ClientCancelledOperationError:
+            case ::bosdyn::client::RPCErrorCode::InvalidAppTokenError:
+            case ::bosdyn::client::RPCErrorCode::InvalidClientCertificateError:
+            case ::bosdyn::client::RPCErrorCode::NonexistentAuthorityError:
+            case ::bosdyn::client::RPCErrorCode::PermissionDeniedError:
+            case ::bosdyn::client::RPCErrorCode::UnauthenticatedError:
+            case ::bosdyn::client::RPCErrorCode::UnknownDnsNameError:
+            case ::bosdyn::client::RPCErrorCode::UnimplementedError:
+            case ::bosdyn::client::RPCErrorCode::NotFoundError:
+                return true;
+            default:
+                return false;
+        }
+    }
+
     return false;
 }
 
@@ -30,7 +64,7 @@ const char* RPCErrorCodeCategory::name() const noexcept { return "RPCErrorCode";
 
 std::string RPCErrorCodeCategory::message(int value) const {
     switch (static_cast<::bosdyn::client::RPCErrorCode>(value)) {
-        case ::bosdyn::client::RPCErrorCode::Success :
+        case ::bosdyn::client::RPCErrorCode::Success:
             return "Success";
         case ::bosdyn::client::RPCErrorCode::ClientCancelledOperationError:
             return "ClientCancelledOperationError";
@@ -66,13 +100,37 @@ std::string RPCErrorCodeCategory::message(int value) const {
             return "TransientFailureError";
         case ::bosdyn::client::RPCErrorCode::TooManyRequestsError:
             return "TooManyRequestsError";
+        case ::bosdyn::client::RPCErrorCode::RetryableUnavailableError:
+            return "RetryableUnavailableError";
     }
     return "(RPCErrorCode: unrecognized error)";
 }
 
 const RPCErrorCodeCategory RPCErrorCodeCategory_category{};
 
+struct RetryableRPCConditionCategory : std::error_category {
+    const char* name() const noexcept override;
+    std::string message(int ev) const override;
+};
+
+const char* RetryableRPCConditionCategory::name() const noexcept { return "RetryableRPCCondition"; }
+
+std::string RetryableRPCConditionCategory::message(int value) const {
+    switch (static_cast<RetryableRPCCondition>(value)) {
+        case RetryableRPCCondition::Retryable:
+            return "Retryable";
+        case RetryableRPCCondition::Persistent:
+            return "Persistent";
+    }
+    return "(RetryableRPCCondition: unrecognized error)";
+}
+const RetryableRPCConditionCategory RetryableRPCConditionCategory_category{};
+
 }  // anonymous namespace
+
+std::error_condition make_error_condition(RetryableRPCCondition value) {
+    return {static_cast<int>(value), RetryableRPCConditionCategory_category};
+}
 
 namespace bosdyn {
 
@@ -95,23 +153,22 @@ const std::error_category& RPCErrorCategory() { return RPCErrorCodeCategory_cate
         grpc::string details = status.error_details();
 
         if (code == grpc::StatusCode::CANCELLED) {
-            if (grpc_message.find("401") != std::string::npos) {
+            if (details.find("401") != std::string::npos) {
                 err_code = RPCErrorCode::UnauthenticatedError;
                 err_message = "The user needs to authenticate to get a user token.";
-            } else if (grpc_message.find("403") != std::string::npos) {
+            } else if (details.find("403") != std::string::npos) {
                 err_code = RPCErrorCode::InvalidAppTokenError;
                 err_message = "The provided app token is invalid.";
-            } else if (grpc_message.find("404") != std::string::npos) {
+            } else if (details.find("404") != std::string::npos) {
                 err_code = RPCErrorCode::NotFoundError;
                 err_message = "The backend system could not be found.";
-            } else if (grpc_message.find("429") != std::string::npos) {
+            } else if (details.find("429") != std::string::npos) {
                 err_code = RPCErrorCode::TooManyRequestsError;
-                err_message =
-                    "The server is not ready to handle the request due to rate limiting.";
-            } else if (grpc_message.find("502") != std::string::npos) {
+                err_message = "The server is not ready to handle the request due to rate limiting.";
+            } else if (details.find("502") != std::string::npos) {
                 err_code = RPCErrorCode::ServiceUnavailableError;
                 err_message = "The proxy could not find the (possibly unregistered) service.";
-            } else if (grpc_message.find("504") != std::string::npos) {
+            } else if (details.find("504") != std::string::npos) {
                 err_code = RPCErrorCode::TimedOutError;
                 err_message =
                     "The remote procedure call did not terminate within the allotted time.";
@@ -133,11 +190,10 @@ const std::error_category& RPCErrorCategory() { return RPCErrorCodeCategory_cate
                    grpc_message.find("Received message larger than max")) {
             err_code = RPCErrorCode::ResponseTooLargeError;
             err_message = "The rpc response was larger than allowed max size.";
-        } else if (code == grpc::StatusCode::UNAVAILABLE) {  // This block is added only in the C++
-                                                             // implementation
-            err_code = RPCErrorCode::UnableToConnectToRobotError;
-            err_message = "The robot may be offline or unavailable";
-        } else {
+        } else if (code == grpc::StatusCode::UNAUTHENTICATED) {
+            err_code = RPCErrorCode::UnauthenticatedError;
+            err_message = "The user needs to authenticate to get a user token.";
+        } else if (!grpc_message.empty()) {
             // The following checks are performed on debug_error_string() in Python, which does not
             // exist in C++
             if (grpc_message.find("is not in peer certificate") != std::string::npos) {
@@ -170,6 +226,27 @@ const std::error_category& RPCErrorCategory() { return RPCErrorCodeCategory_cate
                 err_code = RPCErrorCode::UnimplementedError;
                 err_message = std::to_string(code) + "|" + grpc_message + "|";
             }
+        } else if (code == grpc::StatusCode::UNAVAILABLE) {
+            // The following check is performed on debug_error_string() in Python, which does not
+            // exist in C++.
+            if (grpc_message.find("Socket closed") != std::string::npos ||
+                grpc_message.find("Connection reset by peer") != std::string::npos) {
+                err_code = RPCErrorCode::RetryableUnavailableError;
+                err_message = "Socket closed or connection reset by peer.";
+            } else if (details.find("502") != std::string::npos) {
+                err_code = RPCErrorCode::ServiceUnavailableError;
+                err_message = "Service is unavailable.";
+            } else if (details.find("429") != std::string::npos) {
+                err_code = RPCErrorCode::TooManyRequestsError;
+                err_message = "The server is not ready to handle the request due to rate limiting.";
+            } else {
+                err_code = RPCErrorCode::UnableToConnectToRobotError;
+                err_message = "The robot may be offline or unavailable";
+            }
+        } else {
+            // This is an unknown error case
+            err_code = RPCErrorCode::UnimplementedError;
+            err_message = std::to_string(code) + "|" + grpc_message + "|";
         }
     }
     return ::bosdyn::common::Status(err_code, err_message);

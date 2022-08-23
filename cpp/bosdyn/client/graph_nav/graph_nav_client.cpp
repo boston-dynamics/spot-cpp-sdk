@@ -361,7 +361,7 @@ std::shared_future<UploadWaypointSnapshotResultType> GraphNavClient::UploadWaypo
     std::shared_future<UploadWaypointSnapshotResultType> future = response.get_future();
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
 
-    std::vector<std::unique_ptr<::bosdyn::api::DataChunk>> chunks;
+    std::vector<::bosdyn::api::DataChunk> chunks;
     std::vector<::bosdyn::api::graph_nav::UploadWaypointSnapshotRequest> requests;
 
     ::bosdyn::common::Status status = MessageToDataChunks<::bosdyn::api::graph_nav::WaypointSnapshot>(input_request, &chunks);
@@ -372,7 +372,9 @@ std::shared_future<UploadWaypointSnapshotResultType> GraphNavClient::UploadWaypo
 
     for (auto& chunk : chunks) {
         ::bosdyn::api::graph_nav::UploadWaypointSnapshotRequest request;
-        request.set_allocated_chunk(chunk.release());
+
+        auto request_chunk = request.mutable_chunk();
+        *request_chunk = std::move(chunk);
 
         // For each request, apply the lease processor to automatically include a lease.
         auto lease_status = ProcessRequestWithLease(&request, m_lease_wallet.get(),
@@ -383,7 +385,7 @@ std::shared_future<UploadWaypointSnapshotResultType> GraphNavClient::UploadWaypo
             return future;
         }
 
-        requests.push_back(request);
+        requests.emplace_back(std::move(request));
     }
 
     MessagePumpCallBase* one_time =
@@ -424,7 +426,7 @@ std::shared_future<UploadEdgeSnapshotResultType> GraphNavClient::UploadEdgeSnaps
     std::shared_future<UploadEdgeSnapshotResultType> future = response.get_future();
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
 
-    std::vector<std::unique_ptr<::bosdyn::api::DataChunk>> chunks;
+    std::vector<::bosdyn::api::DataChunk> chunks;
     std::vector<::bosdyn::api::graph_nav::UploadEdgeSnapshotRequest> requests;
     ::bosdyn::common::Status status = MessageToDataChunks<::bosdyn::api::graph_nav::EdgeSnapshot>(input_request, &chunks);
     if (!status) {
@@ -434,7 +436,9 @@ std::shared_future<UploadEdgeSnapshotResultType> GraphNavClient::UploadEdgeSnaps
 
     for (auto& chunk : chunks) {
         ::bosdyn::api::graph_nav::UploadEdgeSnapshotRequest request;
-        request.set_allocated_chunk(chunk.release());
+
+        auto request_chunk = request.mutable_chunk();
+        *request_chunk = std::move(chunk);
 
         // For each request, apply the lease processor to automatically include a lease.
         auto lease_status = ProcessRequestWithLease(&request, m_lease_wallet.get(),
@@ -445,7 +449,7 @@ std::shared_future<UploadEdgeSnapshotResultType> GraphNavClient::UploadEdgeSnaps
             return future;
         }
 
-        requests.push_back(request);
+        requests.emplace_back(std::move(request));
     }
 
     MessagePumpCallBase* one_time =

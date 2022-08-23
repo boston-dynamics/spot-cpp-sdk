@@ -7,8 +7,10 @@
  */
 
 
-#include <bosdyn/api/power.pb.h>
+#pragma once
+
+#include <bosdyn/api/autowalk/autowalk.pb.h>
 #include "bosdyn/client/error_codes/proto_enum_to_stderror_macro.h"
 
-DEFINE_PROTO_ENUM_ERRORCODE_HEADER_API(PowerCommandStatus)
-DEFINE_PROTO_ENUM_ERRORCODE_HEADER_API(FanPowerCommandResponse_Status)
+DEFINE_PROTO_ENUM_ERRORCODE_HEADER_AUTOWALK(CompileAutowalkResponse_Status)
+DEFINE_PROTO_ENUM_ERRORCODE_HEADER_AUTOWALK(LoadAutowalkResponse_Status)

@@ -7,8 +7,8 @@
  */
 
 
-#include "bosdyn/client/power/power_error_codes.h"
+#include "bosdyn/client/autowalk/autowalk_error_codes.h"
 #include "bosdyn/client/error_codes/proto_enum_to_stderror_macro_source.h"
 
-DEFINE_PROTO_ENUM_ERRORCODE_IMPL_API(PowerCommandStatus, valcode == 1 || valcode == 2)
-DEFINE_PROTO_ENUM_ERRORCODE_IMPL_API(FanPowerCommandResponse_Status, valcode == 1)
+DEFINE_PROTO_ENUM_ERRORCODE_IMPL_AUTOWALK(CompileAutowalkResponse_Status, valcode == 1)
+DEFINE_PROTO_ENUM_ERRORCODE_IMPL_AUTOWALK(LoadAutowalkResponse_Status, valcode == 1)

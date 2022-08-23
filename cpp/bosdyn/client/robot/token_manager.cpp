@@ -9,6 +9,7 @@
 
 #include "token_manager.h"
 
+
 namespace bosdyn {
 
 namespace client {
@@ -35,12 +36,13 @@ void TokenManager::Stop() {
 
 bool TokenManager::WaitForInterval() {
     std::unique_lock<std::mutex> lock(m_refresh_mutex);
+    if (!m_refresh_thread_is_alive) return false;
     return !m_cv.wait_for(lock, m_user_token_refresh_interval,
                           [this]() { return !m_refresh_thread_is_alive; });
 }
 
 void TokenManager::Update() {
-    while (m_refresh_thread_is_alive && WaitForInterval()) {
+    while (WaitForInterval()) {
         ::bosdyn::common::Status status = m_robot->AuthenticateWithToken(m_robot->GetUserToken());
         if (!status) {
             fprintf(stderr, "AuthenticateWithToken failed: '%s'\n",

@@ -37,12 +37,25 @@ class MissionClient : public ServiceClient {
     // Uploads a mission to the robot which can be run later.
     // Note: the LoadMission RPC requires a lease. By default, we use a body lease, however other
     // resources (or no resources) can be provided to change which leases are attached to the
-    // request.
+    // request. If the request is larger than 100mb, LoadMissionAsChunks should be used.
     LoadMissionResultType LoadMission(
         ::bosdyn::api::mission::LoadMissionRequest& request,
         const ::bosdyn::client::RPCParameters& parameters = ::bosdyn::client::RPCParameters(),
         const std::vector<std::string>& desired_lease_resources = {::bosdyn::client::kBodyResource});
     std::shared_future<LoadMissionResultType> LoadMissionAsync(
+        ::bosdyn::api::mission::LoadMissionRequest& request,
+        const RPCParameters& parameters = RPCParameters(),
+        const std::vector<std::string>& desired_lease_resources = {::bosdyn::client::kBodyResource});
+
+    // Uploads a mission to the robot which can be run later.
+    // Note: the LoadMission RPC requires a lease. By default, we use a body lease, however other
+    // resources (or no resources) can be provided to change which leases are attached to the
+    // request.
+    LoadMissionResultType LoadMissionAsChunks(
+        ::bosdyn::api::mission::LoadMissionRequest& request,
+        const ::bosdyn::client::RPCParameters& parameters = ::bosdyn::client::RPCParameters(),
+        const std::vector<std::string>& desired_lease_resources = {::bosdyn::client::kBodyResource});
+    std::shared_future<LoadMissionResultType> LoadMissionAsChunksAsync(
         ::bosdyn::api::mission::LoadMissionRequest& request,
         const RPCParameters& parameters = RPCParameters(),
         const std::vector<std::string>& desired_lease_resources = {::bosdyn::client::kBodyResource});
@@ -134,6 +147,11 @@ class MissionClient : public ServiceClient {
     // Callback function registered for the asynchronous grpc calls.
     void OnLoadMissionComplete(
         MessagePumpCallBase* call, const ::bosdyn::api::mission::LoadMissionRequest& request,
+        ::bosdyn::api::mission::LoadMissionResponse&& response, const grpc::Status& status,
+        std::promise<LoadMissionResultType> promise);
+
+    void OnLoadMissionAsChunksComplete(
+        MessagePumpCallBase* call, const std::vector<::bosdyn::api::DataChunk>&& request,
         ::bosdyn::api::mission::LoadMissionResponse&& response, const grpc::Status& status,
         std::promise<LoadMissionResultType> promise);
 

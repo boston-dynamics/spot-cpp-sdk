@@ -40,6 +40,8 @@ constexpr const char* GetFisheyeImageName(BodyCamera camera) {
             return "right_fisheye_image";
         }
     }
+    // To appease `-Werror=return-type`.
+    return "case_unhandled";
 }
 
 constexpr const char* GetDepthName(BodyCamera camera) {
@@ -60,6 +62,8 @@ constexpr const char* GetDepthName(BodyCamera camera) {
             return "right_depth";
         }
     }
+    // To appease `-Werror=return-type`.
+    return "case_unhandled";
 }
 
 constexpr const char* GetDepthInVisualName(BodyCamera camera) {
@@ -80,6 +84,8 @@ constexpr const char* GetDepthInVisualName(BodyCamera camera) {
             return "right_depth_in_visual_frame";
         }
     }
+    // To appease `-Werror=return-type`.
+    return "case_unhandled";
 }
 
 // Sources on spot robots with an arm.

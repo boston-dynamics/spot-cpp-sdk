@@ -14,7 +14,7 @@ namespace bosdyn {
 namespace client {
 
 void StringToDataChunks(const std::string& data,
-                        std::vector<std::unique_ptr<::bosdyn::api::DataChunk>>* chunks) {
+                        std::vector<::bosdyn::api::DataChunk>* chunks) {
     int chunk_size = 4 * 1024 * 1024;
     int start_index = 0;
     int left;
@@ -22,17 +22,17 @@ void StringToDataChunks(const std::string& data,
 
     int total_size = data.length();
     while(true) {
-        std::unique_ptr<::bosdyn::api::DataChunk> chunk = std::make_unique<::bosdyn::api::DataChunk>();
+        ::bosdyn::api::DataChunk chunk;
         left = total_size - start_index;
         if ( left < chunk_size) {
-            chunk->set_data(buffer + start_index, left);
-            chunk->set_total_size(total_size);
-            chunks->push_back(std::move(chunk));
+            chunk.set_data(buffer + start_index, left);
+            chunk.set_total_size(total_size);
+            chunks->emplace_back(std::move(chunk));
             break;
         }
-        chunk->set_data(buffer + start_index, chunk_size);
-        chunk->set_total_size(total_size);
-        chunks->push_back(std::move(chunk));
+        chunk.set_data(buffer + start_index, chunk_size);
+        chunk.set_total_size(total_size);
+        chunks->emplace_back(std::move(chunk));
         start_index += chunk_size;
     }
 }

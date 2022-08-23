@@ -27,6 +27,7 @@ const std::string kFullArmResource = "full-arm";
 const std::string kArmResource = "arm";
 const std::string kGripperResource = "gripper";
 const std::string kMobilityResource = "mobility";
+const std::string kFanResource = "fan";
 
 }  // namespace client
 

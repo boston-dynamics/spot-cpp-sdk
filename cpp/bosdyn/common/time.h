@@ -86,6 +86,9 @@ int64_t DurationToNsec(const ::google::protobuf::Duration& duration);
 /// Convert a duration to seconds.
 double DurationToSec(const ::google::protobuf::Duration& duration);
 
+// Convert seconds to a duration
+::google::protobuf::Duration SecToDuration(double seconds);
+
 /// Returns whether d1 < d2.
 bool DurationIsLessThan(const ::google::protobuf::Duration& d1,
                         const ::google::protobuf::Duration& d2);

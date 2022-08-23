@@ -22,6 +22,7 @@ std::once_flag hierarchy_flag;
 void build_default_resource(::bosdyn::client::LeaseHierarchyRequirements use_arm) {
     s_default_resource.set_resource(::bosdyn::client::kBodyResource);
     s_default_resource.add_sub_resources()->set_resource(::bosdyn::client::kMobilityResource);
+    s_default_resource.add_sub_resources()->set_resource(::bosdyn::client::kFanResource);
     if (use_arm == ::bosdyn::client::LeaseHierarchyRequirements::ARM_AND_GRIPPER) {
         auto* full_arm = s_default_resource.add_sub_resources();
         full_arm->set_resource(::bosdyn::client::kFullArmResource);
@@ -30,9 +31,9 @@ void build_default_resource(::bosdyn::client::LeaseHierarchyRequirements use_arm
     }
 }
 
-void build_default_hierarchy(::bosdyn::client::LeaseHierarchyRequirements use_arm){
-    s_default_hierarchy = ::bosdyn::client::ResourceHierarchy(
-        ::bosdyn::client::DefaultResourceTree(use_arm));
+void build_default_hierarchy(::bosdyn::client::LeaseHierarchyRequirements use_arm) {
+    s_default_hierarchy =
+        ::bosdyn::client::ResourceHierarchy(::bosdyn::client::DefaultResourceTree(use_arm));
 }
 
 const char kClientNameExtender[] = "<unknown>";
@@ -41,14 +42,13 @@ void updateClientNamesList(::bosdyn::api::Lease* lease_proto) {
     if (lease_proto->sequence_size() < lease_proto->client_names_size()) {
         // Truncate the client names to match the size of the sequence.
         const int size_change = lease_proto->client_names_size() - lease_proto->sequence_size();
-        for (int i=0; i < size_change; i++) {
+        for (int i = 0; i < size_change; i++) {
             lease_proto->mutable_client_names()->RemoveLast();
         }
-    }
-    else if (lease_proto->sequence_size() > lease_proto->client_names_size()) {
+    } else if (lease_proto->sequence_size() > lease_proto->client_names_size()) {
         // Extend the client names to match the size of the sequence.
-        const int size_change = lease_proto->sequence_size()-lease_proto->client_names_size();
-        for (int i=0; i < size_change; i++) {
+        const int size_change = lease_proto->sequence_size() - lease_proto->client_names_size();
+        for (int i = 0; i < size_change; i++) {
             lease_proto->add_client_names(kClientNameExtender);
         }
     }
@@ -60,7 +60,8 @@ namespace bosdyn {
 
 namespace client {
 
-LeaseUseResultsAndError::LeaseUseResultsAndError(::bosdyn::api::LeaseUseResult* lease_use, std::string* error) {
+LeaseUseResultsAndError::LeaseUseResultsAndError(::bosdyn::api::LeaseUseResult* lease_use,
+                                                 std::string* error) {
     lease_use_result = lease_use;
     error_message = error;
 }
@@ -101,13 +102,13 @@ const ::bosdyn::client::ResourceHierarchy& DefaultResourceHierarchy(
 
 Lease::Lease(const LeaseProto& lease_proto)
     : m_lease_proto(lease_proto), m_lease_status(LeaseStatus::SELF_OWNER) {
-        updateClientNamesList(&m_lease_proto);
-    }
+    updateClientNamesList(&m_lease_proto);
+}
 
 Lease::Lease(const LeaseProto& lease_proto, const LeaseStatus& lease_status)
     : m_lease_proto(lease_proto), m_lease_status(lease_status) {
-        updateClientNamesList(&m_lease_proto);
-    }
+    updateClientNamesList(&m_lease_proto);
+}
 
 Lease::CompareResult Lease::Compare(const Lease& other_lease) const {
     if (!IsValid() || !other_lease.IsValid()) {
@@ -120,7 +121,6 @@ Lease::CompareResult Lease::Compare(const Lease& other_lease) const {
     }
     return CompareIgnoringResource(other_lease);
 }
-
 
 Lease::CompareResult Lease::CompareIgnoringResource(const Lease& other_lease) const {
     if (m_lease_proto.epoch() != other_lease.m_lease_proto.epoch()) {
@@ -167,11 +167,10 @@ Lease Lease::Increment() const {
     return Lease(new_proto);
 }
 
-
 Lease Lease::DuplicateSequence(const Lease& other) const {
     LeaseProto new_proto = m_lease_proto;
     *new_proto.mutable_sequence() = other.m_lease_proto.sequence();
-	*new_proto.mutable_client_names() = other.m_lease_proto.client_names();
+    *new_proto.mutable_client_names() = other.m_lease_proto.client_names();
     return Lease(new_proto, m_lease_status);
 }
 
@@ -221,9 +220,7 @@ void Lease::UpdateFromLeaseUseResult(const ::bosdyn::api::LeaseUseResult& lease_
     }
 }
 
-
-Lease Lease::SplitLease(const std::string& resource,
-                                const ResourceHierarchy& hierarchy) const {
+Lease Lease::SplitLease(const std::string& resource, const ResourceHierarchy& hierarchy) const {
     if (m_lease_proto.resource() == resource) {
         return *this;
     }
@@ -239,10 +236,9 @@ Lease Lease::SplitLease(const std::string& resource,
     return result;
 }
 
-
- ResourceHierarchy::ResourceHierarchy(const ::bosdyn::api::ResourceTree& resource_tree)
+ResourceHierarchy::ResourceHierarchy(const ::bosdyn::api::ResourceTree& resource_tree)
     : m_resource_tree(resource_tree) {
-    if (resource_tree.sub_resources_size() == 0){
+    if (resource_tree.sub_resources_size() == 0) {
         m_leaf_resources.insert(resource_tree.resource());
     }
     for (const auto& sub_tree : resource_tree.sub_resources()) {
@@ -258,13 +254,11 @@ Lease Lease::SplitLease(const std::string& resource,
     }
 }
 
-
 bool ResourceHierarchy::HasResource(const std::string& resource) const {
     return resource == m_resource_tree.resource() || m_sub_hierarchies.count(resource);
 }
 
 bool ResourceHierarchy::HasSubResources() const { return !m_sub_hierarchies.empty(); }
-
 
 const std::string& ResourceHierarchy::Resource() const { return m_resource_tree.resource(); }
 
@@ -275,23 +269,23 @@ Lease ResourceHierarchy::SubResourceLease(const Lease& parent, const std::string
     return Lease(proto);
 }
 
-const ::bosdyn::api::ResourceTree& ResourceHierarchy::ResourceTree() const { return m_resource_tree; }
+const ::bosdyn::api::ResourceTree& ResourceHierarchy::ResourceTree() const {
+    return m_resource_tree;
+}
 
-
-bool ResourceHierarchy::MaybeGetHierarchy(const std::string& resource, ResourceHierarchy* hierarchy) {
+bool ResourceHierarchy::MaybeGetHierarchy(const std::string& resource,
+                                          ResourceHierarchy* hierarchy) {
     if (!HasResource(resource)) return false;
     *hierarchy = GetHierarchy(resource);
     return true;
 }
 
-const ResourceHierarchy& ResourceHierarchy::GetHierarchy(
-    const std::string& resource) const {
+const ResourceHierarchy& ResourceHierarchy::GetHierarchy(const std::string& resource) const {
     if (resource == m_resource_tree.resource()) return *this;
     return m_sub_hierarchies.at(resource);
 }
 
-
-const std::set<std::string>& ResourceHierarchy::LeafResources() const { return m_leaf_resources;}
+const std::set<std::string>& ResourceHierarchy::LeafResources() const { return m_leaf_resources; }
 
 }  // namespace client
 

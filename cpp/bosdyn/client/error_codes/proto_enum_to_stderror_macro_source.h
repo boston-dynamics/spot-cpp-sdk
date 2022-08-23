@@ -52,6 +52,13 @@
                                      }}},                                                  \
                                      equivalent_condition)
 
+#define DEFINE_PROTO_ENUM_ERRORCODE_IMPL_AUTOWALK(enumclass, equivalent_condition)      \
+    DEFINE_PROTO_ENUM_ERRORCODE_IMPL(enumclass, ::bosdyn::api::autowalk,                  \
+                                     namespace bosdyn{namespace api{namespace autowalk{ \
+                                         ,                                                 \
+                                     }}},                                                  \
+                                     equivalent_condition)
+
 #define DEFINE_PROTO_ENUM_ERRORCODE_IMPL_SPOT(enumclass, equivalent_condition)      \
     DEFINE_PROTO_ENUM_ERRORCODE_IMPL(enumclass, ::bosdyn::api::spot,                  \
                                      namespace bosdyn{namespace api{namespace spot{ \

@@ -19,6 +19,8 @@
 #include <set>
 #include <thread>
 
+#include <bosdyn/api/header.pb.h>
+
 #include "bosdyn/client/service_client/result.h"
 #include "bosdyn/common/time.h"
 #include "bosdyn/common/assert_precondition.h"
@@ -120,11 +122,13 @@ class MessagePumpCallBase {
  protected:
     friend class MessagePump;
 
+
     grpc::ClientContext m_context;
     grpc::Status m_status;
     std::mutex m_call_mutex;
     grpc::CompletionQueue* m_cq = nullptr;
     CallStatus m_call_status;
+
 };
 
 template <typename Request, typename Response, typename PromiseResultType>
@@ -144,17 +148,20 @@ class RequestStreamCall : public MessagePumpCallBase {
      * Start the actual gRPC call. It should only be called once on a RequestStreamCall object.
      *
      * @param requests Vector of all requests to send to the server.
+     * @param header   Request header. If streaming Data Chunks directly, this is the deserialized
+     *                 request header.
      * @param rpc_call The RpcCallFunction object to start the RPC, and it will be invoked
      *                 immediately.
      * @param callback Callback function which will be invoked when the RPC completes on the same
      *                 thread as the MessagePump.
      * @param promise Promise to be set with the status and the response.
+     * @param type_name Deserialized request type name.
      *
      * @return True if successful, false otherwise.
      */
-    void Start(std::vector<Request>&& requests, const RequestStreamRpcCallFunction& rpc_call,
+    void Start(std::vector<Request>&& requests, const ::bosdyn::api::RequestHeader& header, const RequestStreamRpcCallFunction& rpc_call,
                const RequestStreamCallbackFunction& callback,
-               std::promise<Result<PromiseResultType>> promise) {
+               std::promise<Result<PromiseResultType>> promise, const std::string& type_name) {
         std::lock_guard<std::mutex> lock(m_call_mutex);
         // This method should not be called with an empty list of requests.
         BOSDYN_ASSERT_PRECONDITION(!requests.empty(), "Request cannot be empty.");
@@ -178,8 +185,10 @@ class RequestStreamCall : public MessagePumpCallBase {
  private:
     friend class MessagePump;
 
-    explicit RequestStreamCall(grpc::CompletionQueue* cq)
-        : m_next_request_to_write(0), m_next_step(NextStep::WriteRequest) {
+    explicit RequestStreamCall(grpc::CompletionQueue* cq
+    ) :
+    m_next_request_to_write(0), m_next_step(NextStep::WriteRequest)
+    {
         m_cq = cq;
         m_call_status = CallStatus::NotStarted;
         BOSDYN_ASSERT_PRECONDITION(m_cq != nullptr, "No completion queue.");
@@ -299,7 +308,7 @@ class ResponseStreamCall : public MessagePumpCallBase {
         m_call_status = CallStatus::Called;
     }
 
-    virtual void Cancel() {
+    virtual void Cancel() override {
         std::lock_guard<std::mutex> lock(m_call_mutex);
         CancelHelper(m_callback, std::move(m_promise), &m_call_status);
     }
@@ -309,7 +318,10 @@ class ResponseStreamCall : public MessagePumpCallBase {
  private:
     friend class MessagePump;
 
-    explicit ResponseStreamCall(grpc::CompletionQueue* cq) : m_next_step(NextStep::StartRead) {
+    explicit ResponseStreamCall(grpc::CompletionQueue* cq
+    ) :
+    m_next_step(NextStep::StartRead)
+    {
         m_cq = cq;
         m_call_status = CallStatus::NotStarted;
         BOSDYN_ASSERT_PRECONDITION(m_cq != nullptr, "No completion queue.");
@@ -350,6 +362,7 @@ class ResponseStreamCall : public MessagePumpCallBase {
                     m_response_reader->Read(&m_last_response, this);
                     m_next_step = NextStep::ContinueReadOrCallFinish;
                 } else {
+
                     // This happens when the request times out.
                     m_response_reader->Finish(&m_status, this);
                     m_next_step = NextStep::CallCallback;
@@ -409,21 +422,27 @@ class RequestResponseStreamCall : public MessagePumpCallBase {
      * object.
      *
      * @param requests Vector of requests to send to the server.
+     * @param header   Request header. If streaming Data Chunks directly, this is the deserialized
+     *                 request header.
      * @param rpc_call The RpcCallFunction object to start the RPC, and it will be invoked
      *                 immediately.
      * @param callback Callback function which will be invoked when the RPC completes on the same
      *                 thread as the MessagePump.
      * @param promise Promise to be set with the status and the response.
+     * @param type_name Deserialized request type name.
      *
      * @return True if successful, false otherwise.
      */
-    void Start(const std::vector<Request>&& requests,
-               const RequestResponseStreamRpcCallFunction& rpc_call,
+    void Start(std::vector<Request>&& requests, const ::bosdyn::api::RequestHeader& header, const RequestResponseStreamRpcCallFunction& rpc_call,
                const RequestResponseStreamCallbackFunction& callback,
-               std::promise<Result<PromiseResultType>> promise) {
+               std::promise<Result<PromiseResultType>> promise, const std::string& type_name) {
         std::lock_guard<std::mutex> lock(m_call_mutex);
+        // This method should not be called with an empty list of requests.
+        BOSDYN_ASSERT_PRECONDITION(!requests.empty(), "Request cannot be empty.");
         // Start should ONLY be called if the status not started.
-        BOSDYN_ASSERT_PRECONDITION(m_call_status == CallStatus::NotStarted, "Message pump cannot be started multiple times.");
+        BOSDYN_ASSERT_PRECONDITION(
+            m_call_status == CallStatus::NotStarted,
+            "Message pump cannot be started multiple times.");
         m_requests = std::move(requests);
         m_callback = callback;
         m_promise = std::move(promise);
@@ -433,7 +452,7 @@ class RequestResponseStreamCall : public MessagePumpCallBase {
         m_next_request_to_write = 0;
     }
 
-    virtual void Cancel() {
+    virtual void Cancel() override {
         std::lock_guard<std::mutex> lock(m_call_mutex);
         CancelHelper(m_callback, std::move(m_promise), &m_call_status);
     }
@@ -443,8 +462,10 @@ class RequestResponseStreamCall : public MessagePumpCallBase {
  private:
     friend class MessagePump;
 
-    explicit RequestResponseStreamCall(grpc::CompletionQueue* cq)
-        : m_next_request_to_write(0), m_next_step(NextStep::WriteRequest) {
+    explicit RequestResponseStreamCall(grpc::CompletionQueue* cq
+    ) :
+    m_next_request_to_write(0), m_next_step(NextStep::WriteRequest)
+    {
         m_cq = cq;
         m_call_status = CallStatus::NotStarted;
         BOSDYN_ASSERT_PRECONDITION(m_cq != nullptr, "No completion queue.");
@@ -600,7 +621,7 @@ class UnaryCall : public MessagePumpCallBase {
         reader->Finish(&m_response, &m_status, this);
     }
 
-    virtual void Cancel() {
+    virtual void Cancel() override {
         std::lock_guard<std::mutex> lock(m_call_mutex);
         CancelHelper(m_callback, std::move(m_promise), &m_call_status);
     }
@@ -614,7 +635,9 @@ class UnaryCall : public MessagePumpCallBase {
     friend class MessagePump;
 
 
-    explicit UnaryCall(grpc::CompletionQueue* cq) {
+    explicit UnaryCall(grpc::CompletionQueue* cq
+    )
+    {
         m_cq = cq;
         m_call_status = CallStatus::NotStarted;
         BOSDYN_ASSERT_PRECONDITION(m_cq != nullptr, "No completion queue.");
@@ -702,6 +725,7 @@ class MessagePump {
     MessagePump() = default;
     ~MessagePump() { RequestShutdown(); }
 
+
     // Process any completed RPCs in the completion queue for up to the duration milliseconds before
     // returning.  A typical application will have a thread which executes
     // MessagePump::CompleteOne in a loop.
@@ -719,25 +743,37 @@ class MessagePump {
     template <typename Request, typename Response, typename PromiseResultType>
     std::unique_ptr<UnaryCall<Request, Response, PromiseResultType>> CreateUnaryCall() {
         if (m_shutdown_requested) return nullptr;
-        return std::unique_ptr<UnaryCall<Request, Response, PromiseResultType>>(new UnaryCall<Request, Response, PromiseResultType>(&m_completion_queue));
+        return std::unique_ptr<UnaryCall<Request, Response, PromiseResultType>>(
+            new UnaryCall<Request, Response, PromiseResultType>(
+                &m_completion_queue
+            ));
     }
 
     template <typename Request, typename Response, typename Promise>
     std::unique_ptr<RequestStreamCall<Request, Response, Promise>> CreateRequestStreamCall() {
         if (m_shutdown_requested) return nullptr;
-        return std::unique_ptr<RequestStreamCall<Request, Response, Promise>>(new RequestStreamCall<Request, Response, Promise>(&m_completion_queue));
+        return std::unique_ptr<RequestStreamCall<Request, Response, Promise>>(
+            new RequestStreamCall<Request, Response, Promise>(
+                &m_completion_queue
+            ));
     }
 
     template <typename Request, typename Response, typename Promise>
     std::unique_ptr<ResponseStreamCall<Request, Response, Promise>> CreateResponseStreamCall() {
         if (m_shutdown_requested) return nullptr;
-        return std::unique_ptr<ResponseStreamCall<Request, Response, Promise>>(new ResponseStreamCall<Request, Response, Promise>(&m_completion_queue));
+        return std::unique_ptr<ResponseStreamCall<Request, Response, Promise>>(
+            new ResponseStreamCall<Request, Response, Promise>(
+                &m_completion_queue
+            ));
     }
 
     template <typename Request, typename Response, typename Promise>
     std::unique_ptr<RequestResponseStreamCall<Request, Response, Promise>> CreateRequestResponseStreamCall() {
         if (m_shutdown_requested) return nullptr;
-        return std::unique_ptr<RequestResponseStreamCall<Request, Response, Promise>>(new RequestResponseStreamCall<Request, Response, Promise>(&m_completion_queue));
+        return std::unique_ptr<RequestResponseStreamCall<Request, Response, Promise>>(
+            new RequestResponseStreamCall<Request, Response, Promise>(
+                &m_completion_queue
+            ));
     }
 
     // Add a call to be tracked.
@@ -760,6 +796,7 @@ class MessagePump {
 
     std::unique_ptr<std::thread> m_auto_update_thread = nullptr;
     OutstandingCallTracker m_outstanding_calls;
+
 };
 
 }  // namespace client

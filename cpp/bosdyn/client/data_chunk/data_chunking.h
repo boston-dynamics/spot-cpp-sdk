@@ -62,7 +62,7 @@ Result<T> MessageFromDataChunks(
  * @return None, output from method is returned in chunks argument.
  */
 void StringToDataChunks(const std::string& data,
-                        std::vector<std::unique_ptr<::bosdyn::api::DataChunk>>* chunks);
+                        std::vector<::bosdyn::api::DataChunk>* chunks);
 
 
 /**
@@ -77,7 +77,7 @@ void StringToDataChunks(const std::string& data,
  */
 template<class T>
 ::bosdyn::common::Status MessageToDataChunks(const T& message,
-                           std::vector<std::unique_ptr<::bosdyn::api::DataChunk>>* chunks) {
+                           std::vector<::bosdyn::api::DataChunk>* chunks) {
     std::string buffer;
     if (!message.SerializeToString(&buffer)) {
         return ::bosdyn::common::Status(SDKErrorCode::GenericSDKError, "Could not serialize message");

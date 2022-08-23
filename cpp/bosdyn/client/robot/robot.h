@@ -74,24 +74,26 @@ class Robot {
     // message_pump is optional MessagePump instance to use in the ServiceClient, the default
     //   MessagePump for the robot will be used if this parameter is not passed to the method.
     template <class T>
-    Result<T*> EnsureServiceClient(
-        const std::string& service_name, std::shared_ptr<grpc::ChannelInterface> channel = nullptr,
-        std::shared_ptr<MessagePump> message_pump = nullptr) {
+    Result<T*> EnsureServiceClient(const std::string& service_name,
+                                   std::shared_ptr<grpc::ChannelInterface> channel = nullptr,
+                                   std::shared_ptr<MessagePump> message_pump = nullptr) {
         // Use an existing client if one exists.
         auto it_client = m_service_client_map.find(service_name);
         if (it_client != m_service_client_map.end()) {
             if (T::GetServiceType() != it_client->second.service_type) {
-                return {::bosdyn::common::Status(ClientCreationErrorCode::IncorrectServiceType,
-                               "Cached service client for " + service_name + " has service type " +
-                               it_client->second.service_type + ". The expected type is: " +
-                               T::GetServiceType()),
+                return {::bosdyn::common::Status(
+                            ClientCreationErrorCode::IncorrectServiceType,
+                            "Cached service client for " + service_name + " has service type " +
+                                it_client->second.service_type +
+                                ". The expected type is: " + T::GetServiceType()),
                         nullptr};
             }
-            return {::bosdyn::common::Status(ClientCreationErrorCode::Success), static_cast<T*>(it_client->second.service_client.get())};
+            return {::bosdyn::common::Status(ClientCreationErrorCode::Success),
+                    static_cast<T*>(it_client->second.service_client.get())};
         }
 
-        // Since no client currently exists for this service name, create a new one using the default
-        // constructor of the templated service client argument.
+        // Since no client currently exists for this service name, create a new one using the
+        // default constructor of the templated service client argument.
 
         // The mutex is necessary so multiple threads can create clients at the same time, which
         // could potentially trigger the call of this method and generate two directory
@@ -99,10 +101,11 @@ class Robot {
         // same time.
         std::lock_guard<std::recursive_mutex> lock(m_client_create_mutex);
         std::unique_ptr<T> client = std::make_unique<T>();
-        auto status = SetupClient(client.get(), service_name, T::GetServiceType(), channel, message_pump);
+        auto status =
+            SetupClient(client.get(), service_name, T::GetServiceType(), channel, message_pump);
         if (status) {
-            // Ultimately, add the new service client into the service client map such that it can be reused
-            // if there is another request for the same service name.
+            // Ultimately, add the new service client into the service client map such that it can
+            // be reused if there is another request for the same service name.
             m_service_client_map[service_name] = {T::GetServiceType(), std::move(client)};
             return {status,
                     static_cast<T*>(m_service_client_map[service_name].service_client.get())};
@@ -113,9 +116,8 @@ class Robot {
 
     // As above, except the service_name is inferred from the type.
     template <class T>
-    Result<T*> EnsureServiceClient(
-        std::shared_ptr<grpc::ChannelInterface> channel = nullptr,
-        std::shared_ptr<MessagePump> message_pump = nullptr) {
+    Result<T*> EnsureServiceClient(std::shared_ptr<grpc::ChannelInterface> channel = nullptr,
+                                   std::shared_ptr<MessagePump> message_pump = nullptr) {
         return EnsureServiceClient<T>(T::GetDefaultServiceName(), channel, message_pump);
     }
 
@@ -153,7 +155,7 @@ class Robot {
     // Sets up a token cache to persist the user token.
     // If the user provides a cache, it will be saved in the robot object for convenience.
     ::bosdyn::common::Status SetupTokenCache(std::unique_ptr<TokenCache> token_cache,
-                           const std::string& unique_id = "");
+                                             const std::string& unique_id = "");
 
     // List services available on the robot.
     Result<std::vector<::bosdyn::api::ServiceEntry>> ListServices();
@@ -178,6 +180,7 @@ class Robot {
         m_default_message_pump = message_pump;
     }
 
+
     /**
      * Power on robot motors. This function blocks until the command returns success, or the timeout
      * is reached.
@@ -187,8 +190,9 @@ class Robot {
      *                                  command has succeeded.
      * @return ::bosdyn::common::Status object with error code, or Success code.
      */
-    ::bosdyn::common::Status PowerOnMotors(::bosdyn::common::Duration timeout = std::chrono::seconds(30),
-                         double update_frequency = 1.0);
+    ::bosdyn::common::Status PowerOnMotors(
+        ::bosdyn::common::Duration timeout = std::chrono::seconds(30),
+        double update_frequency = 1.0);
 
     /**
      * Power off robot motors.
@@ -199,18 +203,18 @@ class Robot {
      *                                  command has succeeded.
      * @return ::bosdyn::common::Status object with error code, or Success code.
      */
-    ::bosdyn::common::Status PowerOffMotors(bool cut_immediately = false,
-                          ::bosdyn::common::Duration timeout = std::chrono::seconds(30),
-                          double update_frequency = 1.0);
+    ::bosdyn::common::Status PowerOffMotors(
+        bool cut_immediately = false, ::bosdyn::common::Duration timeout = std::chrono::seconds(30),
+        double update_frequency = 1.0);
 
     /**
      * Check if the robot is powered on. This function blocks until the robot state is received.
      *
      * @param robot_state_client (::bosdyn::api::RobotStateClient): client for calling robot_state
      *                                                            service.
-     * @return Result with ::bosdyn::common::Status object with error code if errors are found, or a Success Status
-     *         object and a bool response whether the robot is powered on or not, if no errors are
-     *         found.
+     * @return Result with ::bosdyn::common::Status object with error code if errors are found, or a
+     * Success Status object and a bool response whether the robot is powered on or not, if no
+     * errors are found.
      */
     Result<bool> IsPoweredOn();
 
@@ -226,7 +230,8 @@ class Robot {
 
 
     Result<::bosdyn::api::RobotIdResponse> GetId(
-        const std::string& id_service_name = ::bosdyn::client::RobotIdClient::GetDefaultServiceName());
+        const std::string& id_service_name =
+            ::bosdyn::client::RobotIdClient::GetDefaultServiceName());
 
     /**
      * Check if the robot is estopped, usually indicating if an external application has not
@@ -236,7 +241,16 @@ class Robot {
      */
     Result<bool> IsEstopped();
 
- private:
+    /**
+     * @brief Update the port used for creating secure channels, instead of using the default 443
+     * port. Calling this method does not change existing channels.
+     *
+     * @param secure_channel_port New port to use for creating secure channels.
+     */
+    void UpdateSecureChannelPort(int secure_channel_port) {
+        m_secure_channel_port = secure_channel_port; }
+
+ protected:
     // Updates the cache with the existing user token.
     // This method also instantiates a token manager to refresh the
     // user token.  Furthermore, it should only be called after the
@@ -289,10 +303,10 @@ class Robot {
 
     // Helper function to setup the ServiceClient after it is created.
     ::bosdyn::common::Status SetupClient(ServiceClient* service_client,
-                               const std::string& service_name,
-                               const std::string& service_type,
-                               std::shared_ptr<grpc::ChannelInterface> channel = nullptr,
-                               std::shared_ptr<MessagePump> message_pump = nullptr);
+                                         const std::string& service_name,
+                                         const std::string& service_type,
+                                         std::shared_ptr<grpc::ChannelInterface> channel = nullptr,
+                                         std::shared_ptr<MessagePump> message_pump = nullptr);
 
     std::string m_network_address;
     // Host string as it appears in Directory:ListPairsResponse reported for Directory service.
@@ -349,6 +363,9 @@ class Robot {
 
     // Parameters for RPC calls.
     RPCParameters m_RPC_parameters;
+
+    // Secure port to use when creating secure channels; defaults to 443.
+    int m_secure_channel_port;
 };
 
 }  // namespace client

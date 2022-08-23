@@ -34,6 +34,12 @@
                                            ,                                                 \
                                        }}})
 
+#define DEFINE_PROTO_ENUM_ERRORCODE_HEADER_AUTOWALK(enumclass)                            \
+    DEFINE_PROTO_ENUM_ERRORCODE_HEADER(enumclass, ::bosdyn::api::autowalk,                  \
+                                       namespace bosdyn{namespace api{namespace autowalk{ \
+                                           ,                                                 \
+                                       }}})
+
 #define DEFINE_PROTO_ENUM_ERRORCODE_HEADER_SPOT(enumclass)                            \
     DEFINE_PROTO_ENUM_ERRORCODE_HEADER(enumclass, ::bosdyn::api::spot,                  \
                                        namespace bosdyn{namespace api{namespace spot{ \

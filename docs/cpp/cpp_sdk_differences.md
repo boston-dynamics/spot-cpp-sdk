@@ -41,7 +41,7 @@ All these error codes in the `std::error_code` field are organized in three erro
 
 ### Result struct
 
-SDK methods that need to return a `Status` value as well as an object do so by returning a `Result` struct. This struct conbines a `Status` field with a templatized `response` field. Most client RPC methods return a `Result` struct, templatized with the protobuf response definition for the RPC. This struct is similar in functionality to the proposed `std::expected` and `boost::outcome::result`.
+SDK methods that need to return a `Status` value as well as an object do so by returning a `Result` struct. This struct combines a `Status` field with a templatized `response` field. Most client RPC methods return a `Result` struct, templatized with the protobuf response definition for the RPC. This struct is similar in functionality to the proposed `std::expected` and `boost::outcome::result`.
 
 ## Error checking
 
@@ -80,7 +80,7 @@ bool RPCErrorCodeCategory::equivalent(int valcode,
 ...
 ```
 
-This means that the `RPCErrorCode` 0 (`Success = 0`) reprensents success, while all other enumeration values in `RPCErrorCode` represent failure.
+This means that the `RPCErrorCode` 0 (`Success = 0`) represents success, while all other enumeration values in `RPCErrorCode` represent failure.
 
 In the case of auto-generated `std::error_code` from the protobuf status definitions, most client folders in bosdyn/client/ contain two files *error_codes.h/cpp. These files call macros to convert protobuf status definitions into `std::error_code` used by the `Status` class. The *error_codes.cpp files pass to the macros the success enumeration value that correspond to success criteria. For example, the `ImageClient` calls the macros with `valcode` 1:
 `DEFINE_PROTO_ENUM_ERRORCODE_IMPL_API(ImageResponse_Status, valcode == 1)`

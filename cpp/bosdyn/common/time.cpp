@@ -106,6 +106,11 @@ double DurationToSec(const ::google::protobuf::Duration& duration) {
     return seconds + static_cast<double>(duration.nanos()) / kBillion;
 }
 
+::google::protobuf::Duration SecToDuration(double seconds) {
+    return google::protobuf::util::TimeUtil::NanosecondsToDuration(seconds * 1e9);
+}
+
+
 bool DurationIsLessThan(const ::google::protobuf::Duration& d1,
                         const ::google::protobuf::Duration& d2) {
     if (d1.seconds() < d2.seconds()) {

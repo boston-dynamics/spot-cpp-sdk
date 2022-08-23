@@ -66,6 +66,57 @@ LoadMissionResultType MissionClient::LoadMission(
     return LoadMissionAsync(request, parameters, desired_lease_resources).get();
 }
 
+LoadMissionResultType MissionClient::LoadMissionAsChunks(
+    ::bosdyn::api::mission::LoadMissionRequest& request,
+    const ::bosdyn::client::RPCParameters& parameters,
+    const std::vector<std::string>& desired_lease_resources) {
+    return LoadMissionAsChunksAsync(request, parameters, desired_lease_resources).get();       
+}
+
+std::shared_future<LoadMissionResultType> MissionClient::LoadMissionAsChunksAsync(
+    ::bosdyn::api::mission::LoadMissionRequest& request,
+    const RPCParameters& parameters,
+    const std::vector<std::string>& desired_lease_resources) {
+    std::promise<LoadMissionResultType> response;
+    std::shared_future<LoadMissionResultType> future = response.get_future();
+
+    BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
+
+    // Run a lease processor function to attempt to automatically apply a lease to the request if
+    // a lease is not already set.
+    auto lease_status = ProcessRequestWithMultipleLeases(&request, m_lease_wallet.get(),
+                                                         desired_lease_resources);
+
+    if (!lease_status) {
+        // Failed to set a lease with the lease wallet. Return early since the request will fail
+        // without a lease.
+        response.set_value({lease_status, {}});
+        return future;
+    }
+
+    MessagePumpCallBase* one_time =
+        InitiateRequestStreamAsyncCallWithChunking<::bosdyn::api::mission::LoadMissionRequest,
+                                                   ::bosdyn::api::mission::LoadMissionResponse,
+                                                   ::bosdyn::api::mission::LoadMissionResponse>(
+        std::move(request),
+        std::bind(&::bosdyn::api::mission::MissionService::Stub::AsyncLoadMissionAsChunks, m_stub.get(),
+                  _1, _2, _3, _4),
+        std::bind(&MissionClient::OnLoadMissionAsChunksComplete, this, _1, _2, _3, _4, _5),
+        std::move(response), parameters);
+
+    return future;
+}
+
+void MissionClient::OnLoadMissionAsChunksComplete(
+    MessagePumpCallBase* call, const std::vector<::bosdyn::api::DataChunk>&& request,
+    ::bosdyn::api::mission::LoadMissionResponse&& response, const grpc::Status& status,
+    std::promise<LoadMissionResultType> promise) {
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseWithMultiLeaseAndGetFinalStatus<::bosdyn::api::mission::LoadMissionResponse>(
+            status, response, response.status(), m_lease_wallet.get());
+    promise.set_value({ret_status, std::move(response)});
+}
+
 std::shared_future<PauseMissionResultType> MissionClient::PauseMissionAsync(
     ::bosdyn::api::mission::PauseMissionRequest& request,
     const ::bosdyn::client::RPCParameters& parameters, const std::string& desired_lease_resource) {
