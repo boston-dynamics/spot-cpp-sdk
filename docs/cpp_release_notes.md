@@ -8,6 +8,10 @@ Development Kit License (20191101-BDSDK-SL).
 
 # Spot C++ SDK Release Notes
 
+## Spot C++ SDK version 3.2.1 BETA
+
+No changes from 3.2.0.
+
 ## Spot C++ SDK version 3.2.0 BETA
 
 ### New Features
