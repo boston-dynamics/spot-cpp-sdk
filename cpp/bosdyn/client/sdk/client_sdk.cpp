@@ -161,7 +161,8 @@ void ClientSdk::AddCustomResponseProcessor(const std::shared_ptr<ResponseProcess
 Result<std::unique_ptr<::bosdyn::client::Robot>> ClientSdk::CreateRobot(
     const std::string& network_address,
     const ProxyUseType& proxy_use, ::bosdyn::common::Duration timeout,
-    std::shared_ptr<MessagePump> message_pump) {
+    std::shared_ptr<MessagePump> message_pump,
+    std::shared_ptr<LeaseWallet> lease_wallet) {
     // The SDK must be initialized before the robot object can be created.
     BOSDYN_ASSERT_PRECONDITION(m_is_initialized, "SDK must be initialized before creating robot objects.");
 
@@ -200,6 +201,7 @@ Result<std::unique_ptr<::bosdyn::client::Robot>> ClientSdk::CreateRobot(
         message_pump->AutoUpdate(std::chrono::milliseconds(100));
     }
     robot->SetDefaultMessagePump(message_pump);
+    if (lease_wallet) robot->SetWallet(lease_wallet);
 
     m_is_robot_created = true;
 

@@ -8,6 +8,14 @@ Development Kit License (20191101-BDSDK-SL).
 
 # Spot C++ SDK Release Notes
 
+## Spot C++ SDK version 3.2.2 BETA
+
+### Bug Fixes and Improvements
+
+Updated `Robot` and `ClientSDK` classes to enable applications to specify the `LeaseWallet` used in instantiated clients.
+
+Added `GetSystemLog` methods in `HealthClient`.
+
 ## Spot C++ SDK version 3.2.1 BETA
 
 No changes from 3.2.0.

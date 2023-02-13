@@ -141,6 +141,9 @@ class Robot {
     // processor must be kept alive for the entire lifetime of the robot.
     void AddCustomResponseProcessor(const std::shared_ptr<ResponseProcessor>& processor);
 
+    // Set the lease wallet to be used for future clients.
+    void SetWallet(std::shared_ptr<LeaseWallet> wallet) { m_lease_wallet = wallet; }
+
     // Access the robot's wallet, which should be shared between its clients.
     std::shared_ptr<LeaseWallet> GetWallet() { return m_lease_wallet; }
 

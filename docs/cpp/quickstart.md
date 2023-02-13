@@ -212,4 +212,4 @@ If this worked for you, SUCCESS! You are now successfully communicating with Spo
 
 3.  Read through the [protocol buffer definitions](../protos/README.md) and the Spot C++ SDK [source code documentation](../../cpp/README.md) to understand even more.
 
-If you have any questions, please email support@bostondynamics.com.
+If you have any questions, please [reach out to Support](https://support.bostondynamics.com/s/contactsupport).

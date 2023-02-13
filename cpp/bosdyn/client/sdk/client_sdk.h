@@ -68,7 +68,8 @@ class ClientSdk {
         const std::string& network_address,
         const ProxyUseType& proxy_use = AUTO_DETERMINE,
         ::bosdyn::common::Duration timeout = kRPCTimeoutNotSpecified,
-        std::shared_ptr<MessagePump> message_pump = nullptr);
+        std::shared_ptr<MessagePump> message_pump = nullptr,
+        std::shared_ptr<LeaseWallet> lease_wallet = nullptr);
 
  private:
     void CreateDefaultProcessors();

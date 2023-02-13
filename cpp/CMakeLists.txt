@@ -164,30 +164,6 @@ install(DIRECTORY libs/ DESTINATION include/bosdyn-client/ FILES_MATCHING PATTER
 link_directories(
   ${PROTOBUF_LIB_DIR}
 )
-add_executable(hello_spot ${CMAKE_CURRENT_SOURCE_DIR}/examples/hello_spot/hello_spot.cpp)
-target_compile_features(hello_spot PUBLIC cxx_std_14)
-target_include_directories(hello_spot PUBLIC
-  ${CMAKE_CURRENT_SOURCE_DIR}
-  ${PROTOBUF_INCLUDE_DIR}
-)
-target_link_libraries(hello_spot PUBLIC bosdyn_client_static)
-install(TARGETS hello_spot DESTINATION bin/)
-add_executable(spot_cam ${CMAKE_CURRENT_SOURCE_DIR}/examples/spot_cam/ptz_example.cpp)
-target_compile_features(spot_cam PUBLIC cxx_std_14)
-target_include_directories(spot_cam PUBLIC
-  ${CMAKE_CURRENT_SOURCE_DIR}
-  ${PROTOBUF_INCLUDE_DIR}
-)
-target_link_libraries(spot_cam PUBLIC bosdyn_client_static)
-install(TARGETS spot_cam DESTINATION bin/)
-add_executable(get_image ${CMAKE_CURRENT_SOURCE_DIR}/examples/get_image/get_image.cpp)
-target_compile_features(get_image PUBLIC cxx_std_14)
-target_include_directories(get_image PUBLIC
-  ${CMAKE_CURRENT_SOURCE_DIR}
-  ${PROTOBUF_INCLUDE_DIR}
-)
-target_link_libraries(get_image PUBLIC bosdyn_client_static)
-install(TARGETS get_image DESTINATION bin/)
 add_executable(basic_robot_command ${CMAKE_CURRENT_SOURCE_DIR}/examples/basic_robot_command/basic_robot_command.cpp)
 target_compile_features(basic_robot_command PUBLIC cxx_std_14)
 target_include_directories(basic_robot_command PUBLIC
@@ -196,3 +172,27 @@ target_include_directories(basic_robot_command PUBLIC
 )
 target_link_libraries(basic_robot_command PUBLIC bosdyn_client_static)
 install(TARGETS basic_robot_command DESTINATION bin/)
+add_executable(spot_cam ${CMAKE_CURRENT_SOURCE_DIR}/examples/spot_cam/ptz_example.cpp)
+target_compile_features(spot_cam PUBLIC cxx_std_14)
+target_include_directories(spot_cam PUBLIC
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${PROTOBUF_INCLUDE_DIR}
+)
+target_link_libraries(spot_cam PUBLIC bosdyn_client_static)
+install(TARGETS spot_cam DESTINATION bin/)
+add_executable(hello_spot ${CMAKE_CURRENT_SOURCE_DIR}/examples/hello_spot/hello_spot.cpp)
+target_compile_features(hello_spot PUBLIC cxx_std_14)
+target_include_directories(hello_spot PUBLIC
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${PROTOBUF_INCLUDE_DIR}
+)
+target_link_libraries(hello_spot PUBLIC bosdyn_client_static)
+install(TARGETS hello_spot DESTINATION bin/)
+add_executable(get_image ${CMAKE_CURRENT_SOURCE_DIR}/examples/get_image/get_image.cpp)
+target_compile_features(get_image PUBLIC cxx_std_14)
+target_include_directories(get_image PUBLIC
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${PROTOBUF_INCLUDE_DIR}
+)
+target_link_libraries(get_image PUBLIC bosdyn_client_static)
+install(TARGETS get_image DESTINATION bin/)
