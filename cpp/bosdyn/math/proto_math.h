@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
+ * Copyright (c) 2023 Boston Dynamics, Inc.  All rights reserved.
  *
  * Downloading, reproducing, distributing or otherwise using the SDK Software
  * is subject to the terms and conditions of the Boston Dynamics Software
@@ -13,7 +13,6 @@
 // To get math constants (M_PI) in MSVC
 #    define _USE_MATH_DEFINES
 #endif
-#include <cmath>
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include <cmath>
@@ -54,14 +53,14 @@ bool Equals(const ::bosdyn::api::Vec3& a, const ::bosdyn::api::Vec3& b, double t
 
 // Quaternion Operators
 ::bosdyn::api::Quaternion operator*(const ::bosdyn::api::Quaternion& a,
-                                  const ::bosdyn::api::Quaternion& b);
+                                    const ::bosdyn::api::Quaternion& b);
 bool operator==(const ::bosdyn::api::Quaternion& a, const ::bosdyn::api::Quaternion& b);
 ::bosdyn::api::Quaternion operator*(const double& scalar, const ::bosdyn::api::Quaternion& a);
 ::bosdyn::api::Vec3 operator*(const ::bosdyn::api::Quaternion& q, const ::bosdyn::api::Vec3& p);
 ::bosdyn::api::Quaternion operator+(const ::bosdyn::api::Quaternion& a,
-                                  const ::bosdyn::api::Quaternion& b);
+                                    const ::bosdyn::api::Quaternion& b);
 ::bosdyn::api::Quaternion operator-(const ::bosdyn::api::Quaternion& a,
-                                  const ::bosdyn::api::Quaternion& b);
+                                    const ::bosdyn::api::Quaternion& b);
 ::bosdyn::api::Quaternion operator-(const ::bosdyn::api::Quaternion& a);
 bool ToMatrix(const ::bosdyn::api::Quaternion& q, Eigen::Matrix<double, 3, 3>* rotation_matrix);
 Eigen::Matrix<double, 2, 2> ToMatrix(const double& angle);
@@ -71,14 +70,16 @@ Eigen::Quaterniond EigenFromApiProto(const ::bosdyn::api::Quaternion& q);
 // SE3Pose Operators
 ::bosdyn::api::Vec3 operator*(const ::bosdyn::api::SE3Pose& a_T_b, const ::bosdyn::api::Vec3& p);
 ::bosdyn::api::SE3Pose operator*(const ::bosdyn::api::SE3Pose& a_T_b,
-                               const ::bosdyn::api::SE3Pose& b_T_c);
+                                 const ::bosdyn::api::SE3Pose& b_T_c);
 bool operator==(const ::bosdyn::api::SE3Pose& a_T_b, const ::bosdyn::api::SE3Pose& b_T_c);
 bool Equals(const ::bosdyn::api::SE3Pose& a_T_b, const ::bosdyn::api::SE3Pose& b_T_c,
             double pos_tol = -1.0, double rot_tol = -1.0);
+Eigen::Isometry3d EigenFromApiProto(const ::bosdyn::api::SE3Pose& a_T_b);
+bosdyn::api::SE3Pose EigenToApiProto(const Eigen::Isometry3d& a_T_b);
 
 // SE2Pose Operators
 ::bosdyn::api::SE2Pose operator*(const ::bosdyn::api::SE2Pose& a_T_b,
-                               const ::bosdyn::api::SE2Pose& b_T_c);
+                                 const ::bosdyn::api::SE2Pose& b_T_c);
 bool operator==(const ::bosdyn::api::SE2Pose& a_T_b, const ::bosdyn::api::SE2Pose& b_T_c);
 ::bosdyn::api::Vec2 operator*(const ::bosdyn::api::SE2Pose& a_T_b, const ::bosdyn::api::Vec2& p);
 
@@ -92,7 +93,7 @@ Eigen::Matrix<double, 3, 3> Adjoint(const ::bosdyn::api::SE2Pose& a_T_b);
 // This function applies an adjoint matrix to a velocity twist vector to get the velocity in
 // the reference frame a.
 ::bosdyn::api::SE2Velocity TransformVelocity(const Eigen::Matrix<double, 3, 3>& a_adjoint_b,
-                                            const ::bosdyn::api::SE2Velocity& vel_in_b);
+                                             const ::bosdyn::api::SE2Velocity& vel_in_b);
 // SE(3) Velocity Helpers
 bool operator==(const ::bosdyn::api::SE3Velocity& vel_a, const ::bosdyn::api::SE3Velocity& vel_b);
 Eigen::Matrix<double, 6, 1> EigenFromApiProto(const ::bosdyn::api::SE3Velocity& vel_in_a);
@@ -103,12 +104,18 @@ Eigen::Matrix<double, 6, 6> Adjoint(const ::bosdyn::api::SE3Pose& a_T_b);
 // This function applies an adjoint matrix to a velocity twist vector to get the velocity in
 // the reference frame a.
 ::bosdyn::api::SE3Velocity TransformVelocity(const Eigen::Matrix<double, 6, 6>& a_adjoint_b,
-                                            const ::bosdyn::api::SE3Velocity& vel_in_b);
+                                             const ::bosdyn::api::SE3Velocity& vel_in_b);
 
 // Inverse.
 ::bosdyn::api::Quaternion operator~(const ::bosdyn::api::Quaternion& q);
 ::bosdyn::api::SE3Pose operator~(const ::bosdyn::api::SE3Pose& a_T_b);
 ::bosdyn::api::SE2Pose operator~(const ::bosdyn::api::SE2Pose& a_T_b);
+
+// Generate a roll rotation.
+::bosdyn::api::Quaternion FromRoll(double angle);
+
+// Generate a pitch rotation.
+::bosdyn::api::Quaternion FromPitch(double angle);
 
 // Generate a yaw rotation.
 ::bosdyn::api::Quaternion FromYaw(double angle);
@@ -116,7 +123,18 @@ Eigen::Matrix<double, 6, 6> Adjoint(const ::bosdyn::api::SE3Pose& a_T_b);
 // Create a yaw only quaternion.
 ::bosdyn::api::Quaternion ClosestYawOnly(const ::bosdyn::api::Quaternion& q);
 
-// Get the yaw angle of a rotation or transform.
+// Get the roll angle of a rotation or transform. Note that this isn't the same as decomposing the
+// rotation into Euler angles.
+double ToRoll(const ::bosdyn::api::Quaternion& q);
+double ToRoll(const ::bosdyn::api::SE3Pose& a_T_b);
+
+// Get the pitch angle of a rotation or transform. Note that this isn't the same as decomposing the
+// rotation into Euler angles.
+double ToPitch(const ::bosdyn::api::Quaternion& q);
+double ToPitch(const ::bosdyn::api::SE3Pose& a_T_b);
+
+// Get the yaw angle of a rotation or transform. Note that this isn't the same as decomposing the
+// rotation into Euler angles.
 double ToYaw(const ::bosdyn::api::Quaternion& q);
 double ToYaw(const ::bosdyn::api::SE3Pose& a_T_b);
 
@@ -135,7 +153,7 @@ double DotProduct(const ::bosdyn::api::Quaternion& a, const ::bosdyn::api::Quate
 ::bosdyn::api::Quaternion CreateRotationY(double angle);
 ::bosdyn::api::Quaternion CreateRotationZ(double angle);
 ::bosdyn::api::SE3Pose CreateSE3Pose(const ::bosdyn::api::Quaternion& q = CreateQuaternion(),
-                                    const ::bosdyn::api::Vec3& v = CreateVec3());
+                                     const ::bosdyn::api::Vec3& v = CreateVec3());
 
 // Get the identity transform.
 ::bosdyn::api::SE3Pose Identity();
@@ -160,9 +178,9 @@ void SetDeprecatedFields(::bosdyn::api::SE3Covariance* covariance);
 ::bosdyn::api::SE2Pose FlattenToX(const ::bosdyn::api::SE3Pose& a);
 
 bool SafeFlatten(const ::bosdyn::api::SE3Pose& in_se3_pose, const std::string& base_frame_name,
-                  ::bosdyn::api::SE2Pose* out_se2_pose);
+                 ::bosdyn::api::SE2Pose* out_se2_pose);
 bool SafeInflate(const ::bosdyn::api::SE2Pose& in_se2_pose, const std::string& base_frame_name,
-                  ::bosdyn::api::SE3Pose* out_se3_pose, double z_height = 0.0);
+                 ::bosdyn::api::SE3Pose* out_se3_pose, double z_height = 0.0);
 
 // Returns the minimum angular distance between two angles (a) and (b) in radians.
 template <typename T>

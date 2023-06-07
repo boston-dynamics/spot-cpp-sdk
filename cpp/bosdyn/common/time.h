@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
+ * Copyright (c) 2023 Boston Dynamics, Inc.  All rights reserved.
  *
  * Downloading, reproducing, distributing or otherwise using the SDK Software
  * is subject to the terms and conditions of the Boston Dynamics Software
@@ -36,12 +36,18 @@ std::chrono::seconds SecSinceEpoch();
 
 /// Return a timestamp as nanoseconds since the UNIX epoch.
 int64_t NowNsec();
+
+/// Return a timestamp as seconds since the UNIX epoch.
+int64_t NowSec();
+
 /// This version uses the current wall-clock time, even during a simulation where NowNsec()
 ///  uses simulation time.
 int64_t NowNsecWall();
 
 /// Return a timestamp as nanoseconds since the UNIX epoch.
 ::google::protobuf::Timestamp NowTimestamp();
+
+std::chrono::system_clock::time_point NowTimePoint();
 
 using ClockFn = std::function<std::chrono::nanoseconds()>;
 

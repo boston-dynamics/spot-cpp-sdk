@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
+ * Copyright (c) 2023 Boston Dynamics, Inc.  All rights reserved.
  *
  * Downloading, reproducing, distributing or otherwise using the SDK Software
  * is subject to the terms and conditions of the Boston Dynamics Software
@@ -46,7 +46,7 @@ const double kEqualityTolerance = .000001;  // 1e-6
 }
 
 ::bosdyn::api::SE3Pose make_pose(const ::bosdyn::api::Vec3& position,
-                               const ::bosdyn::api::Quaternion& rotation) {
+                                 const ::bosdyn::api::Quaternion& rotation) {
     ::bosdyn::api::SE3Pose ret;
     (*ret.mutable_position()) = position;
     (*ret.mutable_rotation()) = rotation;
@@ -61,7 +61,7 @@ const double kEqualityTolerance = .000001;  // 1e-6
 }
 
 ::bosdyn::api::SE3Covariance make_cov(const ::bosdyn::api::Vec3& r1, const ::bosdyn::api::Vec3& r2,
-                                    const ::bosdyn::api::Vec3& r3, double yaw_variance) {
+                                      const ::bosdyn::api::Vec3& r3, double yaw_variance) {
     Eigen::MatrixXd mat(6, 6);
     mat(3, 3) = r1.x();
     mat(4, 3) = r1.y();
@@ -140,8 +140,7 @@ bool Equals(const ::bosdyn::api::Vec2& a, const ::bosdyn::api::Vec2& b, double t
     if (tol < 0.0) {
         tol = kEqualityTolerance;
     }
-    return ((fabs(a.x() - b.x()) < tol) &&
-            (fabs(a.y() - b.y()) < tol));
+    return ((fabs(a.x() - b.x()) < tol) && (fabs(a.y() - b.y()) < tol));
 }
 
 ::bosdyn::api::Vec3 operator+(const ::bosdyn::api::Vec3& a, const ::bosdyn::api::Vec3& b) {
@@ -194,8 +193,7 @@ bool Equals(const ::bosdyn::api::Vec3& a, const ::bosdyn::api::Vec3& b, double t
     if (tol < 0.0) {
         tol = kEqualityTolerance;
     }
-    return ((fabs(a.x() - b.x()) < tol) &&
-            (fabs(a.y() - b.y()) < tol) &&
+    return ((fabs(a.x() - b.x()) < tol) && (fabs(a.y() - b.y()) < tol) &&
             (fabs(a.z() - b.z()) < tol));
 }
 
@@ -204,7 +202,7 @@ bool Equals(const ::bosdyn::api::Vec3& a, const ::bosdyn::api::Vec3& b, double t
 }
 
 ::bosdyn::api::Quaternion operator*(const ::bosdyn::api::Quaternion& a,
-                                  const ::bosdyn::api::Quaternion& b) {
+                                    const ::bosdyn::api::Quaternion& b) {
     return make_quat(a.w() * b.w() - a.x() * b.x() - a.y() * b.y() - a.z() * b.z(),
                      a.w() * b.x() + a.x() * b.w() + a.y() * b.z() - a.z() * b.y(),
                      a.w() * b.y() - a.x() * b.z() + a.y() * b.w() + a.z() * b.x(),
@@ -212,11 +210,11 @@ bool Equals(const ::bosdyn::api::Vec3& a, const ::bosdyn::api::Vec3& b, double t
 }
 
 ::bosdyn::api::Quaternion operator+(const ::bosdyn::api::Quaternion& a,
-                                  const ::bosdyn::api::Quaternion& b) {
+                                    const ::bosdyn::api::Quaternion& b) {
     return make_quat(a.w() + b.w(), a.x() + b.x(), a.y() + b.y(), a.z() + b.z());
 }
 ::bosdyn::api::Quaternion operator-(const ::bosdyn::api::Quaternion& a,
-                                  const ::bosdyn::api::Quaternion& b) {
+                                    const ::bosdyn::api::Quaternion& b) {
     return make_quat(a.w() - b.w(), a.x() - b.x(), a.y() - b.y(), a.z() - b.z());
 }
 
@@ -289,7 +287,7 @@ Eigen::Quaterniond EigenFromApiProto(const ::bosdyn::api::Quaternion& q) {
 }
 
 ::bosdyn::api::SE3Pose operator*(const ::bosdyn::api::SE3Pose& a_T_b,
-                               const ::bosdyn::api::SE3Pose& b_T_c) {
+                                 const ::bosdyn::api::SE3Pose& b_T_c) {
     ::bosdyn::api::Vec3 p = a_T_b.rotation() * b_T_c.position();
     return make_pose(a_T_b.position() + p, a_T_b.rotation() * b_T_c.rotation());
 }
@@ -323,8 +321,24 @@ bool Equals(const ::bosdyn::api::SE3Pose& a_T_b, const ::bosdyn::api::SE3Pose& b
     return (a_eq_b || a_eq_negative_b);
 }
 
+Eigen::Isometry3d EigenFromApiProto(const ::bosdyn::api::SE3Pose& a_T_b) {
+    Eigen::Matrix<double, 4, 4> ret = Eigen::Matrix<double, 4, 4>::Identity();
+    ret.block<3, 3>(0, 0) = EigenFromApiProto(a_T_b.rotation()).toRotationMatrix();
+    ret.block<3, 1>(0, 3) = EigenFromApiProto(a_T_b.position());
+    return Eigen::Isometry3d(ret);
+}
+
+bosdyn::api::SE3Pose EigenToApiProto(const Eigen::Isometry3d& a_T_b) {
+    bosdyn::api::SE3Pose ret;
+    const Eigen::Matrix<double, 3, 1>& p = a_T_b.translation();
+    ret.mutable_position()->CopyFrom(EigenToApiProtoVector(p));
+    Eigen::Quaternion<double> q(a_T_b.linear());
+    ret.mutable_rotation()->CopyFrom(EigenToApiProto(q));
+    return ret;
+}
+
 ::bosdyn::api::SE2Pose operator*(const ::bosdyn::api::SE2Pose& a_T_b,
-                               const ::bosdyn::api::SE2Pose& b_T_c) {
+                                 const ::bosdyn::api::SE2Pose& b_T_c) {
     ::bosdyn::api::SE2Pose a_T_c;
     double c = cos(a_T_b.angle());
     double s = sin(a_T_b.angle());
@@ -375,14 +389,14 @@ Eigen::Matrix<double, 6, 6> Adjoint(const ::bosdyn::api::SE3Pose& a_T_b) {
 }
 
 ::bosdyn::api::SE2Velocity TransformVelocity(const Eigen::Matrix<double, 3, 3>& a_adjoint_b,
-                                            const ::bosdyn::api::SE2Velocity& vel_in_b) {
+                                             const ::bosdyn::api::SE2Velocity& vel_in_b) {
     Eigen::Matrix<double, 3, 1> velocity_in_b = EigenFromApiProto(vel_in_b);
     Eigen::Matrix<double, 3, 1> velocity_in_a = a_adjoint_b * velocity_in_b;
     return EigenToApiProto(velocity_in_a);
 }
 
 ::bosdyn::api::SE3Velocity TransformVelocity(const Eigen::Matrix<double, 6, 6>& a_adjoint_b,
-                                            const ::bosdyn::api::SE3Velocity& vel_in_b) {
+                                             const ::bosdyn::api::SE3Velocity& vel_in_b) {
     Eigen::Matrix<double, 6, 1> velocity_in_b = EigenFromApiProto(vel_in_b);
     Eigen::Matrix<double, 6, 1> velocity_in_a = a_adjoint_b * velocity_in_b;
     return EigenToApiProto(velocity_in_a);
@@ -436,7 +450,6 @@ Eigen::Matrix<double, 6, 1> EigenFromApiProto(const ::bosdyn::api::SE3Velocity& 
     return result;
 }
 
-
 ::bosdyn::api::SE2Pose FlattenToX(const SE3Pose& a) {
     ::bosdyn::api::SE2Pose result;
     result.mutable_position()->set_x(a.position().x());
@@ -475,7 +488,7 @@ Eigen::Matrix<double, 6, 1> EigenFromApiProto(const ::bosdyn::api::SE3Velocity& 
 }
 
 bool SafeFlatten(const ::bosdyn::api::SE3Pose& in_se3_pose, const std::string& base_frame_name,
-                  ::bosdyn::api::SE2Pose* out_se2_pose) {
+                 ::bosdyn::api::SE2Pose* out_se2_pose) {
     // For a transform a_T_b, the base_frame_name represents "frame A" and must be a frame name
     // for an SE(2) pose. This must be a gravity aligned frame, either "vision", "odom", or
     // "flat_body" to be safely converted from  an SE3Pose to an SE2Pose with minimal loss of
@@ -488,7 +501,7 @@ bool SafeFlatten(const ::bosdyn::api::SE3Pose& in_se3_pose, const std::string& b
 }
 
 bool SafeInflate(const ::bosdyn::api::SE2Pose& in_se2_pose, const std::string& base_frame_name,
-                  ::bosdyn::api::SE3Pose* out_se3_pose, double z_height) {
+                 ::bosdyn::api::SE3Pose* out_se3_pose, double z_height) {
     // For a transform a_T_b, the pose_frame_name represents "frame A" and must be a string frame
     // name for an SE(2) pose. This must be a gravity aligned frame, either "vision", "odom", or
     // "flat_body to be safely converted from an SE2Pose to an SE3Pose without creating incorrect
@@ -498,6 +511,14 @@ bool SafeInflate(const ::bosdyn::api::SE2Pose& in_se2_pose, const std::string& b
     }
     *out_se3_pose = Inflate(in_se2_pose);
     return true;
+}
+
+::bosdyn::api::Quaternion FromRoll(double angle) {
+    return make_quat(cos(angle / 2.0), sin(angle / 2.0), 0, 0);
+}
+
+::bosdyn::api::Quaternion FromPitch(double angle) {
+    return make_quat(cos(angle / 2.0), 0, sin(angle / 2.0), 0);
 }
 
 ::bosdyn::api::Quaternion FromYaw(double angle) {
@@ -514,6 +535,33 @@ bool SafeInflate(const ::bosdyn::api::SE2Pose& in_se2_pose, const std::string& b
         return EigenToApiProto(Eigen::Quaterniond(0, 0, 1, 0) * EigenFromApiProto(q));
     }
 }
+
+double ToRoll(const ::bosdyn::api::Quaternion& q) {
+    if (q.w() * q.w() + q.x() * q.x() + q.y() * q.y() + q.z() * q.z() == 0.0) {
+        return 0.0;
+    }
+    double t0 = 2.0 * (q.w() * q.x() + q.y() * q.z());
+    double t1 = 1.0 - 2.0 * (q.x() * q.x() + q.y() * q.y());
+    return atan2(t0, t1);
+}
+
+double ToRoll(const ::bosdyn::api::SE3Pose& a_T_b) { return ToRoll(a_T_b.rotation()); }
+
+double ToPitch(const ::bosdyn::api::Quaternion& q) {
+    if (q.w() * q.w() + q.x() * q.x() + q.y() * q.y() + q.z() * q.z() == 0.0) {
+        return 0.0;
+    }
+    double t2 = 2.0 * (q.w() * q.y() - q.z() * q.x());
+    if (t2 < -1.0) {
+        return -M_PI / 2;
+    }
+    if (t2 > 1.0) {
+        return M_PI / 2;
+    }
+    return asin(t2);
+}
+
+double ToPitch(const ::bosdyn::api::SE3Pose& a_T_b) { return ToPitch(a_T_b.rotation()); }
 
 double ToYaw(const ::bosdyn::api::Quaternion& q) {
     // Get the closest yaw only quaternion: [qw, 0, 0, qz]. This can be computed:
@@ -567,8 +615,8 @@ double ToAngle(const ::bosdyn::api::SE3Pose& a_T_b) { return ToAngle(a_T_b.rotat
 
 ::bosdyn::api::Quaternion CreateRotationX(double angle) {
     ::bosdyn::api::Quaternion rotation;
-    rotation.set_w(std::cos(angle/2.0));
-    rotation.set_x(std::sin(angle/2.0));
+    rotation.set_w(std::cos(angle / 2.0));
+    rotation.set_x(std::sin(angle / 2.0));
     rotation.set_y(0);
     rotation.set_z(0);
     return rotation;
@@ -576,23 +624,24 @@ double ToAngle(const ::bosdyn::api::SE3Pose& a_T_b) { return ToAngle(a_T_b.rotat
 
 ::bosdyn::api::Quaternion CreateRotationY(double angle) {
     ::bosdyn::api::Quaternion rotation;
-    rotation.set_w(std::cos(angle/2.0));
+    rotation.set_w(std::cos(angle / 2.0));
     rotation.set_x(0);
-    rotation.set_y(std::sin(angle/2.0));
+    rotation.set_y(std::sin(angle / 2.0));
     rotation.set_z(0);
     return rotation;
 }
 
 ::bosdyn::api::Quaternion CreateRotationZ(double angle) {
     ::bosdyn::api::Quaternion rotation;
-    rotation.set_w(std::cos(angle/2.0));
+    rotation.set_w(std::cos(angle / 2.0));
     rotation.set_x(0);
     rotation.set_y(0);
-    rotation.set_z(std::sin(angle/2.0));
+    rotation.set_z(std::sin(angle / 2.0));
     return rotation;
 }
 
-::bosdyn::api::SE3Pose CreateSE3Pose(const ::bosdyn::api::Quaternion& q, const ::bosdyn::api::Vec3& v) {
+::bosdyn::api::SE3Pose CreateSE3Pose(const ::bosdyn::api::Quaternion& q,
+                                     const ::bosdyn::api::Vec3& v) {
     ::bosdyn::api::SE3Pose p;
     *p.mutable_rotation() = q;
     *p.mutable_position() = v;

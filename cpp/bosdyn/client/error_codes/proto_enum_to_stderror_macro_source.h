@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
+ * Copyright (c) 2023 Boston Dynamics, Inc.  All rights reserved.
  *
  * Downloading, reproducing, distributing or otherwise using the SDK Software
  * is subject to the terms and conditions of the Boston Dynamics Software
@@ -56,6 +56,20 @@
     DEFINE_PROTO_ENUM_ERRORCODE_IMPL(enumclass, ::bosdyn::api::autowalk,                  \
                                      namespace bosdyn{namespace api{namespace autowalk{ \
                                          ,                                                 \
+                                     }}},                                                  \
+                                     equivalent_condition)
+
+#define DEFINE_PROTO_ENUM_ERRORCODE_IMPL_KEEPALIVE(enumclass, equivalent_condition)      \
+    DEFINE_PROTO_ENUM_ERRORCODE_IMPL(enumclass, ::bosdyn::api::keepalive,                \
+                                     namespace bosdyn{namespace api{namespace keepalive{ \
+                                         ,                                               \
+                                     }}},                                                \
+                                     equivalent_condition)
+
+#define DEFINE_PROTO_ENUM_ERRORCODE_IMPL_LOG_STATUS(enumclass, equivalent_condition)      \
+    DEFINE_PROTO_ENUM_ERRORCODE_IMPL(enumclass, ::bosdyn::api::log_status,                \
+                                     namespace bosdyn{namespace api{namespace log_status{ \
+                                         ,                                                \
                                      }}},                                                  \
                                      equivalent_condition)
 

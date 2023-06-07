@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
+ * Copyright (c) 2023 Boston Dynamics, Inc.  All rights reserved.
  *
  * Downloading, reproducing, distributing or otherwise using the SDK Software
  * is subject to the terms and conditions of the Boston Dynamics Software
@@ -74,6 +74,7 @@ class WorldObjectClient : public ServiceClient {
         ::bosdyn::api::MutateWorldObjectRequest& request,
         const RPCParameters& parameters = RPCParameters());
 
+
     // Sets the QualityOfService enum for the world object client to be used for network selection
     // optimization.
     QualityOfService GetQualityOfService() const override;
@@ -101,6 +102,7 @@ class WorldObjectClient : public ServiceClient {
         MessagePumpCallBase* call, const ::bosdyn::api::MutateWorldObjectRequest& request,
         ::bosdyn::api::MutateWorldObjectResponse&& response, const grpc::Status& status,
         std::promise<MutateWorldObjectsResultType> promise);
+
 
     // The stub for the world object client to communicate it's rpc with (and pass to the robot).
     std::unique_ptr<::bosdyn::api::WorldObjectService::Stub> m_stub;

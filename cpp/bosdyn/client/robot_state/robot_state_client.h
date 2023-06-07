@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
+ * Copyright (c) 2023 Boston Dynamics, Inc.  All rights reserved.
  *
  * Downloading, reproducing, distributing or otherwise using the SDK Software
  * is subject to the terms and conditions of the Boston Dynamics Software
@@ -30,6 +30,7 @@ typedef Result<::bosdyn::api::RobotStateResponse> RobotStateResultType;
 typedef Result<::bosdyn::api::RobotMetricsResponse> RobotMetricsResultType;
 typedef Result<::bosdyn::api::RobotHardwareConfigurationResponse> HardwareConfigurationResultType;
 typedef Result<::bosdyn::api::RobotLinkModelResponse> LinkObjectModelResultType;
+
 
 /**
  * The RobotState service tracks all information about the measured and computed states of the
@@ -138,6 +139,7 @@ class RobotStateClient : public ServiceClient {
         MessagePumpCallBase* call, const ::bosdyn::api::RobotLinkModelRequest& request,
         ::bosdyn::api::RobotLinkModelResponse&& response, const grpc::Status& status,
         std::promise<LinkObjectModelResultType> promise);
+
 };
 
 }  // namespace client

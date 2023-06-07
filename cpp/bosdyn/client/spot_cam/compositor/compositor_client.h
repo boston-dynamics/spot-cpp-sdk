@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
+ * Copyright (c) 2023 Boston Dynamics, Inc.  All rights reserved.
  *
  * Downloading, reproducing, distributing or otherwise using the SDK Software
  * is subject to the terms and conditions of the Boston Dynamics Software
@@ -30,6 +30,7 @@ typedef Result<::bosdyn::api::spot_cam::ListScreensResponse> ListScreensResultTy
 typedef Result<::bosdyn::api::spot_cam::GetVisibleCamerasResponse> GetVisibleCamerasResultType;
 typedef Result<::bosdyn::api::spot_cam::GetIrColormapResponse> GetIrColormapResultType;
 typedef Result<::bosdyn::api::spot_cam::SetIrColormapResponse> SetIrColormapResultType;
+typedef Result<::bosdyn::api::spot_cam::GetIrMeterOverlayResponse> GetIrMeterOverlayResultType;
 typedef Result<::bosdyn::api::spot_cam::SetIrMeterOverlayResponse> SetIrMeterOverlayResultType;
 
 class CompositorClient : public ServiceClient {
@@ -71,21 +72,46 @@ class CompositorClient : public ServiceClient {
     GetIrColormapResultType GetIrColormap(const RPCParameters& parameters = RPCParameters());
 
     std::shared_future<SetIrColormapResultType> SetIrColormapAsync(
-        const ::bosdyn::api::spot_cam::IrColorMap::ColorMap& colormap, float min_temp, float max_temp,
-        bool auto_scale, const RPCParameters& parameters = RPCParameters());
-    SetIrColormapResultType SetIrColormap(const ::bosdyn::api::spot_cam::IrColorMap::ColorMap& colormap,
-                                          float min_temp, float max_temp, bool auto_scale,
-                                          const RPCParameters& parameters = RPCParameters());
+        const ::bosdyn::api::spot_cam::IrColorMap::ColorMap& colormap, float min_temp,
+        float max_temp, bool auto_scale, const RPCParameters& parameters = RPCParameters());
+    SetIrColormapResultType SetIrColormap(
+        const ::bosdyn::api::spot_cam::IrColorMap::ColorMap& colormap, float min_temp,
+        float max_temp, bool auto_scale, const RPCParameters& parameters = RPCParameters());
     std::shared_future<SetIrColormapResultType> SetIrColormapAsync(
         ::bosdyn::api::spot_cam::SetIrColormapRequest& request,
         const RPCParameters& parameters = RPCParameters());
     SetIrColormapResultType SetIrColormap(::bosdyn::api::spot_cam::SetIrColormapRequest& request,
                                           const RPCParameters& parameters = RPCParameters());
 
+    std::shared_future<GetIrMeterOverlayResultType> GetIrMeterOverlayAsync(
+        const RPCParameters& parameters = RPCParameters());
+    GetIrMeterOverlayResultType GetIrMeterOverlay(
+        const RPCParameters& parameters = RPCParameters());
+
     std::shared_future<SetIrMeterOverlayResultType> SetIrMeterOverlayAsync(
         float x, float y, bool enable, const RPCParameters& parameters = RPCParameters());
+    std::shared_future<SetIrMeterOverlayResultType> SetIrMeterOverlayAsync(
+        float x, float y, bool enable, ::bosdyn::api::spot_cam::IrMeterOverlay::TempUnit unit,
+        const RPCParameters& parameters = RPCParameters());
+    std::shared_future<SetIrMeterOverlayResultType> SetIrMeterOverlayAsync(
+        std::vector<std::pair<float, float>> coords, bool enable,
+        const RPCParameters& parameters = RPCParameters());
+    std::shared_future<SetIrMeterOverlayResultType> SetIrMeterOverlayAsync(
+        std::vector<std::pair<float, float>> coords, bool enable,
+        ::bosdyn::api::spot_cam::IrMeterOverlay::TempUnit unit,
+        const RPCParameters& parameters = RPCParameters());
     SetIrMeterOverlayResultType SetIrMeterOverlay(
         float x, float y, bool enable, const RPCParameters& parameters = RPCParameters());
+    SetIrMeterOverlayResultType SetIrMeterOverlay(
+        float x, float y, bool enable, ::bosdyn::api::spot_cam::IrMeterOverlay::TempUnit unit,
+        const RPCParameters& parameters = RPCParameters());
+    SetIrMeterOverlayResultType SetIrMeterOverlay(
+        std::vector<std::pair<float, float>> coords, bool enable,
+        const RPCParameters& parameters = RPCParameters());
+    SetIrMeterOverlayResultType SetIrMeterOverlay(
+        std::vector<std::pair<float, float>> coords, bool enable,
+        ::bosdyn::api::spot_cam::IrMeterOverlay::TempUnit unit,
+        const RPCParameters& parameters = RPCParameters());
     std::shared_future<SetIrMeterOverlayResultType> SetIrMeterOverlayAsync(
         ::bosdyn::api::spot_cam::SetIrMeterOverlayRequest& request,
         const RPCParameters& parameters = RPCParameters());
@@ -98,31 +124,33 @@ class CompositorClient : public ServiceClient {
     void SetComms(const std::shared_ptr<grpc::ChannelInterface>& channel) override;
     // End of ServiceClient overrides.
 
-    // Get the default service name the spot cam compositor service will be registered in the directory with.
+    // Get the default service name the spot cam compositor service will be registered in the
+    // directory with.
     static std::string GetDefaultServiceName() { return s_default_service_name; }
 
-    // Get the default service type for the spot cam compositor service that will be registered in the directory.
+    // Get the default service type for the spot cam compositor service that will be registered in
+    // the directory.
     static std::string GetServiceType() { return s_service_type; }
 
  private:
     // Callback function registered for the asynchronous grpc calls.
     void OnSetScreenComplete(MessagePumpCallBase* call,
                              const ::bosdyn::api::spot_cam::SetScreenRequest& request,
-                             ::bosdyn::api::spot_cam::SetScreenResponse&& response, const grpc::Status& status,
-                             std::promise<SetScreenResultType> promise);
+                             ::bosdyn::api::spot_cam::SetScreenResponse&& response,
+                             const grpc::Status& status, std::promise<SetScreenResultType> promise);
     void OnGetScreenComplete(MessagePumpCallBase* call,
                              const ::bosdyn::api::spot_cam::GetScreenRequest& request,
-                             ::bosdyn::api::spot_cam::GetScreenResponse&& response, const grpc::Status& status,
-                             std::promise<GetScreenResultType> promise);
+                             ::bosdyn::api::spot_cam::GetScreenResponse&& response,
+                             const grpc::Status& status, std::promise<GetScreenResultType> promise);
     void OnListScreensComplete(MessagePumpCallBase* call,
                                const ::bosdyn::api::spot_cam::ListScreensRequest& request,
                                ::bosdyn::api::spot_cam::ListScreensResponse&& response,
-                               const grpc::Status& status, std::promise<ListScreensResultType> promise);
-    void OnGetVisibleCamerasComplete(MessagePumpCallBase* call,
-                                     const ::bosdyn::api::spot_cam::GetVisibleCamerasRequest& request,
-                                     ::bosdyn::api::spot_cam::GetVisibleCamerasResponse&& response,
-                                     const grpc::Status& status,
-                                     std::promise<GetVisibleCamerasResultType> promise);
+                               const grpc::Status& status,
+                               std::promise<ListScreensResultType> promise);
+    void OnGetVisibleCamerasComplete(
+        MessagePumpCallBase* call, const ::bosdyn::api::spot_cam::GetVisibleCamerasRequest& request,
+        ::bosdyn::api::spot_cam::GetVisibleCamerasResponse&& response, const grpc::Status& status,
+        std::promise<GetVisibleCamerasResultType> promise);
     void OnGetIrColormapComplete(MessagePumpCallBase* call,
                                  const ::bosdyn::api::spot_cam::GetIrColormapRequest& request,
                                  ::bosdyn::api::spot_cam::GetIrColormapResponse&& response,
@@ -133,11 +161,14 @@ class CompositorClient : public ServiceClient {
                                  ::bosdyn::api::spot_cam::SetIrColormapResponse&& response,
                                  const grpc::Status& status,
                                  std::promise<SetIrColormapResultType> promise);
-    void OnSetIrMeterOverlayComplete(MessagePumpCallBase* call,
-                                     const ::bosdyn::api::spot_cam::SetIrMeterOverlayRequest& request,
-                                     ::bosdyn::api::spot_cam::SetIrMeterOverlayResponse&& response,
-                                     const grpc::Status& status,
-                                     std::promise<SetIrMeterOverlayResultType> promise);
+    void OnSetIrMeterOverlayComplete(
+        MessagePumpCallBase* call, const ::bosdyn::api::spot_cam::SetIrMeterOverlayRequest& request,
+        ::bosdyn::api::spot_cam::SetIrMeterOverlayResponse&& response, const grpc::Status& status,
+        std::promise<SetIrMeterOverlayResultType> promise);
+    void OnGetIrMeterOverlayComplete(
+        MessagePumpCallBase* call, const ::bosdyn::api::spot_cam::GetIrMeterOverlayRequest& request,
+        ::bosdyn::api::spot_cam::GetIrMeterOverlayResponse&& response, const grpc::Status& status,
+        std::promise<GetIrMeterOverlayResultType> promise);
 
     std::unique_ptr<::bosdyn::api::spot_cam::CompositorService::Stub> m_stub;
 

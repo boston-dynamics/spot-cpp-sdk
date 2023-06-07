@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
+ * Copyright (c) 2023 Boston Dynamics, Inc.  All rights reserved.
  *
  * Downloading, reproducing, distributing or otherwise using the SDK Software
  * is subject to the terms and conditions of the Boston Dynamics Software
@@ -9,8 +9,8 @@
 
 #pragma once
 
-#include "bosdyn/client/service_client/service_client.h"
 #include "bosdyn/client/error_codes/proto_enum_to_stderror_macro.h"
+#include "bosdyn/client/service_client/service_client.h"
 
 #include <bosdyn/api/spot_cam/service.grpc.pb.h>
 #include <bosdyn/api/spot_cam/service.pb.h>
@@ -25,7 +25,8 @@ namespace spot_cam {
 
 typedef Result<::bosdyn::api::spot_cam::GetStreamParamsResponse> GetStreamParamsResultType;
 typedef Result<::bosdyn::api::spot_cam::SetStreamParamsResponse> SetStreamParamsResultType;
-typedef Result<::bosdyn::api::spot_cam::EnableCongestionControlResponse> EnableCongestionControlResultType;
+typedef Result<::bosdyn::api::spot_cam::EnableCongestionControlResponse>
+    EnableCongestionControlResultType;
 
 class StreamQualityClient : public ServiceClient {
  public:
@@ -43,23 +44,57 @@ class StreamQualityClient : public ServiceClient {
         ::bosdyn::api::spot_cam::StreamParams_AwbModeEnum awb,
         const RPCParameters& parameters = RPCParameters());
 
+    std::shared_future<SetStreamParamsResultType> SetStreamParamsAutoExposureAsync(
+        const RPCParameters& parameters = RPCParameters());
+
+    std::shared_future<SetStreamParamsResultType> SetStreamParamsSyncExposureAsync(
+        const RPCParameters& parameters = RPCParameters());
+
+    std::shared_future<SetStreamParamsResultType> SetStreamParamsSyncExposureAsync(
+        int32_t brightness_target, const RPCParameters& parameters = RPCParameters());
+
+    std::shared_future<SetStreamParamsResultType> SetStreamParamsManualExposureAsync(
+        int64_t exposure_duration_ns, float gain,
+        const RPCParameters& parameters = RPCParameters());
+
+    std::shared_future<SetStreamParamsResultType> SetStreamParamsManualExposureAsync(
+        int64_t exposure_duration_ns, const RPCParameters& parameters = RPCParameters());
+
     std::shared_future<SetStreamParamsResultType> SetStreamParamsAsync(
-        ::bosdyn::api::spot_cam::StreamParams params, const RPCParameters& parameters = RPCParameters());
+        ::bosdyn::api::spot_cam::StreamParams params,
+        const RPCParameters& parameters = RPCParameters());
 
     SetStreamParamsResultType SetStreamParams(int targetbitrate, int refreshinterval,
                                               int idrinterval,
                                               ::bosdyn::api::spot_cam::StreamParams_AwbModeEnum awb,
                                               const RPCParameters& parameters = RPCParameters());
 
+    SetStreamParamsResultType SetStreamParamsAutoExposure(
+        const RPCParameters& parameters = RPCParameters());
+
+    SetStreamParamsResultType SetStreamParamsSyncExposure(
+        const RPCParameters& parameters = RPCParameters());
+
+    SetStreamParamsResultType SetStreamParamsSyncExposure(
+        int32_t brightness_target, const RPCParameters& parameters = RPCParameters());
+
+    SetStreamParamsResultType SetStreamParamsManualExposure(
+        int64_t exposure_duration_ns, const RPCParameters& parameters = RPCParameters());
+
+    SetStreamParamsResultType SetStreamParamsManualExposure(
+        int64_t exposure_duration_ns, float gain,
+        const RPCParameters& parameters = RPCParameters());
+
     SetStreamParamsResultType SetStreamParams(::bosdyn::api::spot_cam::StreamParams params,
-                                            const RPCParameters& parameters = RPCParameters());
+                                              const RPCParameters& parameters = RPCParameters());
 
     std::shared_future<SetStreamParamsResultType> SetStreamParamsAsync(
         ::bosdyn::api::spot_cam::SetStreamParamsRequest& request,
         const RPCParameters& parameters = RPCParameters());
 
-    SetStreamParamsResultType SetStreamParams(::bosdyn::api::spot_cam::SetStreamParamsRequest& request,
-                                            const RPCParameters& parameters = RPCParameters());
+    SetStreamParamsResultType SetStreamParams(
+        ::bosdyn::api::spot_cam::SetStreamParamsRequest& request,
+        const RPCParameters& parameters = RPCParameters());
 
     std::shared_future<EnableCongestionControlResultType> EnableCongestionControlAsync(
         bool enable, const RPCParameters& parameters = RPCParameters());
@@ -80,34 +115,33 @@ class StreamQualityClient : public ServiceClient {
     void SetComms(const std::shared_ptr<grpc::ChannelInterface>& channe) override;
     // End of ServiceClient overrides.
 
-    // Get the default service name the spot cam streamquality service will be registered in the directory with.
+    // Get the default service name the spot cam streamquality service will be registered in the
+    // directory with.
     static std::string GetDefaultServiceName() { return s_default_service_name; }
 
-    // Get the default service type for the spot cam streamquality service that will be registered in the directory.
+    // Get the default service type for the spot cam streamquality service that will be registered
+    // in the directory.
     static std::string GetServiceType() { return s_service_type; }
 
  private:
     // Callback function registered for the asynchronous grpc calls.
-    void OnGetStreamParamsComplete(
-        MessagePumpCallBase* call,
-        const ::bosdyn::api::spot_cam::GetStreamParamsRequest& request,
-        ::bosdyn::api::spot_cam::GetStreamParamsResponse&& response,
-        const grpc::Status& status,
-        std::promise<GetStreamParamsResultType> promise);
+    void OnGetStreamParamsComplete(MessagePumpCallBase* call,
+                                   const ::bosdyn::api::spot_cam::GetStreamParamsRequest& request,
+                                   ::bosdyn::api::spot_cam::GetStreamParamsResponse&& response,
+                                   const grpc::Status& status,
+                                   std::promise<GetStreamParamsResultType> promise);
 
-    void OnSetStreamParamsComplete(
-        MessagePumpCallBase* call,
-        const ::bosdyn::api::spot_cam::SetStreamParamsRequest& request,
-        ::bosdyn::api::spot_cam::SetStreamParamsResponse&& response,
-        const grpc::Status& status,
-        std::promise<SetStreamParamsResultType> promise);
+    void OnSetStreamParamsComplete(MessagePumpCallBase* call,
+                                   const ::bosdyn::api::spot_cam::SetStreamParamsRequest& request,
+                                   ::bosdyn::api::spot_cam::SetStreamParamsResponse&& response,
+                                   const grpc::Status& status,
+                                   std::promise<SetStreamParamsResultType> promise);
 
     void OnEnableCongestionControlComplete(
         MessagePumpCallBase* call,
         const ::bosdyn::api::spot_cam::EnableCongestionControlRequest& request,
         ::bosdyn::api::spot_cam::EnableCongestionControlResponse&& response,
-        const grpc::Status& status,
-        std::promise<EnableCongestionControlResultType> promise);
+        const grpc::Status& status, std::promise<EnableCongestionControlResultType> promise);
 
     std::unique_ptr<::bosdyn::api::spot_cam::StreamQualityService::Stub> m_stub;
 

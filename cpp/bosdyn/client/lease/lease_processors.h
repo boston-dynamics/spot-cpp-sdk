@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
+ * Copyright (c) 2023 Boston Dynamics, Inc.  All rights reserved.
  *
  * Downloading, reproducing, distributing or otherwise using the SDK Software
  * is subject to the terms and conditions of the Boston Dynamics Software
@@ -83,7 +83,7 @@ template <class RpcResponseWithLeaseResult>
 ::bosdyn::common::Status ProcessResponseWithLeaseUseResult(
     const RpcResponseWithLeaseResult& full_response, LeaseWallet* lease_wallet) {
     BOSDYN_ASSERT_PRECONDITION(lease_wallet != nullptr,
-                               "No lease wallet provided for the request.");
+                               "No lease wallet provided for the response.");
 
     if (!full_response.has_lease_use_result()) {
         // No lease use results to process.
@@ -102,7 +102,7 @@ template <class RpcResponseMultiLeaseResults>
 ::bosdyn::common::Status ProcessResponseForMultipleLease(
     const RpcResponseMultiLeaseResults& full_response, LeaseWallet* lease_wallet) {
     BOSDYN_ASSERT_PRECONDITION(lease_wallet != nullptr,
-                               "No lease wallet provided for the request.");
+                               "No lease wallet provided for the response.");
 
     ::bosdyn::api::LeaseUseResult::Status lease_use_status = ::bosdyn::api::LeaseUseResult::STATUS_OK;
     for (const auto& lease_use_res : full_response.lease_use_results()) {

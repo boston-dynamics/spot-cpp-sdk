@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
+ * Copyright (c) 2023 Boston Dynamics, Inc.  All rights reserved.
  *
  * Downloading, reproducing, distributing or otherwise using the SDK Software
  * is subject to the terms and conditions of the Boston Dynamics Software
@@ -51,7 +51,7 @@ class TimeSyncEndpoint {
     TimeSyncUpdateResultType Update();
 
     TimeSyncClient* m_client = nullptr;
-    std::mutex m_mutex;
+    mutable std::mutex m_mutex;
     // These member variables should be accessed using the lock.
     ::bosdyn::api::TimeSyncRoundTrip m_locked_previous_round_trip;
     TimeSyncUpdateResultType m_locked_previous_result;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
+ * Copyright (c) 2023 Boston Dynamics, Inc.  All rights reserved.
  *
  * Downloading, reproducing, distributing or otherwise using the SDK Software
  * is subject to the terms and conditions of the Boston Dynamics Software
@@ -193,6 +193,23 @@ const std::error_category& RPCErrorCategory() { return RPCErrorCodeCategory_cate
         } else if (code == grpc::StatusCode::UNAUTHENTICATED) {
             err_code = RPCErrorCode::UnauthenticatedError;
             err_message = "The user needs to authenticate to get a user token.";
+        } else if (code == grpc::StatusCode::UNAVAILABLE) {
+            // The following check is performed on debug_error_string() in Python, which does not
+            // exist in C++.
+            if (grpc_message.find("Socket closed") != std::string::npos ||
+                grpc_message.find("Connection reset by peer") != std::string::npos) {
+                err_code = RPCErrorCode::RetryableUnavailableError;
+                err_message = "Socket closed or connection reset by peer.";
+            } else if (details.find("502") != std::string::npos) {
+                err_code = RPCErrorCode::ServiceUnavailableError;
+                err_message = "Service is unavailable.";
+            } else if (details.find("429") != std::string::npos) {
+                err_code = RPCErrorCode::TooManyRequestsError;
+                err_message = "The server is not ready to handle the request due to rate limiting.";
+            } else {
+                err_code = RPCErrorCode::UnableToConnectToRobotError;
+                err_message = "The robot may be offline or unavailable";
+            }
         } else if (!grpc_message.empty()) {
             // The following checks are performed on debug_error_string() in Python, which does not
             // exist in C++
@@ -225,23 +242,6 @@ const std::error_category& RPCErrorCategory() { return RPCErrorCodeCategory_cate
                 // This is an unknown error case
                 err_code = RPCErrorCode::UnimplementedError;
                 err_message = std::to_string(code) + "|" + grpc_message + "|";
-            }
-        } else if (code == grpc::StatusCode::UNAVAILABLE) {
-            // The following check is performed on debug_error_string() in Python, which does not
-            // exist in C++.
-            if (grpc_message.find("Socket closed") != std::string::npos ||
-                grpc_message.find("Connection reset by peer") != std::string::npos) {
-                err_code = RPCErrorCode::RetryableUnavailableError;
-                err_message = "Socket closed or connection reset by peer.";
-            } else if (details.find("502") != std::string::npos) {
-                err_code = RPCErrorCode::ServiceUnavailableError;
-                err_message = "Service is unavailable.";
-            } else if (details.find("429") != std::string::npos) {
-                err_code = RPCErrorCode::TooManyRequestsError;
-                err_message = "The server is not ready to handle the request due to rate limiting.";
-            } else {
-                err_code = RPCErrorCode::UnableToConnectToRobotError;
-                err_message = "The robot may be offline or unavailable";
             }
         } else {
             // This is an unknown error case

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
+ * Copyright (c) 2023 Boston Dynamics, Inc.  All rights reserved.
  *
  * Downloading, reproducing, distributing or otherwise using the SDK Software
  * is subject to the terms and conditions of the Boston Dynamics Software
@@ -12,6 +12,7 @@
 #include <bosdyn/api/mission/mission_service.grpc.pb.h>
 #include <bosdyn/api/mission/mission_service.pb.h>
 #include "bosdyn/client/service_client/service_client.h"
+#include "bosdyn/client/data_chunk/data_chunking.h"
 #include "bosdyn/client/lease/lease_resources.h"
 #include "bosdyn/client/mission/mission_error_codes.h"
 
@@ -50,7 +51,7 @@ class MissionClient : public ServiceClient {
     // Uploads a mission to the robot which can be run later.
     // Note: the LoadMission RPC requires a lease. By default, we use a body lease, however other
     // resources (or no resources) can be provided to change which leases are attached to the
-    // request.
+    // request. Streaming request, non-streaming response.
     LoadMissionResultType LoadMissionAsChunks(
         ::bosdyn::api::mission::LoadMissionRequest& request,
         const ::bosdyn::client::RPCParameters& parameters = ::bosdyn::client::RPCParameters(),
@@ -58,6 +59,13 @@ class MissionClient : public ServiceClient {
     std::shared_future<LoadMissionResultType> LoadMissionAsChunksAsync(
         ::bosdyn::api::mission::LoadMissionRequest& request,
         const RPCParameters& parameters = RPCParameters(),
+        const std::vector<std::string>& desired_lease_resources = {::bosdyn::client::kBodyResource},
+	const bool bidirectional_streaming = false);
+
+    // Same as above, except the response is also streaming.
+    LoadMissionResultType LoadMissionAsChunks2(
+        ::bosdyn::api::mission::LoadMissionRequest& request,
+        const ::bosdyn::client::RPCParameters& parameters = ::bosdyn::client::RPCParameters(),
         const std::vector<std::string>& desired_lease_resources = {::bosdyn::client::kBodyResource});
 
     // Pause the execution of a mission until further notified (via PlayMission).
@@ -118,6 +126,13 @@ class MissionClient : public ServiceClient {
         ::bosdyn::api::mission::GetMissionRequest& request,
         const RPCParameters& parameters = RPCParameters());
 
+    std::shared_future<GetMissionResultType> GetMissionAsChunksAsync(
+        ::bosdyn::api::mission::GetMissionRequest& request,
+        const RPCParameters& parameters = RPCParameters());
+
+    GetMissionResultType GetMissionAsChunks(::bosdyn::api::mission::GetMissionRequest& request,
+                                            const RPCParameters& parameters = RPCParameters());
+
     AnswerQuestionResultType AnswerQuestion(
         ::bosdyn::api::mission::AnswerQuestionRequest& request,
         const RPCParameters& parameters = RPCParameters());
@@ -155,6 +170,11 @@ class MissionClient : public ServiceClient {
         ::bosdyn::api::mission::LoadMissionResponse&& response, const grpc::Status& status,
         std::promise<LoadMissionResultType> promise);
 
+    void OnLoadMissionAsChunks2Complete(
+        MessagePumpCallBase* call, const std::vector<::bosdyn::api::DataChunk>&& requests,
+        std::vector<::bosdyn::api::DataChunk>&& responses, const grpc::Status& status,
+        std::promise<LoadMissionResultType> promise);
+
     void OnPauseMissionComplete(
         MessagePumpCallBase* call, const ::bosdyn::api::mission::PauseMissionRequest& request,
         ::bosdyn::api::mission::PauseMissionResponse&& response, const grpc::Status& status,
@@ -183,6 +203,11 @@ class MissionClient : public ServiceClient {
     void OnGetMissionComplete(
         MessagePumpCallBase* call, const ::bosdyn::api::mission::GetMissionRequest& request,
         ::bosdyn::api::mission::GetMissionResponse&& response, const grpc::Status& status,
+        std::promise<GetMissionResultType> promise);
+
+    void OnGetMissionAsChunksComplete(
+        MessagePumpCallBase* call, const ::bosdyn::api::mission::GetMissionRequest& request,
+        std::vector<::bosdyn::api::DataChunk>&& responses, const grpc::Status& status,
         std::promise<GetMissionResultType> promise);
 
     void OnAnswerQuestionComplete(

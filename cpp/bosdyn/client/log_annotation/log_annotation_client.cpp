@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
+ * Copyright (c) 2023 Boston Dynamics, Inc.  All rights reserved.
  *
  * Downloading, reproducing, distributing or otherwise using the SDK Software
  * is subject to the terms and conditions of the Boston Dynamics Software
@@ -81,8 +81,7 @@ std::shared_future<AddLogAnnotationResultType> LogAnnotationClient::AddOperatorC
     ::bosdyn::api::LogAnnotationOperatorMessage* op_message =
         request.mutable_annotations()->add_operator_messages();
     if (::google::protobuf::util::TimeUtil::TimestampToNanoseconds(robot_timestamp) > 0) {
-        ::google::protobuf::Timestamp ts_copy(robot_timestamp);
-        op_message->set_allocated_timestamp(&ts_copy);
+        *op_message->mutable_timestamp() = robot_timestamp;
     }
     op_message->set_message(comment);
     return AddLogAnnotationAsync(request, parameters);

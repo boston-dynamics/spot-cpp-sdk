@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
+ * Copyright (c) 2023 Boston Dynamics, Inc.  All rights reserved.
  *
  * Downloading, reproducing, distributing or otherwise using the SDK Software
  * is subject to the terms and conditions of the Boston Dynamics Software
@@ -18,8 +18,8 @@
 #include <string>
 #include <vector>
 
-#include "bosdyn/client/service_client/service_client.h"
 #include "bosdyn/client/data_buffer/data_buffer_error_codes.h"
+#include "bosdyn/client/service_client/service_client.h"
 
 namespace bosdyn {
 
@@ -104,9 +104,8 @@ class DataBufferClient : public ServiceClient {
         const RPCParameters& parameters = RPCParameters());
 
     // Synchronous method to record data blobs.
-    RecordDataBlobsResultType RecordDataBlobs(
-        ::bosdyn::api::RecordDataBlobsRequest& request,
-        const RPCParameters& parameters = RPCParameters());
+    RecordDataBlobsResultType RecordDataBlobs(::bosdyn::api::RecordDataBlobsRequest& request,
+                                              const RPCParameters& parameters = RPCParameters());
 
     // Asynchronous helper method to record data blobs.
     std::shared_future<RecordDataBlobsResultType> RecordDataBlobsAsync(
@@ -114,19 +113,16 @@ class DataBufferClient : public ServiceClient {
         const RPCParameters& parameters = RPCParameters());
 
     // Synchronous helper method to record data blobs.
-    RecordDataBlobsResultType RecordDataBlobs(
-        const std::vector<::bosdyn::api::DataBlob>& blobs,
-        const RPCParameters& parameters = RPCParameters());
+    RecordDataBlobsResultType RecordDataBlobs(const std::vector<::bosdyn::api::DataBlob>& blobs,
+                                              const RPCParameters& parameters = RPCParameters());
 
     // Asynchronous helper method to record a single data blob.
     std::shared_future<RecordDataBlobsResultType> RecordDataBlobAsync(
-        const ::bosdyn::api::DataBlob& blob,
-        const RPCParameters& parameters = RPCParameters());
+        const ::bosdyn::api::DataBlob& blob, const RPCParameters& parameters = RPCParameters());
 
     // Synchronous helper method to record a single data blob.
-    RecordDataBlobsResultType RecordDataBlob(
-        const ::bosdyn::api::DataBlob& blob,
-        const RPCParameters& parameters = RPCParameters());
+    RecordDataBlobsResultType RecordDataBlob(const ::bosdyn::api::DataBlob& blob,
+                                             const RPCParameters& parameters = RPCParameters());
 
     // Asynchronous method to record signal ticks.
     std::shared_future<RecordSignalTicksResultType> RecordSignalTicksAsync(
@@ -150,13 +146,11 @@ class DataBufferClient : public ServiceClient {
 
     // Asynchronous helper method to record a single signal tick.
     std::shared_future<RecordSignalTicksResultType> RecordSignalTickAsync(
-        const ::bosdyn::api::SignalTick& tick,
-        const RPCParameters& parameters = RPCParameters());
+        const ::bosdyn::api::SignalTick& tick, const RPCParameters& parameters = RPCParameters());
 
     // Synchronous helper method to record a single signal tick.
-    RecordSignalTicksResultType RecordSignalTick(
-        const ::bosdyn::api::SignalTick& tick,
-        const RPCParameters& parameters = RPCParameters());
+    RecordSignalTicksResultType RecordSignalTick(const ::bosdyn::api::SignalTick& tick,
+                                                 const RPCParameters& parameters = RPCParameters());
 
     // Asynchronous method to record events.
     std::shared_future<RecordEventsResultType> RecordEventsAsync(
@@ -164,9 +158,8 @@ class DataBufferClient : public ServiceClient {
         const RPCParameters& parameters = RPCParameters());
 
     // Synchronous method to record events.
-    RecordEventsResultType RecordEvents(
-        ::bosdyn::api::RecordEventsRequest& request,
-        const RPCParameters& parameters = RPCParameters());
+    RecordEventsResultType RecordEvents(::bosdyn::api::RecordEventsRequest& request,
+                                        const RPCParameters& parameters = RPCParameters());
 
     // Asynchronous helper method to record events.
     std::shared_future<RecordEventsResultType> RecordEventsAsync(
@@ -174,17 +167,16 @@ class DataBufferClient : public ServiceClient {
         const RPCParameters& parameters = RPCParameters());
 
     // Synchronous helper method to record events.
-    RecordEventsResultType RecordEvents(
-        const std::vector<::bosdyn::api::Event>& events,
-        const RPCParameters& parameters = RPCParameters());
+    RecordEventsResultType RecordEvents(const std::vector<::bosdyn::api::Event>& events,
+                                        const RPCParameters& parameters = RPCParameters());
 
     // Asynchronous helper method to record a single event.
     std::shared_future<RecordEventsResultType> RecordEventAsync(
         const ::bosdyn::api::Event& event, const RPCParameters& parameters = RPCParameters());
 
     // Synchronous helper method to record a single event.
-    RecordEventsResultType RecordEvent(
-        const ::bosdyn::api::Event& event, const RPCParameters& parameters = RPCParameters());
+    RecordEventsResultType RecordEvent(const ::bosdyn::api::Event& event,
+                                       const RPCParameters& parameters = RPCParameters());
 
     // Asynchronous method to register a signal schema.
     std::shared_future<RegisterSignalSchemaResultType> RegisterSignalSchemaAsync(
@@ -215,15 +207,17 @@ class DataBufferClient : public ServiceClient {
     // with.
     static std::string GetDefaultServiceName() { return s_default_service_name; }
 
-    // Get the default service type for the DataBuffer service that will be registered in the directory.
+    // Get the default service type for the DataBuffer service that will be registered in the
+    // directory.
     static std::string GetServiceType() { return s_service_type; }
 
  private:
     // Callback function registered for the asynchronous calls to record text messages.
-    void OnRecordTextMessagesComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::RecordTextMessagesRequest& request,
-        ::bosdyn::api::RecordTextMessagesResponse&& response, const grpc::Status& status,
-        std::promise<RecordTextMessagesResultType> promise);
+    void OnRecordTextMessagesComplete(MessagePumpCallBase* call,
+                                      const ::bosdyn::api::RecordTextMessagesRequest& request,
+                                      ::bosdyn::api::RecordTextMessagesResponse&& response,
+                                      const grpc::Status& status,
+                                      std::promise<RecordTextMessagesResultType> promise);
 
     // Callback function registered for the asynchronous calls to record operator comments.
     void OnRecordOperatorCommentsComplete(
@@ -232,28 +226,32 @@ class DataBufferClient : public ServiceClient {
         std::promise<RecordOperatorCommentsResultType> promise);
 
     // Callback function registered for the asynchronous calls to record data blobs.
-    void OnRecordDataBlobsComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::RecordDataBlobsRequest& request,
-        ::bosdyn::api::RecordDataBlobsResponse&& response, const grpc::Status& status,
-        std::promise<RecordDataBlobsResultType> promise);
+    void OnRecordDataBlobsComplete(MessagePumpCallBase* call,
+                                   const ::bosdyn::api::RecordDataBlobsRequest& request,
+                                   ::bosdyn::api::RecordDataBlobsResponse&& response,
+                                   const grpc::Status& status,
+                                   std::promise<RecordDataBlobsResultType> promise);
 
     // Callback function registered for the asynchronous calls to record signal ticks.
-    void OnRecordSignalTicksComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::RecordSignalTicksRequest& request,
-        ::bosdyn::api::RecordSignalTicksResponse&& response, const grpc::Status& status,
-        std::promise<RecordSignalTicksResultType> promise);
+    void OnRecordSignalTicksComplete(MessagePumpCallBase* call,
+                                     const ::bosdyn::api::RecordSignalTicksRequest& request,
+                                     ::bosdyn::api::RecordSignalTicksResponse&& response,
+                                     const grpc::Status& status,
+                                     std::promise<RecordSignalTicksResultType> promise);
 
     // Callback function registered for the asynchronous calls to record events.
-    void OnRecordEventsComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::RecordEventsRequest& request,
-        ::bosdyn::api::RecordEventsResponse&& response, const grpc::Status& status,
-        std::promise<RecordEventsResultType> promise);
+    void OnRecordEventsComplete(MessagePumpCallBase* call,
+                                const ::bosdyn::api::RecordEventsRequest& request,
+                                ::bosdyn::api::RecordEventsResponse&& response,
+                                const grpc::Status& status,
+                                std::promise<RecordEventsResultType> promise);
 
     // Callback function registered for the asynchronous calls to register a signal schema.
-    void OnRegisterSignalSchemaComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::RegisterSignalSchemaRequest& request,
-        ::bosdyn::api::RegisterSignalSchemaResponse&& response, const grpc::Status& status,
-        std::promise<RegisterSignalSchemaResultType> promise);
+    void OnRegisterSignalSchemaComplete(MessagePumpCallBase* call,
+                                        const ::bosdyn::api::RegisterSignalSchemaRequest& request,
+                                        ::bosdyn::api::RegisterSignalSchemaResponse&& response,
+                                        const grpc::Status& status,
+                                        std::promise<RegisterSignalSchemaResultType> promise);
 
     std::unique_ptr<::bosdyn::api::DataBufferService::Stub> m_stub;
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
+ * Copyright (c) 2023 Boston Dynamics, Inc.  All rights reserved.
  *
  * Downloading, reproducing, distributing or otherwise using the SDK Software
  * is subject to the terms and conditions of the Boston Dynamics Software
@@ -37,12 +37,9 @@ namespace power_client_helper {
     double update_time = 1.0 / update_frequency;
 
     ::bosdyn::api::RobotCommandRequest command_request;
-    // The set_allocated method is responsible for deleting this memory.
-    ::bosdyn::api::SafePowerOffCommand_Request* safe_power_off_request =
-        new ::bosdyn::api::SafePowerOffCommand_Request();
     command_request.mutable_command()
         ->mutable_full_body_command()
-        ->set_allocated_safe_power_off_request(safe_power_off_request);
+        ->mutable_safe_power_off_request();
 
     RobotCommandResultType result = robot_command_client->RobotCommand(command_request);
     if (!result) {

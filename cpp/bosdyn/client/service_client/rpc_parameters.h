@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
+ * Copyright (c) 2023 Boston Dynamics, Inc.  All rights reserved.
  *
  * Downloading, reproducing, distributing or otherwise using the SDK Software
  * is subject to the terms and conditions of the Boston Dynamics Software
@@ -22,6 +22,7 @@ enum class LogRequestMode {
     kDefault = 2,
 };
 
+
 // Specifying the timeout defined below means the RPC timeout is not set and the default timeout value
 // specified in the service client will be used.
 const ::bosdyn::common::Duration kRPCTimeoutNotSpecified = std::chrono::milliseconds(-1);
@@ -38,9 +39,9 @@ struct RPCParameters {
     // kRPCTimeoutNotSpecified is used when timeout is not specified, meaning the default value
     // specified in ServiceClient will be used.
     ::bosdyn::common::Duration timeout = kRPCTimeoutNotSpecified;
+
 };
 
 }  // namespace client
 
 }  // namespace bosdyn
-

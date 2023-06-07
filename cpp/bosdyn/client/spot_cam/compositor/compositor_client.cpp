@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
+ * Copyright (c) 2023 Boston Dynamics, Inc.  All rights reserved.
  *
  * Downloading, reproducing, distributing or otherwise using the SDK Software
  * is subject to the terms and conditions of the Boston Dynamics Software
@@ -41,14 +41,14 @@ std::shared_future<SetScreenResultType> CompositorClient::SetScreenAsync(
     std::shared_future<SetScreenResultType> future = response.get_future();
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
 
-    MessagePumpCallBase* one_time =
-        InitiateAsyncCall<::bosdyn::api::spot_cam::SetScreenRequest, ::bosdyn::api::spot_cam::SetScreenResponse,
-                          ::bosdyn::api::spot_cam::SetScreenResponse>(
-            request,
-            std::bind(&::bosdyn::api::spot_cam::CompositorService::Stub::AsyncSetScreen, m_stub.get(), _1, _2,
-                      _3),
-            std::bind(&CompositorClient::OnSetScreenComplete, this, _1, _2, _3, _4, _5),
-            std::move(response), parameters);
+    MessagePumpCallBase* one_time = InitiateAsyncCall<::bosdyn::api::spot_cam::SetScreenRequest,
+                                                      ::bosdyn::api::spot_cam::SetScreenResponse,
+                                                      ::bosdyn::api::spot_cam::SetScreenResponse>(
+        request,
+        std::bind(&::bosdyn::api::spot_cam::CompositorService::Stub::AsyncSetScreen, m_stub.get(),
+                  _1, _2, _3),
+        std::bind(&CompositorClient::OnSetScreenComplete, this, _1, _2, _3, _4, _5),
+        std::move(response), parameters);
 
     return future;
 }
@@ -63,8 +63,9 @@ void CompositorClient::OnSetScreenComplete(MessagePumpCallBase* call,
                                            ::bosdyn::api::spot_cam::SetScreenResponse&& response,
                                            const grpc::Status& status,
                                            std::promise<SetScreenResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::spot_cam::SetScreenResponse>(
-        status, response, SDKErrorCode::Success);
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::spot_cam::SetScreenResponse>(
+            status, response, SDKErrorCode::Success);
 
     promise.set_value({ret_status, std::move(response)});
 }
@@ -77,11 +78,12 @@ std::shared_future<GetIrColormapResultType> CompositorClient::GetIrColormapAsync
 
     ::bosdyn::api::spot_cam::GetIrColormapRequest request;
     MessagePumpCallBase* one_time =
-        InitiateAsyncCall<::bosdyn::api::spot_cam::GetIrColormapRequest, ::bosdyn::api::spot_cam::GetIrColormapResponse,
+        InitiateAsyncCall<::bosdyn::api::spot_cam::GetIrColormapRequest,
+                          ::bosdyn::api::spot_cam::GetIrColormapResponse,
                           ::bosdyn::api::spot_cam::GetIrColormapResponse>(
             request,
-            std::bind(&::bosdyn::api::spot_cam::CompositorService::Stub::AsyncGetIrColormap, m_stub.get(), _1,
-                      _2, _3),
+            std::bind(&::bosdyn::api::spot_cam::CompositorService::Stub::AsyncGetIrColormap,
+                      m_stub.get(), _1, _2, _3),
             std::bind(&CompositorClient::OnGetIrColormapComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
@@ -109,27 +111,31 @@ std::shared_future<SetIrColormapResultType> CompositorClient::SetIrColormapAsync
 
     return SetIrColormapAsync(request, parameters);
 }
+
 SetIrColormapResultType CompositorClient::SetIrColormap(
     const ::bosdyn::api::spot_cam::IrColorMap::ColorMap& colormap, float min_temp, float max_temp,
     bool auto_scale, const RPCParameters& parameters) {
     return SetIrColormapAsync(colormap, min_temp, max_temp, auto_scale, parameters).get();
 }
+
 std::shared_future<SetIrColormapResultType> CompositorClient::SetIrColormapAsync(
     ::bosdyn::api::spot_cam::SetIrColormapRequest& request, const RPCParameters& parameters) {
     std::promise<SetIrColormapResultType> response;
     std::shared_future<SetIrColormapResultType> future = response.get_future();
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
     MessagePumpCallBase* one_time =
-        InitiateAsyncCall<::bosdyn::api::spot_cam::SetIrColormapRequest, ::bosdyn::api::spot_cam::SetIrColormapResponse,
+        InitiateAsyncCall<::bosdyn::api::spot_cam::SetIrColormapRequest,
+                          ::bosdyn::api::spot_cam::SetIrColormapResponse,
                           ::bosdyn::api::spot_cam::SetIrColormapResponse>(
             request,
-            std::bind(&::bosdyn::api::spot_cam::CompositorService::Stub::AsyncSetIrColormap, m_stub.get(), _1,
-                      _2, _3),
+            std::bind(&::bosdyn::api::spot_cam::CompositorService::Stub::AsyncSetIrColormap,
+                      m_stub.get(), _1, _2, _3),
             std::bind(&CompositorClient::OnSetIrColormapComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
     return future;
 }
+
 SetIrColormapResultType CompositorClient::SetIrColormap(
     ::bosdyn::api::spot_cam::SetIrColormapRequest& request, const RPCParameters& parameters) {
     return SetIrColormapAsync(request, parameters).get();
@@ -148,10 +154,81 @@ std::shared_future<SetIrMeterOverlayResultType> CompositorClient::SetIrMeterOver
 
     return SetIrMeterOverlayAsync(request, parameters);
 }
+
 SetIrMeterOverlayResultType CompositorClient::SetIrMeterOverlay(float x, float y, bool enable,
                                                                 const RPCParameters& parameters) {
     return SetIrMeterOverlayAsync(x, y, enable, parameters).get();
 }
+
+std::shared_future<SetIrMeterOverlayResultType> CompositorClient::SetIrMeterOverlayAsync(
+    float x, float y, bool enable, ::bosdyn::api::spot_cam::IrMeterOverlay::TempUnit unit,
+    const RPCParameters& parameters) {
+    ::bosdyn::api::spot_cam::SetIrMeterOverlayRequest request;
+    ::bosdyn::api::spot_cam::IrMeterOverlay::NormalizedCoordinates coords;
+    coords.set_x(x);
+    coords.set_y(y);
+    ::bosdyn::api::spot_cam::IrMeterOverlay overlay;
+    overlay.mutable_coords()->MergeFrom(coords);
+    overlay.set_enable(enable);
+    overlay.mutable_unit()->CopyFrom(unit);
+    request.mutable_overlay()->MergeFrom(overlay);
+
+    return SetIrMeterOverlayAsync(request, parameters);
+}
+
+SetIrMeterOverlayResultType CompositorClient::SetIrMeterOverlay(
+    float x, float y, bool enable, ::bosdyn::api::spot_cam::IrMeterOverlay::TempUnit unit,
+    const RPCParameters& parameters) {
+    return SetIrMeterOverlayAsync(x, y, enable, unit, parameters).get();
+}
+
+std::shared_future<SetIrMeterOverlayResultType> CompositorClient::SetIrMeterOverlayAsync(
+    std::vector<std::pair<float, float>> coords, bool enable, const RPCParameters& parameters) {
+    ::bosdyn::api::spot_cam::SetIrMeterOverlayRequest request;
+    ::bosdyn::api::spot_cam::IrMeterOverlay overlay;
+    for (auto pair : coords) {
+        auto meter = overlay.add_meter();
+        ::bosdyn::api::spot_cam::IrMeterOverlay::NormalizedCoordinates normalized_coords;
+        normalized_coords.set_x(pair.first);
+        normalized_coords.set_y(pair.second);
+        meter->CopyFrom(normalized_coords);
+    }
+    overlay.set_enable(enable);
+    request.mutable_overlay()->MergeFrom(overlay);
+
+    return SetIrMeterOverlayAsync(request, parameters);
+}
+
+SetIrMeterOverlayResultType CompositorClient::SetIrMeterOverlay(
+    std::vector<std::pair<float, float>> coords, bool enable, const RPCParameters& parameters) {
+    return SetIrMeterOverlayAsync(coords, enable, parameters).get();
+}
+
+std::shared_future<SetIrMeterOverlayResultType> CompositorClient::SetIrMeterOverlayAsync(
+    std::vector<std::pair<float, float>> coords, bool enable,
+    ::bosdyn::api::spot_cam::IrMeterOverlay::TempUnit unit, const RPCParameters& parameters) {
+    ::bosdyn::api::spot_cam::SetIrMeterOverlayRequest request;
+    ::bosdyn::api::spot_cam::IrMeterOverlay overlay;
+    for (auto pair : coords) {
+        auto meter = overlay.add_meter();
+        ::bosdyn::api::spot_cam::IrMeterOverlay::NormalizedCoordinates normalized_coords;
+        normalized_coords.set_x(pair.first);
+        normalized_coords.set_y(pair.second);
+        meter->CopyFrom(normalized_coords);
+    }
+    overlay.set_enable(enable);
+    overlay.mutable_unit()->CopyFrom(unit);
+    request.mutable_overlay()->MergeFrom(overlay);
+
+    return SetIrMeterOverlayAsync(request, parameters);
+}
+
+SetIrMeterOverlayResultType CompositorClient::SetIrMeterOverlay(
+    std::vector<std::pair<float, float>> coords, bool enable,
+    ::bosdyn::api::spot_cam::IrMeterOverlay::TempUnit unit, const RPCParameters& parameters) {
+    return SetIrMeterOverlayAsync(coords, enable, unit, parameters).get();
+}
+
 std::shared_future<SetIrMeterOverlayResultType> CompositorClient::SetIrMeterOverlayAsync(
     ::bosdyn::api::spot_cam::SetIrMeterOverlayRequest& request, const RPCParameters& parameters) {
     std::promise<SetIrMeterOverlayResultType> response;
@@ -163,24 +240,61 @@ std::shared_future<SetIrMeterOverlayResultType> CompositorClient::SetIrMeterOver
                           ::bosdyn::api::spot_cam::SetIrMeterOverlayResponse,
                           ::bosdyn::api::spot_cam::SetIrMeterOverlayResponse>(
             request,
-            std::bind(&::bosdyn::api::spot_cam::CompositorService::Stub::AsyncSetIrMeterOverlay, m_stub.get(),
-                      _1, _2, _3),
+            std::bind(&::bosdyn::api::spot_cam::CompositorService::Stub::AsyncSetIrMeterOverlay,
+                      m_stub.get(), _1, _2, _3),
             std::bind(&CompositorClient::OnSetIrMeterOverlayComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
     return future;
 }
+
 SetIrMeterOverlayResultType CompositorClient::SetIrMeterOverlay(
     ::bosdyn::api::spot_cam::SetIrMeterOverlayRequest& request, const RPCParameters& parameters) {
     return SetIrMeterOverlayAsync(request, parameters).get();
+}
+
+std::shared_future<GetIrMeterOverlayResultType> CompositorClient::GetIrMeterOverlayAsync(
+    const RPCParameters& parameters) {
+    std::promise<GetIrMeterOverlayResultType> response;
+    std::shared_future<GetIrMeterOverlayResultType> future = response.get_future();
+    BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
+
+    ::bosdyn::api::spot_cam::GetIrMeterOverlayRequest request;
+    MessagePumpCallBase* one_time =
+        InitiateAsyncCall<::bosdyn::api::spot_cam::GetIrMeterOverlayRequest,
+                          ::bosdyn::api::spot_cam::GetIrMeterOverlayResponse,
+                          ::bosdyn::api::spot_cam::GetIrMeterOverlayResponse>(
+            request,
+            std::bind(&::bosdyn::api::spot_cam::CompositorService::Stub::AsyncGetIrMeterOverlay,
+                      m_stub.get(), _1, _2, _3),
+            std::bind(&CompositorClient::OnGetIrMeterOverlayComplete, this, _1, _2, _3, _4, _5),
+            std::move(response), parameters);
+
+    return future;
+}
+
+GetIrMeterOverlayResultType CompositorClient::GetIrMeterOverlay(const RPCParameters& parameters) {
+    return GetIrMeterOverlayAsync(parameters).get();
+}
+
+void CompositorClient::OnGetIrMeterOverlayComplete(
+    MessagePumpCallBase* call, const ::bosdyn::api::spot_cam::GetIrMeterOverlayRequest& request,
+    ::bosdyn::api::spot_cam::GetIrMeterOverlayResponse&& response, const grpc::Status& status,
+    std::promise<GetIrMeterOverlayResultType> promise) {
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::spot_cam::GetIrMeterOverlayResponse>(
+            status, response, SDKErrorCode::Success);
+
+    promise.set_value({ret_status, std::move(response)});
 }
 
 void CompositorClient::OnGetIrColormapComplete(
     MessagePumpCallBase* call, const ::bosdyn::api::spot_cam::GetIrColormapRequest& request,
     ::bosdyn::api::spot_cam::GetIrColormapResponse&& response, const grpc::Status& status,
     std::promise<GetIrColormapResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::spot_cam::GetIrColormapResponse>(
-        status, response, SDKErrorCode::Success);
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::spot_cam::GetIrColormapResponse>(
+            status, response, SDKErrorCode::Success);
 
     promise.set_value({ret_status, std::move(response)});
 }
@@ -189,17 +303,20 @@ void CompositorClient::OnSetIrColormapComplete(
     MessagePumpCallBase* call, const ::bosdyn::api::spot_cam::SetIrColormapRequest& request,
     ::bosdyn::api::spot_cam::SetIrColormapResponse&& response, const grpc::Status& status,
     std::promise<SetIrColormapResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::spot_cam::SetIrColormapResponse>(
-        status, response, SDKErrorCode::Success);
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::spot_cam::SetIrColormapResponse>(
+            status, response, SDKErrorCode::Success);
 
     promise.set_value({ret_status, std::move(response)});
 }
+
 void CompositorClient::OnSetIrMeterOverlayComplete(
     MessagePumpCallBase* call, const ::bosdyn::api::spot_cam::SetIrMeterOverlayRequest& request,
     ::bosdyn::api::spot_cam::SetIrMeterOverlayResponse&& response, const grpc::Status& status,
     std::promise<SetIrMeterOverlayResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::spot_cam::SetIrMeterOverlayResponse>(
-        status, response, SDKErrorCode::Success);
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::spot_cam::SetIrMeterOverlayResponse>(
+            status, response, SDKErrorCode::Success);
 
     promise.set_value({ret_status, std::move(response)});
 }
@@ -211,14 +328,14 @@ std::shared_future<GetScreenResultType> CompositorClient::GetScreenAsync(
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
 
     ::bosdyn::api::spot_cam::GetScreenRequest request;
-    MessagePumpCallBase* one_time =
-        InitiateAsyncCall<::bosdyn::api::spot_cam::GetScreenRequest, ::bosdyn::api::spot_cam::GetScreenResponse,
-                          ::bosdyn::api::spot_cam::GetScreenResponse>(
-            request,
-            std::bind(&::bosdyn::api::spot_cam::CompositorService::Stub::AsyncGetScreen, m_stub.get(), _1, _2,
-                      _3),
-            std::bind(&CompositorClient::OnGetScreenComplete, this, _1, _2, _3, _4, _5),
-            std::move(response), parameters);
+    MessagePumpCallBase* one_time = InitiateAsyncCall<::bosdyn::api::spot_cam::GetScreenRequest,
+                                                      ::bosdyn::api::spot_cam::GetScreenResponse,
+                                                      ::bosdyn::api::spot_cam::GetScreenResponse>(
+        request,
+        std::bind(&::bosdyn::api::spot_cam::CompositorService::Stub::AsyncGetScreen, m_stub.get(),
+                  _1, _2, _3),
+        std::bind(&CompositorClient::OnGetScreenComplete, this, _1, _2, _3, _4, _5),
+        std::move(response), parameters);
 
     return future;
 }
@@ -232,8 +349,9 @@ void CompositorClient::OnGetScreenComplete(MessagePumpCallBase* call,
                                            ::bosdyn::api::spot_cam::GetScreenResponse&& response,
                                            const grpc::Status& status,
                                            std::promise<GetScreenResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::spot_cam::GetScreenResponse>(
-        status, response, SDKErrorCode::Success);
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::spot_cam::GetScreenResponse>(
+            status, response, SDKErrorCode::Success);
 
     promise.set_value({ret_status, std::move(response)});
 }
@@ -245,14 +363,14 @@ std::shared_future<ListScreensResultType> CompositorClient::ListScreensAsync(
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
 
     ::bosdyn::api::spot_cam::ListScreensRequest request;
-    MessagePumpCallBase* one_time =
-        InitiateAsyncCall<::bosdyn::api::spot_cam::ListScreensRequest, ::bosdyn::api::spot_cam::ListScreensResponse,
-                          ::bosdyn::api::spot_cam::ListScreensResponse>(
-            request,
-            std::bind(&::bosdyn::api::spot_cam::CompositorService::Stub::AsyncListScreens, m_stub.get(), _1,
-                      _2, _3),
-            std::bind(&CompositorClient::OnListScreensComplete, this, _1, _2, _3, _4, _5),
-            std::move(response), parameters);
+    MessagePumpCallBase* one_time = InitiateAsyncCall<::bosdyn::api::spot_cam::ListScreensRequest,
+                                                      ::bosdyn::api::spot_cam::ListScreensResponse,
+                                                      ::bosdyn::api::spot_cam::ListScreensResponse>(
+        request,
+        std::bind(&::bosdyn::api::spot_cam::CompositorService::Stub::AsyncListScreens, m_stub.get(),
+                  _1, _2, _3),
+        std::bind(&CompositorClient::OnListScreensComplete, this, _1, _2, _3, _4, _5),
+        std::move(response), parameters);
 
     return future;
 }
@@ -261,13 +379,13 @@ ListScreensResultType CompositorClient::ListScreens(const RPCParameters& paramet
     return ListScreensAsync(parameters).get();
 }
 
-void CompositorClient::OnListScreensComplete(MessagePumpCallBase* call,
-                                             const ::bosdyn::api::spot_cam::ListScreensRequest& request,
-                                             ::bosdyn::api::spot_cam::ListScreensResponse&& response,
-                                             const grpc::Status& status,
-                                             std::promise<ListScreensResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::spot_cam::ListScreensResponse>(
-        status, response, SDKErrorCode::Success);
+void CompositorClient::OnListScreensComplete(
+    MessagePumpCallBase* call, const ::bosdyn::api::spot_cam::ListScreensRequest& request,
+    ::bosdyn::api::spot_cam::ListScreensResponse&& response, const grpc::Status& status,
+    std::promise<ListScreensResultType> promise) {
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::spot_cam::ListScreensResponse>(
+            status, response, SDKErrorCode::Success);
 
     promise.set_value({ret_status, std::move(response)});
 }
@@ -284,8 +402,8 @@ std::shared_future<GetVisibleCamerasResultType> CompositorClient::GetVisibleCame
                           ::bosdyn::api::spot_cam::GetVisibleCamerasResponse,
                           ::bosdyn::api::spot_cam::GetVisibleCamerasResponse>(
             request,
-            std::bind(&::bosdyn::api::spot_cam::CompositorService::Stub::AsyncGetVisibleCameras, m_stub.get(),
-                      _1, _2, _3),
+            std::bind(&::bosdyn::api::spot_cam::CompositorService::Stub::AsyncGetVisibleCameras,
+                      m_stub.get(), _1, _2, _3),
             std::bind(&CompositorClient::OnGetVisibleCamerasComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
@@ -300,8 +418,9 @@ void CompositorClient::OnGetVisibleCamerasComplete(
     MessagePumpCallBase* call, const ::bosdyn::api::spot_cam::GetVisibleCamerasRequest& request,
     ::bosdyn::api::spot_cam::GetVisibleCamerasResponse&& response, const grpc::Status& status,
     std::promise<GetVisibleCamerasResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::spot_cam::GetVisibleCamerasResponse>(
-        status, response, SDKErrorCode::Success);
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::spot_cam::GetVisibleCamerasResponse>(
+            status, response, SDKErrorCode::Success);
 
     promise.set_value({ret_status, std::move(response)});
 }

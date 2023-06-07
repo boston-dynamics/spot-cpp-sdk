@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
+ * Copyright (c) 2023 Boston Dynamics, Inc.  All rights reserved.
  *
  * Downloading, reproducing, distributing or otherwise using the SDK Software
  * is subject to the terms and conditions of the Boston Dynamics Software
@@ -56,10 +56,7 @@ void AutowalkClient::OnCompileAutowalkComplete(
     auto response_result =
         MessageFromDataChunks<::bosdyn::api::autowalk::CompileAutowalkResponse>(chunks);
     if (!response_result) {
-        promise.set_value(
-            {::bosdyn::common::Status(SDKErrorCode::GenericSDKError,
-                                      "Unable to reconstruct response from data chunks"),
-             {}});
+        promise.set_value(response_result);
         return;
     }
 
@@ -118,10 +115,7 @@ void AutowalkClient::OnLoadAutowalkComplete(MessagePumpCallBase* call,
     auto response_result =
         MessageFromDataChunks<::bosdyn::api::autowalk::LoadAutowalkResponse>(chunks);
     if (!response_result) {
-        promise.set_value(
-            {::bosdyn::common::Status(SDKErrorCode::GenericSDKError,
-                                      "Unable to reconstruct response from data chunks"),
-             {}});
+        promise.set_value(response_result);
         return;
     }
 

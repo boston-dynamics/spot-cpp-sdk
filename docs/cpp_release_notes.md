@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
+Copyright (c) 2023 Boston Dynamics, Inc.  All rights reserved.
 
 Downloading, reproducing, distributing or otherwise using the SDK Software
 is subject to the terms and conditions of the Boston Dynamics Software
@@ -7,6 +7,92 @@ Development Kit License (20191101-BDSDK-SL).
 -->
 
 # Spot C++ SDK Release Notes
+
+## Spot C++ SDK version 3.3.0 BETA
+
+### New Features
+
+Added `KeepAlive` client (BETA) to support corresponding proto additions.
+
+Added `LogStatus` client to support corresponding proto additions.
+
+Added `Manipulation API` Client.
+
+Added `InverseKinematics` client to support corresponding proto additions.
+
+### Bug Fixes and Improvements
+
+#### API
+
+Please see the Release Notes in https://dev.bostondynamics.com for a description of the API changes included in release 3.3.0.
+
+#### SDK
+
+Improved conversion of `grpc::StatusCode::UNAVAILABLE` error statuses to SDK error codes in `rpc_error_code.cpp`.
+
+Added `AutoReturn` client error codes for `StartResponse` Status enumeration.
+
+Return errors from converting data chunk to a response in `Autowalk` client `CompileAutowalk` RPC, instead of returning the more generic `GenericSDKError` errors.
+
+Data Chunk
+
+- Reduced chunk size from 4MB to 2MB.
+- Added call to reserve the string capacity to avoid the frequent memory reallocations.
+
+Mission Client
+
+- Added `LoadMissionAsChunks2` method to support bidirectional streaming in the `LoadMissionAsChunks` RPC.
+- Added `GetMissionAsChunks` methods to support the corresponding RPC.
+
+Robot Command
+
+- Added helper methods in robot_command_builder for using the Spot Arm.
+- Added `BodyPose` method in robot_command_builder for creating a `BodyControlParams.BodyPose` from a single desired `body_pose` relative to `frame_name`.
+- Added a set of helper functions in `robot_command_helpers.h` to be used with a robot command client.
+
+Added `ProcessAndInitiateRequestStreamAsyncCall` method in `ServiceClient`, which packages a full request message that includes an API `RequestHeader` into multiple `DataChunk` messages that are streamed directly to the robot via a request-streaming RPC.
+
+Spot CAM Clients
+
+- Compositor Client
+  - Added more versions of `SetIrMeterOverlay` method with various argument combinations.
+  - Added `GetIrMeterOverlay` methods.
+- PTZ Client
+  - Added methods for `GetPtzFocusState`, `SetPtzFocusState` RPCs.
+- StreamQuality Client
+  - Added more versions of `SetStreamParams` method with various argument combinations.
+
+Added support for `WORLD_OBJECT_STAIRCASE` and `WORLD_OBJECT_USER_NOGO` types in `WorldObjects` Client.
+
+Added `NowSec` and `NowTimePoint` methods in common time helper methods.
+
+Added various arm frame names and the stairs base frame names for world objects in common API frames.
+
+Added `EigenFromApiProto/EigenToApiProto`, `FromRoll/ToRoll`, `FromPitch/ToPitch` methods in common proto math helper methods.
+
+### Deprecations
+
+Please see the Release Notes in https://dev.bostondynamics.com for a description of the API deprecations included in release 3.3.0.
+
+### Breaking Changes
+
+### Dependencies
+
+### Known Issues
+
+### Sample Code
+
+#### New
+
+[Arm Grasp Carry Overrides](../cpp/examples/arm_grasp_carry_overrides/README.md): Sets arm grasp state and carry state overrides while moving the arm around.
+
+[Arm Manipulation API Walk To Object](../cpp/examples/arm_manipulation_api_walk_to/README.md): Sends a `WalkToObjectRayInWorld` command to the robot via the Manipulation API.
+
+[Inverse Kinematics Reachability](../cpp/examples/inverse_kinematics_reachability/README.md): Shows how to use the Inverse Kinematics Service API to make reachability queries for random arm poses.
+
+#### Updated
+
+[Query Autowalk Status](../cpp/examples/query_autowalk_status/README.md): Modified the example to contain a mission_name command line argument. If the mission_name is not specified, the script attempts to guess the mission name.
 
 ## Spot C++ SDK version 3.2.3 BETA
 

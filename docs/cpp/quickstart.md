@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
+Copyright (c) 2023 Boston Dynamics, Inc.  All rights reserved.
 
 Downloading, reproducing, distributing or otherwise using the SDK Software
 is subject to the terms and conditions of the Boston Dynamics Software
@@ -58,17 +58,17 @@ Spot C++ SDK works with gcc and Microsoft Visual Studio.
 The C++ SDK depends on gRPC, Protobuf, Eigen and CLI11. Protobuf is included in gRPC. The instructions below use `vcpkg` to install these dependencies. All commands need to be run on a Linux/Windows terminal.
 
 1. Clone vcpkg. The checkout hash below specifies the one used for testing internally. This version of vcpkg installs the dependency versions:
-   - gRPC 1.33.1
-   - Protobuf 3.14.0
-   - Eigen 3.3.9
-   - CLI11 1.9.1
+   - gRPC 1.51.1
+   - Protobuf 3.21.12
+   - Eigen 3.4.0#2
+   - CLI11 2.3.1
 
 It also downloads cmake in the location `downloads/tools/{CMAKE_VERSION}/{CMAKE_VERSION}/bin/cmake`, which is needed to build the SDK. Please add that folder to your PATH to simplify running cmake on the terminal.
 
 ```cmd
 git clone https://github.com/microsoft/vcpkg
 cd vcpkg
-git checkout cd7f976e99c2b2ee4c6d2ac55e6e6ed206c4865c
+git checkout c6592ce60ff394049905365865f59e3a4d93d35b
 ```
 
 2. On x86-64 Linux:
@@ -77,7 +77,7 @@ git checkout cd7f976e99c2b2ee4c6d2ac55e6e6ed206c4865c
 ./bootstrap-vcpkg.sh
 ./vcpkg install grpc:x64-linux
 ./vcpkg install eigen3:x64-linux
-./vcpkg install CLI11:x64-linux
+./vcpkg install cli11:x64-linux
 ```
 
 3. On arm64 Linux, such as CORE I/O:
@@ -87,7 +87,7 @@ git checkout cd7f976e99c2b2ee4c6d2ac55e6e6ed206c4865c
 export VCPKG_FORCE_SYSTEM_BINARIES=arm
 ./vcpkg install grpc:arm64-linux
 ./vcpkg install eigen3:arm64-linux
-./vcpkg install CLI11:arm64-linux
+./vcpkg install cli11:arm64-linux
 ```
 
 4. On Windows, add `set(VCPKG_PLATFORM_TOOLSET v141)` in file `vcpkg\triplets\x64-windows.cmake` to get Visual Studio 2017 builds.
@@ -96,7 +96,7 @@ export VCPKG_FORCE_SYSTEM_BINARIES=arm
 > .\bootstrap-vcpkg.bat
 > .\vcpkg.exe install grpc:x64-windows
 > .\vcpkg.exe install eigen3:x64-windows
-> .\vcpkg.exe install CLI11:x64-windows
+> .\vcpkg.exe install cli11:x64-windows
 ```
 
 ## Install the C++ SDK

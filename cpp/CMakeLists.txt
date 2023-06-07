@@ -1,4 +1,4 @@
-# Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
+# Copyright (c) 2023 Boston Dynamics, Inc.  All rights reserved.
 #
 # Downloading, reproducing, distributing or otherwise using the SDK Software
 # is subject to the terms and conditions of the Boston Dynamics Software
@@ -164,14 +164,6 @@ install(DIRECTORY libs/ DESTINATION include/bosdyn-client/ FILES_MATCHING PATTER
 link_directories(
   ${PROTOBUF_LIB_DIR}
 )
-add_executable(basic_robot_command ${CMAKE_CURRENT_SOURCE_DIR}/examples/basic_robot_command/basic_robot_command.cpp)
-target_compile_features(basic_robot_command PUBLIC cxx_std_14)
-target_include_directories(basic_robot_command PUBLIC
-  ${CMAKE_CURRENT_SOURCE_DIR}
-  ${PROTOBUF_INCLUDE_DIR}
-)
-target_link_libraries(basic_robot_command PUBLIC bosdyn_client_static)
-install(TARGETS basic_robot_command DESTINATION bin/)
 add_executable(spot_cam ${CMAKE_CURRENT_SOURCE_DIR}/examples/spot_cam/ptz_example.cpp)
 target_compile_features(spot_cam PUBLIC cxx_std_14)
 target_include_directories(spot_cam PUBLIC
@@ -180,14 +172,22 @@ target_include_directories(spot_cam PUBLIC
 )
 target_link_libraries(spot_cam PUBLIC bosdyn_client_static)
 install(TARGETS spot_cam DESTINATION bin/)
-add_executable(hello_spot ${CMAKE_CURRENT_SOURCE_DIR}/examples/hello_spot/hello_spot.cpp)
-target_compile_features(hello_spot PUBLIC cxx_std_14)
-target_include_directories(hello_spot PUBLIC
+add_executable(inverse_kinematics_reachability ${CMAKE_CURRENT_SOURCE_DIR}/examples/inverse_kinematics_reachability/inverse_kinematics_reachability.cpp)
+target_compile_features(inverse_kinematics_reachability PUBLIC cxx_std_14)
+target_include_directories(inverse_kinematics_reachability PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${PROTOBUF_INCLUDE_DIR}
 )
-target_link_libraries(hello_spot PUBLIC bosdyn_client_static)
-install(TARGETS hello_spot DESTINATION bin/)
+target_link_libraries(inverse_kinematics_reachability PUBLIC bosdyn_client_static)
+install(TARGETS inverse_kinematics_reachability DESTINATION bin/)
+add_executable(arm_grasp_carry_overrides ${CMAKE_CURRENT_SOURCE_DIR}/examples/arm_grasp_carry_overrides/arm_grasp_carry_overrides.cpp)
+target_compile_features(arm_grasp_carry_overrides PUBLIC cxx_std_14)
+target_include_directories(arm_grasp_carry_overrides PUBLIC
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${PROTOBUF_INCLUDE_DIR}
+)
+target_link_libraries(arm_grasp_carry_overrides PUBLIC bosdyn_client_static)
+install(TARGETS arm_grasp_carry_overrides DESTINATION bin/)
 add_executable(get_image ${CMAKE_CURRENT_SOURCE_DIR}/examples/get_image/get_image.cpp)
 target_compile_features(get_image PUBLIC cxx_std_14)
 target_include_directories(get_image PUBLIC
@@ -196,3 +196,27 @@ target_include_directories(get_image PUBLIC
 )
 target_link_libraries(get_image PUBLIC bosdyn_client_static)
 install(TARGETS get_image DESTINATION bin/)
+add_executable(arm_manipulation_api_walk_to ${CMAKE_CURRENT_SOURCE_DIR}/examples/arm_manipulation_api_walk_to/arm_manipulation_api_walk_to.cpp)
+target_compile_features(arm_manipulation_api_walk_to PUBLIC cxx_std_14)
+target_include_directories(arm_manipulation_api_walk_to PUBLIC
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${PROTOBUF_INCLUDE_DIR}
+)
+target_link_libraries(arm_manipulation_api_walk_to PUBLIC bosdyn_client_static)
+install(TARGETS arm_manipulation_api_walk_to DESTINATION bin/)
+add_executable(basic_robot_command ${CMAKE_CURRENT_SOURCE_DIR}/examples/basic_robot_command/basic_robot_command.cpp)
+target_compile_features(basic_robot_command PUBLIC cxx_std_14)
+target_include_directories(basic_robot_command PUBLIC
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${PROTOBUF_INCLUDE_DIR}
+)
+target_link_libraries(basic_robot_command PUBLIC bosdyn_client_static)
+install(TARGETS basic_robot_command DESTINATION bin/)
+add_executable(hello_spot ${CMAKE_CURRENT_SOURCE_DIR}/examples/hello_spot/hello_spot.cpp)
+target_compile_features(hello_spot PUBLIC cxx_std_14)
+target_include_directories(hello_spot PUBLIC
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${PROTOBUF_INCLUDE_DIR}
+)
+target_link_libraries(hello_spot PUBLIC bosdyn_client_static)
+install(TARGETS hello_spot DESTINATION bin/)

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
+ * Copyright (c) 2023 Boston Dynamics, Inc.  All rights reserved.
  *
  * Downloading, reproducing, distributing or otherwise using the SDK Software
  * is subject to the terms and conditions of the Boston Dynamics Software
@@ -19,6 +19,7 @@
 #include "bosdyn/client/mission/mission_client.h"
 #include "bosdyn/client/sdk/client_sdk.h"
 #include "bosdyn/client/util/cli_util.h"
+#include "bosdyn/common/mission_filesystem.h"
 
 class AutowalkPlayer {
  public:
@@ -47,11 +48,11 @@ class AutowalkPlayer {
     /**
      * Loads autowalk to the robot using the autowalk service.
      *
-     * @param walk_folder File path to autowalk mission folder.
+     * @param walk_path File path to walk file in walk folder.
      *
      * @returns Status message that includes any failures that might have occured.
      */
-    ::bosdyn::common::Status LoadAutowalk(const std::filesystem::path& walk_folder);
+    ::bosdyn::common::Status LoadAutowalk(const std::filesystem::path& walk_path);
 
     /**
      * Plays the mission loaded on the robot.
@@ -156,3 +157,15 @@ class AutowalkPlayer {
  */
 template <typename ProtoType>
 ::bosdyn::common::Status ReadProtoFromFile(const std::filesystem::path& file, ProtoType* proto);
+
+/**
+ * Attempts to find the walk file from the walk folder.
+ *
+ * @param walk_folder File path to autowalk mission folder.
+ *
+ * @param mission_name If a valid mission name is found, it will be stored at this address.
+ *
+ * @returns Status message that includes any failures that might have occured.
+ */
+::bosdyn::common::Status GetMissionName(const std::filesystem::path& walk_folder,
+                                        std::string* mission_name);

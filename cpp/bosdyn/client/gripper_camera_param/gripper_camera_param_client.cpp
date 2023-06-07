@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
+ * Copyright (c) 2023 Boston Dynamics, Inc.  All rights reserved.
  *
  * Downloading, reproducing, distributing or otherwise using the SDK Software
  * is subject to the terms and conditions of the Boston Dynamics Software
@@ -15,7 +15,7 @@ namespace bosdyn {
 
 namespace client {
 
-const char* GripperCameraParamClient::s_default_service_name = "gripper_camera_param";
+const char* GripperCameraParamClient::s_default_service_name = "gripper-camera-param";
 
 const char* GripperCameraParamClient::s_service_type = "bosdyn.api.GripperCameraParamService";
 

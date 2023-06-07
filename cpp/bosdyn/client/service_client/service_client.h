@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
+ * Copyright (c) 2023 Boston Dynamics, Inc.  All rights reserved.
  *
  * Downloading, reproducing, distributing or otherwise using the SDK Software
  * is subject to the terms and conditions of the Boston Dynamics Software
@@ -20,6 +20,7 @@
 #include "bosdyn/client/processors/response_processor_chain.h"
 #include "bosdyn/client/service_client/result.h"
 #include "bosdyn/client/service_client/rpc_parameters.h"
+#include "bosdyn/client/data_chunk/data_chunking.h"
 #include "bosdyn/client/error_codes/rpc_error_code.h"
 #include "bosdyn/client/error_codes/sdk_error_code.h"
 #include "bosdyn/client/lease/lease_wallet.h"
@@ -34,7 +35,9 @@ namespace client {
 // Base for any client version of a gRPC service running on robot.
 class ServiceClient {
  public:
-    ServiceClient() { m_RPC_parameters.timeout = kDefaultRPCTimeout; }
+    ServiceClient() {
+        m_RPC_parameters.timeout = kDefaultRPCTimeout;
+    }
 
     virtual ~ServiceClient() = default;
 
@@ -165,7 +168,10 @@ class ServiceClient {
         }
         auto ret = one_time.get();
         m_message_pump->AddCall(std::move(one_time));
-        ret->Start(request, rpc_call, callback, std::move(result_promise));
+
+
+        ret->Start(request, rpc_call,
+                   callback, std::move(result_promise));
         return ret;
     }
 
@@ -321,6 +327,78 @@ class ServiceClient {
                                           CONVERT_DURATION_FOR_GRPC(timeout));
 
         return one_time;
+    }
+
+    /**
+     * Initiate the async RequestStreamCall and return the future to the promise.
+     *
+     * This method is called by services which package a full request message (MUST INCLUDE
+     * an api RequestHeader) into multiple DataChunk messages that are streamed directly
+     * to the robot via a request-streaming RPC defined in the ServiceClient-derived classes.
+     *
+     * It executes all the request processors on the individual incoming request message before
+     * breaking that message into DataChunk protobuf messages, and then it initializes the RPC
+     * call through the MessagePump.
+     *
+     * @param requests Request message to be chunked and then streamed through RPC. This method moves the
+     *                 content of the request into a vector of DataChunk messages, which is passed into the
+     *                 RequestStreamCall instance.
+     * @param rpc_call RPC function associated with this streaming call.
+     * @param callback Callback function defined in the client to call when the RPC completes.
+     * @param result_promise Promise the callback function needs to set with the status and the
+     *                       response.
+     *
+     * @returns Instance of RequestStreamCall created, or nullptr if errors occur.
+     */
+    template <typename Request, typename Response, typename PromiseResultType>
+    MessagePumpCallBase* ProcessAndInitiateRequestStreamAsyncCall(
+        Request&& request_to_stream,
+        const typename ::bosdyn::client::RequestStreamCall<
+            ::bosdyn::api::DataChunk, Response, PromiseResultType>::RequestStreamRpcCallFunction& rpc_call,
+        const typename ::bosdyn::client::RequestStreamCall<
+            ::bosdyn::api::DataChunk, Response, PromiseResultType>::RequestStreamCallbackFunction& callback,
+        std::promise<Result<PromiseResultType>> promise,
+        const RPCParameters& parameters) {
+        BOSDYN_ASSERT_PRECONDITION(m_message_pump != nullptr, "Message pump cannot be null.");
+
+        // The one_time pointer is deleted by MessagePump::Update after the callback function
+        // returns.
+        auto one_time =
+            m_message_pump->CreateRequestStreamCall<::bosdyn::api::DataChunk, Response, PromiseResultType>();
+        if (!one_time) {
+            promise.set_value(
+                {::bosdyn::common::Status(RPCErrorCode::ClientCancelledOperationError, "MessagePump has shut down"),
+                 {}});
+            return nullptr;
+        }
+
+        RPCParameters parameters_to_use = CombineRPCParameters(parameters);
+        one_time->context()->set_deadline(
+            std::chrono::system_clock::now() +
+            CONVERT_DURATION_FOR_GRPC(parameters_to_use.timeout));
+
+        SetLoggingControl(parameters_to_use.logging_control, &request_to_stream);
+        auto processor_status = m_request_processor_chain.Process(one_time->context(),
+                                                        request_to_stream.mutable_header(), &request_to_stream);
+        if (!processor_status) {
+            promise.set_value({std::move(processor_status), {}});
+            return nullptr;
+        }
+
+        // Now that all the processing has happened, actually chunk the request message.
+        std::vector<std::unique_ptr<::bosdyn::api::DataChunk>> chunks;
+        ::bosdyn::common::Status status = MessageToDataChunks<Request>(request_to_stream, &chunks);
+        if (!status) {
+            promise.set_value({status, {}});
+            return nullptr;
+        }
+        std::vector<::bosdyn::api::DataChunk> request_chunks;
+        for (auto& chunk : chunks) {
+            request_chunks.push_back(*chunk.release());
+        }
+
+        one_time->Start(std::move(request_chunks), rpc_call, callback, std::move(promise));
+        return m_message_pump->AddCall(std::move(one_time));
     }
 
     /**

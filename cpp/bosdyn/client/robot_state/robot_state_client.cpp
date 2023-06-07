@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
+ * Copyright (c) 2023 Boston Dynamics, Inc.  All rights reserved.
  *
  * Downloading, reproducing, distributing or otherwise using the SDK Software
  * is subject to the terms and conditions of the Boston Dynamics Software
@@ -166,6 +166,7 @@ LinkObjectModelResultType RobotStateClient::GetRobotLinkModel(
     const std::string& link_name, const RPCParameters& parameters) {
     return this->GetRobotLinkModelAsync(link_name, parameters).get();
 }
+
 
 ServiceClient::QualityOfService RobotStateClient::GetQualityOfService() const {
     return QualityOfService::NORMAL;

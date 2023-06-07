@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
+ * Copyright (c) 2023 Boston Dynamics, Inc.  All rights reserved.
  *
  * Downloading, reproducing, distributing or otherwise using the SDK Software
  * is subject to the terms and conditions of the Boston Dynamics Software
@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include <array>
 #include <string>
 
 namespace bosdyn {
@@ -62,6 +63,7 @@ const char kFilteredFiducialFrame[] =
 const char kDoorFrame[] = "door_";
 const char kImageCoordsFrame[] = "image_coords_";
 const char kDockName[] = "dock_";
+const char kStairsName[] = "stairs_";
 
 // Sensor frame names. These are consistent for internal and external.
 const char kFrontLeftFisheyeFrame[] = "frontleft_fisheye";
@@ -88,6 +90,20 @@ const char kManipulationWalktoRaycastIntersection[] = "walkto_raycast_intersecti
 const char kManipulationGraspPlanningSolution[] = "grasp_planning_solution";
 const char kManipulationGraspNearestObject[] = "gripper_nearest_object";
 const char kManipulationGraspTargetObject[] = "grasp_target_object";
+
+// Various arm frame names
+const char kToolFrame[] = "tool";
+const char kDesiredToolFrame[] = "desired_tool";
+const char kTaskFrame[] = "task";
+const char kDesiredToolAtEndFrame[] = "desired_tool_at_end";
+const char kMeasuredToolAtStartFrame[] = "measured_tool_at_start";
+const char kGazeTargetFrame[] = "gaze_target";
+const char kFrontLeftFootFrame[] = "fl_foot";
+const char kFrontRightFootFrame[] = "fr_foot";
+const char kHindLeftFootFrame[] = "hl_foot";
+const char kHindRightFootFrame[] = "hr_foot";
+const std::array<const char*, 4> kFootFrames{kFrontLeftFootFrame, kFrontRightFootFrame,
+                                             kHindLeftFootFrame, kHindRightFootFrame};
 
 }  // namespace api
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
+ * Copyright (c) 2023 Boston Dynamics, Inc.  All rights reserved.
  *
  * Downloading, reproducing, distributing or otherwise using the SDK Software
  * is subject to the terms and conditions of the Boston Dynamics Software
@@ -66,17 +66,27 @@ LoadMissionResultType MissionClient::LoadMission(
     return LoadMissionAsync(request, parameters, desired_lease_resources).get();
 }
 
+// Streaming request, non-streaming response
 LoadMissionResultType MissionClient::LoadMissionAsChunks(
     ::bosdyn::api::mission::LoadMissionRequest& request,
     const ::bosdyn::client::RPCParameters& parameters,
     const std::vector<std::string>& desired_lease_resources) {
-    return LoadMissionAsChunksAsync(request, parameters, desired_lease_resources).get();       
+    return LoadMissionAsChunksAsync(request, parameters, desired_lease_resources, false).get();
+}
+
+// Streaming request, streaming response
+LoadMissionResultType MissionClient::LoadMissionAsChunks2(
+    ::bosdyn::api::mission::LoadMissionRequest& request,
+    const ::bosdyn::client::RPCParameters& parameters,
+    const std::vector<std::string>& desired_lease_resources) {
+    return LoadMissionAsChunksAsync(request, parameters, desired_lease_resources, true).get();
 }
 
 std::shared_future<LoadMissionResultType> MissionClient::LoadMissionAsChunksAsync(
     ::bosdyn::api::mission::LoadMissionRequest& request,
     const RPCParameters& parameters,
-    const std::vector<std::string>& desired_lease_resources) {
+    const std::vector<std::string>& desired_lease_resources,
+    const bool bidirectional_streaming) {
     std::promise<LoadMissionResultType> response;
     std::shared_future<LoadMissionResultType> future = response.get_future();
 
@@ -94,15 +104,26 @@ std::shared_future<LoadMissionResultType> MissionClient::LoadMissionAsChunksAsyn
         return future;
     }
 
-    MessagePumpCallBase* one_time =
-        InitiateRequestStreamAsyncCallWithChunking<::bosdyn::api::mission::LoadMissionRequest,
-                                                   ::bosdyn::api::mission::LoadMissionResponse,
-                                                   ::bosdyn::api::mission::LoadMissionResponse>(
-        std::move(request),
-        std::bind(&::bosdyn::api::mission::MissionService::Stub::AsyncLoadMissionAsChunks, m_stub.get(),
-                  _1, _2, _3, _4),
-        std::bind(&MissionClient::OnLoadMissionAsChunksComplete, this, _1, _2, _3, _4, _5),
-        std::move(response), parameters);
+    if (bidirectional_streaming) {
+        MessagePumpCallBase* one_time = InitiateRequestResponseStreamAsyncCallWithChunking<
+            ::bosdyn::api::mission::LoadMissionRequest,
+            ::bosdyn::api::mission::LoadMissionResponse>(
+            std::move(request),
+            std::bind(&::bosdyn::api::mission::MissionService::Stub::AsyncLoadMissionAsChunks2,
+                      m_stub.get(), _1, _2, _3),
+            std::bind(&MissionClient::OnLoadMissionAsChunks2Complete, this, _1, _2, _3, _4, _5),
+            std::move(response), parameters);
+    } else {
+        MessagePumpCallBase* one_time =
+            InitiateRequestStreamAsyncCallWithChunking<::bosdyn::api::mission::LoadMissionRequest,
+                                                       ::bosdyn::api::mission::LoadMissionResponse,
+                                                       ::bosdyn::api::mission::LoadMissionResponse>(
+            std::move(request),
+            std::bind(&::bosdyn::api::mission::MissionService::Stub::AsyncLoadMissionAsChunks, m_stub.get(),
+                      _1, _2, _3, _4),
+            std::bind(&MissionClient::OnLoadMissionAsChunksComplete, this, _1, _2, _3, _4, _5),
+            std::move(response), parameters);
+    }
 
     return future;
 }
@@ -112,6 +133,29 @@ void MissionClient::OnLoadMissionAsChunksComplete(
     ::bosdyn::api::mission::LoadMissionResponse&& response, const grpc::Status& status,
     std::promise<LoadMissionResultType> promise) {
     ::bosdyn::common::Status ret_status =
+        ProcessResponseWithMultiLeaseAndGetFinalStatus<::bosdyn::api::mission::LoadMissionResponse>(
+            status, response, response.status(), m_lease_wallet.get());
+    promise.set_value({ret_status, std::move(response)});
+}
+
+void MissionClient::OnLoadMissionAsChunks2Complete(
+    MessagePumpCallBase* call, const std::vector<::bosdyn::api::DataChunk>&& requests,
+    std::vector<::bosdyn::api::DataChunk>&& responses, const grpc::Status& status,
+    std::promise<LoadMissionResultType> promise) {
+    std::vector<const ::bosdyn::api::DataChunk*> chunks;
+    for (auto& chunk : responses) {
+        chunks.push_back(&chunk);
+    }
+
+    auto response_result =
+        MessageFromDataChunks<::bosdyn::api::mission::LoadMissionResponse>(chunks);
+    if (!response_result) {
+        promise.set_value(response_result);
+        return;
+    }
+
+    ::bosdyn::api::mission::LoadMissionResponse&& response = response_result.move();
+    auto ret_status =
         ProcessResponseWithMultiLeaseAndGetFinalStatus<::bosdyn::api::mission::LoadMissionResponse>(
             status, response, response.status(), m_lease_wallet.get());
     promise.set_value({ret_status, std::move(response)});
@@ -351,6 +395,53 @@ void MissionClient::OnGetMissionComplete(
         status, response, SDKErrorCode::Success);
 
     promise.set_value({ret_status, std::move(response)});
+}
+
+std::shared_future<GetMissionResultType> MissionClient::GetMissionAsChunksAsync(
+    ::bosdyn::api::mission::GetMissionRequest& request, const RPCParameters& parameters) {
+    std::promise<GetMissionResultType> response;
+    std::shared_future<GetMissionResultType> future = response.get_future();
+    BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
+
+    MessagePumpCallBase* one_time =
+        InitiateResponseStreamAsyncCall<::bosdyn::api::mission::GetMissionRequest, ::bosdyn::api::DataChunk,
+                                        ::bosdyn::api::mission::GetMissionResponse>(
+            request,
+            std::bind(&::bosdyn::api::mission::MissionService::Stub::AsyncGetMissionAsChunks, m_stub.get(),
+                      _1, _2, _3, _4),
+            std::bind(&MissionClient::OnGetMissionAsChunksComplete, this, _1, _2, _3, _4, _5),
+            std::move(response), parameters);
+
+    return future;
+}
+
+void MissionClient::OnGetMissionAsChunksComplete(MessagePumpCallBase* call,
+                                                 const ::bosdyn::api::mission::GetMissionRequest& request,
+                                                 std::vector<::bosdyn::api::DataChunk>&& responses,
+                                                 const grpc::Status& status,
+                                                 std::promise<GetMissionResultType> promise) {
+    std::vector<const ::bosdyn::api::DataChunk*> chunks;
+    for (auto& chunk : responses) {
+        chunks.push_back(&chunk);
+    }
+
+    auto response_result =
+        MessageFromDataChunks<::bosdyn::api::mission::GetMissionResponse>(chunks);
+    if (!response_result) {
+        promise.set_value(response_result);
+        return;
+    }
+
+    ::bosdyn::api::mission::GetMissionResponse&& response = response_result.move();
+    auto ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::mission::GetMissionResponse>(
+            status, response, SDKErrorCode::Success);
+    promise.set_value({ret_status, std::move(response)});
+}
+
+GetMissionResultType MissionClient::GetMissionAsChunks(::bosdyn::api::mission::GetMissionRequest& request,
+                                                       const RPCParameters& parameters) {
+    return GetMissionAsChunksAsync(request, parameters).get();
 }
 
 GetMissionResultType MissionClient::GetMission(::bosdyn::api::mission::GetMissionRequest& request,

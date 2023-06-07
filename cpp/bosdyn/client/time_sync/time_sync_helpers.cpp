@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
+ * Copyright (c) 2023 Boston Dynamics, Inc.  All rights reserved.
  *
  * Downloading, reproducing, distributing or otherwise using the SDK Software
  * is subject to the terms and conditions of the Boston Dynamics Software
@@ -120,6 +120,7 @@ bool TimeSyncEndpoint::EstablishTimeSync(int max_samples, bool break_on_success)
 }
 
 ::bosdyn::common::RobotTimeConverter TimeSyncEndpoint::GetRobotTimeConverter() const {
+    std::lock_guard<std::mutex> lock(m_mutex);
     return ::bosdyn::common::RobotTimeConverter(std::chrono::nanoseconds(
         ::bosdyn::common::DurationToNsec(
             m_locked_previous_result.response.state().best_estimate().clock_skew())));

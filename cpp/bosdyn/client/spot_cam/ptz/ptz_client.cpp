@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
+ * Copyright (c) 2023 Boston Dynamics, Inc.  All rights reserved.
  *
  * Downloading, reproducing, distributing or otherwise using the SDK Software
  * is subject to the terms and conditions of the Boston Dynamics Software
@@ -21,35 +21,36 @@ namespace spot_cam {
 const char* PtzClient::s_default_service_name = "spot-cam-ptz";
 const char* PtzClient::s_service_type = "bosdyn.api.spot_cam.PtzService";
 
-std::shared_future<ListPtzResultType> PtzClient::ListPtzAsync(
-    const RPCParameters& parameters) {
+std::shared_future<ListPtzResultType> PtzClient::ListPtzAsync(const RPCParameters& parameters) {
     std::promise<ListPtzResultType> response;
     std::shared_future<ListPtzResultType> future = response.get_future();
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
 
     ::bosdyn::api::spot_cam::ListPtzRequest request;
-    MessagePumpCallBase* one_time =
-        InitiateAsyncCall<::bosdyn::api::spot_cam::ListPtzRequest, ::bosdyn::api::spot_cam::ListPtzResponse,
-                          ::bosdyn::api::spot_cam::ListPtzResponse>(
-            request,
-            std::bind(&::bosdyn::api::spot_cam::PtzService::Stub::AsyncListPtz, m_stub.get(), _1, _2, _3),
-            std::bind(&PtzClient::OnListPtzComplete, this, _1, _2, _3, _4, _5),
-            std::move(response), parameters);
+    MessagePumpCallBase* one_time = InitiateAsyncCall<::bosdyn::api::spot_cam::ListPtzRequest,
+                                                      ::bosdyn::api::spot_cam::ListPtzResponse,
+                                                      ::bosdyn::api::spot_cam::ListPtzResponse>(
+        request,
+        std::bind(&::bosdyn::api::spot_cam::PtzService::Stub::AsyncListPtz, m_stub.get(), _1, _2,
+                  _3),
+        std::bind(&PtzClient::OnListPtzComplete, this, _1, _2, _3, _4, _5), std::move(response),
+        parameters);
 
     return future;
 }
 
-ListPtzResultType PtzClient::ListPtz(
-    const RPCParameters& parameters) {
+ListPtzResultType PtzClient::ListPtz(const RPCParameters& parameters) {
     return ListPtzAsync(parameters).get();
 }
 
-void PtzClient::OnListPtzComplete(
-    MessagePumpCallBase* call, const ::bosdyn::api::spot_cam::ListPtzRequest& request,
-    ::bosdyn::api::spot_cam::ListPtzResponse&& response, const grpc::Status& status,
-    std::promise<ListPtzResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::spot_cam::ListPtzResponse>(
-        status, response, SDKErrorCode::Success);
+void PtzClient::OnListPtzComplete(MessagePumpCallBase* call,
+                                  const ::bosdyn::api::spot_cam::ListPtzRequest& request,
+                                  ::bosdyn::api::spot_cam::ListPtzResponse&& response,
+                                  const grpc::Status& status,
+                                  std::promise<ListPtzResultType> promise) {
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::spot_cam::ListPtzResponse>(
+            status, response, SDKErrorCode::Success);
 
     promise.set_value({ret_status, std::move(response)});
 }
@@ -62,14 +63,13 @@ std::shared_future<GetPtzPositionResultType> PtzClient::GetPtzPositionAsync(
     return GetPtzPositionAsync(request, parameters);
 }
 
-GetPtzPositionResultType PtzClient::GetPtzPosition(
-    const std::string& ptz_name, const RPCParameters& parameters) {
+GetPtzPositionResultType PtzClient::GetPtzPosition(const std::string& ptz_name,
+                                                   const RPCParameters& parameters) {
     return GetPtzPositionAsync(ptz_name, parameters).get();
 }
 
 std::shared_future<GetPtzPositionResultType> PtzClient::GetPtzPositionAsync(
-    ::bosdyn::api::spot_cam::GetPtzPositionRequest& request,
-    const RPCParameters& parameters) {
+    ::bosdyn::api::spot_cam::GetPtzPositionRequest& request, const RPCParameters& parameters) {
     std::promise<GetPtzPositionResultType> response;
     std::shared_future<GetPtzPositionResultType> future = response.get_future();
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
@@ -79,8 +79,8 @@ std::shared_future<GetPtzPositionResultType> PtzClient::GetPtzPositionAsync(
                           ::bosdyn::api::spot_cam::GetPtzPositionResponse,
                           ::bosdyn::api::spot_cam::GetPtzPositionResponse>(
             request,
-            std::bind(&::bosdyn::api::spot_cam::PtzService::Stub::AsyncGetPtzPosition, m_stub.get(), _1, _2,
-                      _3),
+            std::bind(&::bosdyn::api::spot_cam::PtzService::Stub::AsyncGetPtzPosition, m_stub.get(),
+                      _1, _2, _3),
             std::bind(&PtzClient::OnGetPtzPositionComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
@@ -88,8 +88,7 @@ std::shared_future<GetPtzPositionResultType> PtzClient::GetPtzPositionAsync(
 }
 
 GetPtzPositionResultType PtzClient::GetPtzPosition(
-    ::bosdyn::api::spot_cam::GetPtzPositionRequest& request,
-    const RPCParameters& parameters) {
+    ::bosdyn::api::spot_cam::GetPtzPositionRequest& request, const RPCParameters& parameters) {
     return GetPtzPositionAsync(request, parameters).get();
 }
 
@@ -97,8 +96,9 @@ void PtzClient::OnGetPtzPositionComplete(
     MessagePumpCallBase* call, const ::bosdyn::api::spot_cam::GetPtzPositionRequest& request,
     ::bosdyn::api::spot_cam::GetPtzPositionResponse&& response, const grpc::Status& status,
     std::promise<GetPtzPositionResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::spot_cam::GetPtzPositionResponse>(
-        status, response, SDKErrorCode::Success);
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::spot_cam::GetPtzPositionResponse>(
+            status, response, SDKErrorCode::Success);
 
     promise.set_value({ret_status, std::move(response)});
 }
@@ -110,14 +110,13 @@ std::shared_future<GetPtzVelocityResultType> PtzClient::GetPtzVelocityAsync(
     return GetPtzVelocityAsync(request, parameters);
 }
 
-GetPtzVelocityResultType PtzClient::GetPtzVelocity(
-    const std::string& ptz_name, const RPCParameters& parameters) {
+GetPtzVelocityResultType PtzClient::GetPtzVelocity(const std::string& ptz_name,
+                                                   const RPCParameters& parameters) {
     return GetPtzVelocityAsync(ptz_name, parameters).get();
 }
 
 std::shared_future<GetPtzVelocityResultType> PtzClient::GetPtzVelocityAsync(
-    ::bosdyn::api::spot_cam::GetPtzVelocityRequest& request,
-    const RPCParameters& parameters) {
+    ::bosdyn::api::spot_cam::GetPtzVelocityRequest& request, const RPCParameters& parameters) {
     std::promise<GetPtzVelocityResultType> response;
     std::shared_future<GetPtzVelocityResultType> future = response.get_future();
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
@@ -127,8 +126,8 @@ std::shared_future<GetPtzVelocityResultType> PtzClient::GetPtzVelocityAsync(
                           ::bosdyn::api::spot_cam::GetPtzVelocityResponse,
                           ::bosdyn::api::spot_cam::GetPtzVelocityResponse>(
             request,
-            std::bind(&::bosdyn::api::spot_cam::PtzService::Stub::AsyncGetPtzVelocity, m_stub.get(), _1, _2,
-                      _3),
+            std::bind(&::bosdyn::api::spot_cam::PtzService::Stub::AsyncGetPtzVelocity, m_stub.get(),
+                      _1, _2, _3),
             std::bind(&PtzClient::OnGetPtzVelocityComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
@@ -136,8 +135,7 @@ std::shared_future<GetPtzVelocityResultType> PtzClient::GetPtzVelocityAsync(
 }
 
 GetPtzVelocityResultType PtzClient::GetPtzVelocity(
-    ::bosdyn::api::spot_cam::GetPtzVelocityRequest& request,
-    const RPCParameters& parameters) {
+    ::bosdyn::api::spot_cam::GetPtzVelocityRequest& request, const RPCParameters& parameters) {
     return GetPtzVelocityAsync(request, parameters).get();
 }
 
@@ -145,8 +143,9 @@ void PtzClient::OnGetPtzVelocityComplete(
     MessagePumpCallBase* call, const ::bosdyn::api::spot_cam::GetPtzVelocityRequest& request,
     ::bosdyn::api::spot_cam::GetPtzVelocityResponse&& response, const grpc::Status& status,
     std::promise<GetPtzVelocityResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::spot_cam::GetPtzVelocityResponse>(
-        status, response, SDKErrorCode::Success);
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::spot_cam::GetPtzVelocityResponse>(
+            status, response, SDKErrorCode::Success);
 
     promise.set_value({ret_status, std::move(response)});
 }
@@ -163,15 +162,14 @@ std::shared_future<SetPtzPositionResultType> PtzClient::SetPtzPositionAsync(
     return SetPtzPositionAsync(request, parameters);
 }
 
-SetPtzPositionResultType PtzClient::SetPtzPosition(
-    const std::string& ptz_name, float pan, float tilt, float zoom,
-    const RPCParameters& parameters) {
+SetPtzPositionResultType PtzClient::SetPtzPosition(const std::string& ptz_name, float pan,
+                                                   float tilt, float zoom,
+                                                   const RPCParameters& parameters) {
     return SetPtzPositionAsync(ptz_name, pan, tilt, zoom, parameters).get();
 }
 
 std::shared_future<SetPtzPositionResultType> PtzClient::SetPtzPositionAsync(
-    ::bosdyn::api::spot_cam::SetPtzPositionRequest& request,
-    const RPCParameters& parameters) {
+    ::bosdyn::api::spot_cam::SetPtzPositionRequest& request, const RPCParameters& parameters) {
     std::promise<SetPtzPositionResultType> response;
     std::shared_future<SetPtzPositionResultType> future = response.get_future();
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
@@ -181,8 +179,8 @@ std::shared_future<SetPtzPositionResultType> PtzClient::SetPtzPositionAsync(
                           ::bosdyn::api::spot_cam::SetPtzPositionResponse,
                           ::bosdyn::api::spot_cam::SetPtzPositionResponse>(
             request,
-            std::bind(&::bosdyn::api::spot_cam::PtzService::Stub::AsyncSetPtzPosition, m_stub.get(), _1, _2,
-                      _3),
+            std::bind(&::bosdyn::api::spot_cam::PtzService::Stub::AsyncSetPtzPosition, m_stub.get(),
+                      _1, _2, _3),
             std::bind(&PtzClient::OnSetPtzPositionComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
@@ -190,8 +188,7 @@ std::shared_future<SetPtzPositionResultType> PtzClient::SetPtzPositionAsync(
 }
 
 SetPtzPositionResultType PtzClient::SetPtzPosition(
-    ::bosdyn::api::spot_cam::SetPtzPositionRequest& request,
-    const RPCParameters& parameters) {
+    ::bosdyn::api::spot_cam::SetPtzPositionRequest& request, const RPCParameters& parameters) {
     return SetPtzPositionAsync(request, parameters).get();
 }
 
@@ -199,8 +196,9 @@ void PtzClient::OnSetPtzPositionComplete(
     MessagePumpCallBase* call, const ::bosdyn::api::spot_cam::SetPtzPositionRequest& request,
     ::bosdyn::api::spot_cam::SetPtzPositionResponse&& response, const grpc::Status& status,
     std::promise<SetPtzPositionResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::spot_cam::SetPtzPositionResponse>(
-        status, response, SDKErrorCode::Success);
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::spot_cam::SetPtzPositionResponse>(
+            status, response, SDKErrorCode::Success);
 
     promise.set_value({ret_status, std::move(response)});
 }
@@ -217,15 +215,14 @@ std::shared_future<SetPtzVelocityResultType> PtzClient::SetPtzVelocityAsync(
     return SetPtzVelocityAsync(request, parameters);
 }
 
-SetPtzVelocityResultType PtzClient::SetPtzVelocity(
-    const std::string& ptz_name, float pan, float tilt, float zoom,
-    const RPCParameters& parameters) {
+SetPtzVelocityResultType PtzClient::SetPtzVelocity(const std::string& ptz_name, float pan,
+                                                   float tilt, float zoom,
+                                                   const RPCParameters& parameters) {
     return SetPtzVelocityAsync(ptz_name, pan, tilt, zoom, parameters).get();
 }
 
 std::shared_future<SetPtzVelocityResultType> PtzClient::SetPtzVelocityAsync(
-    ::bosdyn::api::spot_cam::SetPtzVelocityRequest& request,
-    const RPCParameters& parameters) {
+    ::bosdyn::api::spot_cam::SetPtzVelocityRequest& request, const RPCParameters& parameters) {
     std::promise<SetPtzVelocityResultType> response;
     std::shared_future<SetPtzVelocityResultType> future = response.get_future();
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
@@ -235,8 +232,8 @@ std::shared_future<SetPtzVelocityResultType> PtzClient::SetPtzVelocityAsync(
                           ::bosdyn::api::spot_cam::SetPtzVelocityResponse,
                           ::bosdyn::api::spot_cam::SetPtzVelocityResponse>(
             request,
-            std::bind(&::bosdyn::api::spot_cam::PtzService::Stub::AsyncSetPtzVelocity, m_stub.get(), _1, _2,
-                      _3),
+            std::bind(&::bosdyn::api::spot_cam::PtzService::Stub::AsyncSetPtzVelocity, m_stub.get(),
+                      _1, _2, _3),
             std::bind(&PtzClient::OnSetPtzVelocityComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
@@ -244,8 +241,7 @@ std::shared_future<SetPtzVelocityResultType> PtzClient::SetPtzVelocityAsync(
 }
 
 SetPtzVelocityResultType PtzClient::SetPtzVelocity(
-    ::bosdyn::api::spot_cam::SetPtzVelocityRequest& request,
-    const RPCParameters& parameters) {
+    ::bosdyn::api::spot_cam::SetPtzVelocityRequest& request, const RPCParameters& parameters) {
     return SetPtzVelocityAsync(request, parameters).get();
 }
 
@@ -253,8 +249,9 @@ void PtzClient::OnSetPtzVelocityComplete(
     MessagePumpCallBase* call, const ::bosdyn::api::spot_cam::SetPtzVelocityRequest& request,
     ::bosdyn::api::spot_cam::SetPtzVelocityResponse&& response, const grpc::Status& status,
     std::promise<SetPtzVelocityResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::spot_cam::SetPtzVelocityResponse>(
-        status, response, SDKErrorCode::Success);
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::spot_cam::SetPtzVelocityResponse>(
+            status, response, SDKErrorCode::Success);
 
     promise.set_value({ret_status, std::move(response)});
 }
@@ -267,10 +264,12 @@ std::shared_future<InitializeLensResultType> PtzClient::InitializeLensAsync(
 
     ::bosdyn::api::spot_cam::InitializeLensRequest request;
     MessagePumpCallBase* one_time =
-        InitiateAsyncCall<::bosdyn::api::spot_cam::InitializeLensRequest, ::bosdyn::api::spot_cam::InitializeLensResponse,
+        InitiateAsyncCall<::bosdyn::api::spot_cam::InitializeLensRequest,
+                          ::bosdyn::api::spot_cam::InitializeLensResponse,
                           ::bosdyn::api::spot_cam::InitializeLensResponse>(
             request,
-            std::bind(&::bosdyn::api::spot_cam::PtzService::Stub::AsyncInitializeLens, m_stub.get(), _1, _2, _3),
+            std::bind(&::bosdyn::api::spot_cam::PtzService::Stub::AsyncInitializeLens, m_stub.get(),
+                      _1, _2, _3),
             std::bind(&PtzClient::OnInitializeLensComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
@@ -281,13 +280,116 @@ InitializeLensResultType PtzClient::InitializeLens(const RPCParameters& paramete
     return InitializeLensAsync(parameters).get();
 }
 
-void PtzClient::OnInitializeLensComplete(MessagePumpCallBase* call,
-                                         const ::bosdyn::api::spot_cam::InitializeLensRequest& request,
-                                         ::bosdyn::api::spot_cam::InitializeLensResponse&& response,
-                                         const grpc::Status& status,
-                                         std::promise<InitializeLensResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::spot_cam::InitializeLensResponse>(
-        status, response, SDKErrorCode::Success);
+void PtzClient::OnInitializeLensComplete(
+    MessagePumpCallBase* call, const ::bosdyn::api::spot_cam::InitializeLensRequest& request,
+    ::bosdyn::api::spot_cam::InitializeLensResponse&& response, const grpc::Status& status,
+    std::promise<InitializeLensResultType> promise) {
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::spot_cam::InitializeLensResponse>(
+            status, response, SDKErrorCode::Success);
+
+    promise.set_value({ret_status, std::move(response)});
+}
+
+// manual focus rpcs
+GetPtzFocusStateResultType PtzClient::GetPtzFocusState(const RPCParameters& parameters) {
+    return GetPtzFocusStateAsync(parameters).get();
+}
+
+std::shared_future<GetPtzFocusStateResultType> PtzClient::GetPtzFocusStateAsync(
+    const RPCParameters& parameters) {
+    ::bosdyn::api::spot_cam::GetPtzFocusStateRequest request;
+    std::promise<GetPtzFocusStateResultType> response;
+    std::shared_future<GetPtzFocusStateResultType> future = response.get_future();
+    BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
+
+    MessagePumpCallBase* one_time =
+        InitiateAsyncCall<::bosdyn::api::spot_cam::GetPtzFocusStateRequest,
+                          ::bosdyn::api::spot_cam::GetPtzFocusStateResponse,
+                          ::bosdyn::api::spot_cam::GetPtzFocusStateResponse>(
+            request,
+            std::bind(&::bosdyn::api::spot_cam::PtzService::Stub::AsyncGetPtzFocusState,
+                      m_stub.get(), _1, _2, _3),
+            std::bind(&PtzClient::OnGetPtzFocusStateComplete, this, _1, _2, _3, _4, _5),
+            std::move(response), parameters);
+
+    return future;
+}
+
+void PtzClient::OnGetPtzFocusStateComplete(
+    MessagePumpCallBase* call, const ::bosdyn::api::spot_cam::GetPtzFocusStateRequest& request,
+    ::bosdyn::api::spot_cam::GetPtzFocusStateResponse&& response, const grpc::Status& status,
+    std::promise<GetPtzFocusStateResultType> promise) {
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::spot_cam::GetPtzFocusStateResponse>(
+            status, response, SDKErrorCode::Success);
+
+    promise.set_value({ret_status, std::move(response)});
+}
+
+std::shared_future<SetPtzFocusStateResultType> PtzClient::SetPtzFocusStateApproxAsync(
+    const ::bosdyn::api::spot_cam::PtzFocusState::PtzFocusMode& focus_mode, float approx_distance,
+    const RPCParameters& parameters) {
+    ::bosdyn::api::spot_cam::SetPtzFocusStateRequest request;
+    request.mutable_focus_state()->set_mode(focus_mode);
+    request.mutable_focus_state()->mutable_approx_distance()->set_value(approx_distance);
+
+    return SetPtzFocusStateAsync(request, parameters);
+}
+
+SetPtzFocusStateResultType PtzClient::SetPtzFocusStateApprox(
+    const ::bosdyn::api::spot_cam::PtzFocusState::PtzFocusMode& focus_mode, float approx_distance,
+    const RPCParameters& parameters) {
+    return SetPtzFocusStateApproxAsync(focus_mode, approx_distance, parameters).get();
+}
+
+std::shared_future<SetPtzFocusStateResultType> PtzClient::SetPtzFocusStateExactAsync(
+    const ::bosdyn::api::spot_cam::PtzFocusState::PtzFocusMode& focus_mode,
+    const int32_t focus_position, const RPCParameters& parameters) {
+    ::bosdyn::api::spot_cam::SetPtzFocusStateRequest request;
+    request.mutable_focus_state()->set_mode(focus_mode);
+    request.mutable_focus_state()->mutable_focus_position()->set_value(focus_position);
+
+    return SetPtzFocusStateAsync(request, parameters);
+}
+
+SetPtzFocusStateResultType PtzClient::SetPtzFocusStateExact(
+    const ::bosdyn::api::spot_cam::PtzFocusState::PtzFocusMode& focus_mode,
+    const int32_t focus_position, const RPCParameters& parameters) {
+    return SetPtzFocusStateExactAsync(focus_mode, focus_position, parameters).get();
+}
+
+std::shared_future<SetPtzFocusStateResultType> PtzClient::SetPtzFocusStateAsync(
+    ::bosdyn::api::spot_cam::SetPtzFocusStateRequest& request, const RPCParameters& parameters) {
+    std::promise<SetPtzFocusStateResultType> response;
+    std::shared_future<SetPtzFocusStateResultType> future = response.get_future();
+    BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
+
+    MessagePumpCallBase* one_time =
+        InitiateAsyncCall<::bosdyn::api::spot_cam::SetPtzFocusStateRequest,
+                          ::bosdyn::api::spot_cam::SetPtzFocusStateResponse,
+                          ::bosdyn::api::spot_cam::SetPtzFocusStateResponse>(
+            request,
+            std::bind(&::bosdyn::api::spot_cam::PtzService::Stub::AsyncSetPtzFocusState,
+                      m_stub.get(), _1, _2, _3),
+            std::bind(&PtzClient::OnSetPtzFocusStateComplete, this, _1, _2, _3, _4, _5),
+            std::move(response), parameters);
+
+    return future;
+}
+
+SetPtzFocusStateResultType PtzClient::SetPtzFocusState(
+    ::bosdyn::api::spot_cam::SetPtzFocusStateRequest& request, const RPCParameters& parameters) {
+    return SetPtzFocusStateAsync(request, parameters).get();
+}
+
+void PtzClient::OnSetPtzFocusStateComplete(
+    MessagePumpCallBase* call, const ::bosdyn::api::spot_cam::SetPtzFocusStateRequest& request,
+    ::bosdyn::api::spot_cam::SetPtzFocusStateResponse&& response, const grpc::Status& status,
+    std::promise<SetPtzFocusStateResultType> promise) {
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::spot_cam::SetPtzFocusStateResponse>(
+            status, response, SDKErrorCode::Success);
 
     promise.set_value({ret_status, std::move(response)});
 }

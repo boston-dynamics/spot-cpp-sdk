@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
+ * Copyright (c) 2023 Boston Dynamics, Inc.  All rights reserved.
  *
  * Downloading, reproducing, distributing or otherwise using the SDK Software
  * is subject to the terms and conditions of the Boston Dynamics Software
@@ -15,7 +15,7 @@ namespace client {
 
 void StringToDataChunks(const std::string& data,
                         std::vector<::bosdyn::api::DataChunk>* chunks) {
-    int chunk_size = 4 * 1024 * 1024;
+    int chunk_size = 2 * 1024 * 1024;
     int start_index = 0;
     int left;
     const char* buffer = data.c_str();
@@ -45,6 +45,7 @@ Result<std::string> StringFromDataChunks(
 
     std::string full_data;
     int reported_total_size = data_chunks[0]->total_size();
+    full_data.reserve(reported_total_size);
     for (auto chunk : data_chunks) {
         if (chunk->total_size() != reported_total_size) {
             return {::bosdyn::common::Status(SDKErrorCode::GenericSDKError,

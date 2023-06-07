@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022 Boston Dynamics, Inc.  All rights reserved.
+ * Copyright (c) 2023 Boston Dynamics, Inc.  All rights reserved.
  *
  * Downloading, reproducing, distributing or otherwise using the SDK Software
  * is subject to the terms and conditions of the Boston Dynamics Software
@@ -46,6 +46,14 @@ std::chrono::seconds SecSinceEpoch() {
 }
 
 int64_t NowNsec() { return NsecSinceEpoch().count(); }
+
+int64_t NowSec() { return SecSinceEpoch().count(); }
+
+// now is always valid, but will return 0 time if shm hasn't been opened yet
+std::chrono::system_clock::time_point NowTimePoint() {
+    const std::chrono::nanoseconds time(NowNsec());
+    return std::chrono::system_clock::time_point(time);
+}
 
 int64_t NowNsecWall() { return _default_clock_fn().count(); }
 
