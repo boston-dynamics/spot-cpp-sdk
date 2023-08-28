@@ -231,6 +231,7 @@ FanPowerCommandResultType FanPowerCommand(PowerClient* power_client, int percent
 FanPowerCommandFeedbackResultType FanPowerCommandFeedback(PowerClient* power_client,
                                                           int command_id);
 
+
 }  // namespace power_client_helper
 
 }  // namespace client
