@@ -8,6 +8,18 @@ Development Kit License (20191101-BDSDK-SL).
 
 # Spot C++ SDK Release Notes
 
+## Spot C++ SDK version 3.3.2 BETA
+
+No changes from 3.3.0
+
+## Spot C++ SDK version 3.3.1 BETA
+
+No changes from 3.3.0.
+
+### Upcoming Removals
+
+In the upcoming release 4.0, we plan to change the encoding for real-valued fields in local grids to RAW instead of RLE (Run-Length Encoded) and provide client helpers for decoding. Make sure your code handles the `encoding` field in `LocalGridResponse` correctly.
+
 ## Spot C++ SDK version 3.3.0 BETA
 
 ### New Features
