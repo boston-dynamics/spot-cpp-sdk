@@ -3,6 +3,9 @@
 
 @PACKAGE_INIT@
 
+# add path to installed dependencies to cmake prefix path
+list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_LIST_DIR}/../../../../spot-cpp-install/external)
+
 # Make sure the dependencies are available first
 include(CMakeFindDependencyMacro)
 find_dependency(Protobuf CONFIG REQUIRED)
