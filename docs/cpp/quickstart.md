@@ -143,6 +143,7 @@ The `cmake` command can also overwrite the following variables by passing them t
 - `CMAKE_BUILD_TYPE`: String variable to determine build type. The default value for this variable is "Release".
 - `BUILD_SHARED_LIBS`: Boolean ON/OFF variable to turn on the build of shared libraries. The default value for this variable is ON. **Shared libraries currently are only supported on Linux.** This limitation is temporary and will be addressed in future releases.
 - `BUILD_CHOREOGRAPHY_LIBS`: Boolean ON/OFF variable to turn on the build of choreography libraries. The default value for this variable is ON.
+- `CMAKE_POSITION_INDEPENDENT_CODE`: Boolean true/false variable to enable compilation of position independent machine code. This is necessary when linking the library against other shared libraries
 
 **On Linux:**
 
@@ -150,6 +151,12 @@ Build the SDK using the `make` command below.
 
 ```
 make -j6 install
+```
+
+Build the SDK and generate a debian package containing command using the `make` command below:
+
+```
+make -j6 install package
 ```
 
 The `make` command generates a lot of deprecation warnings during the compiling of the classes generated from the protobuf definitions. This is expected as the protobuf definitions contain `deprecated` flags for fields that will not be supported in future versions of the SDK.
