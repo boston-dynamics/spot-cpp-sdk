@@ -251,10 +251,13 @@ install(
     DESTINATION ${PROJECT_CONFIG_PATH}
 )
 
+# Define Variables needed by package config file
+set(PACKAGE_INSTALL_PREFIX /opt/spot-cpp-sdk)
+set(DEP_INSTALL_PATH ${PACKAGE_INSTALL_PREFIX}/external)
+
 #this generates a relocatable config file for install, but it gets invoked at build time,
 #so the output has to be saved in a way that won't conflict with the export config
 set(CONFIG_FILE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}InstallConfig.cmake")
-
 
 configure_package_config_file( "cmake/ProjectConfig.cmake.in"
   ${CONFIG_FILE}
@@ -287,3 +290,19 @@ ${PROJECT_NAME}Config.cmake
 # it may be easily found.
 message(STATUS "Location of this build will be exported. Set ENABLE_EXPORT to OFF if you don't want this and delete ~/.cmake/projects/${PROJECT_NAME} ")
 export(PACKAGE ${PROJECT_NAME})
+
+# Packaging logic
+set(CPACK_GENERATOR "DEB")
+set(CPACK_PACKAGE_NAME "spot-cpp-sdk")
+set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Anthony Baker <ABaker@theaiinstitute.com>")
+set(CPACK_PACKAGE_VENDOR "Boston Dynamics")
+set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Your package description here.")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Boston Dynamics' Spot C++ SDK")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/../LICENSE")
+set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
+set(CPACK_PACKAGING_INSTALL_PREFIX "${PACKAGE_INSTALL_PREFIX}")
+set(CPACK_INSTALLED_DIRECTORIES "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/;${DEP_INSTALL_PATH}/")
+
+include(CPack)
