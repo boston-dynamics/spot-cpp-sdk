@@ -1,0 +1,25 @@
+# Configuration file for @PROJECT_NAME@ library.
+# Project specific variables are dynamically inserted
+
+@PACKAGE_INIT@
+
+# add path to installed dependencies to cmake prefix path
+list(APPEND CMAKE_PREFIX_PATH @DEP_INSTALL_PATH@)
+
+# Make sure the dependencies are available first
+include(CMakeFindDependencyMacro)
+find_dependency(Protobuf CONFIG REQUIRED)
+find_dependency(Eigen3 CONFIG REQUIRED)
+find_dependency(gRPC CONFIG REQUIRED)
+find_dependency(CLI11 CONFIG REQUIRED)
+find_dependency(Threads REQUIRED)
+
+# Pick up the auto-generated file which knows how to add the library targets
+# This will mean that we don't have to supply full paths for the libraries
+set(exports_file "${CMAKE_CURRENT_LIST_DIR}/@EXPORTS_FILE@")
+if (EXISTS ${exports_file})
+  message(STATUS "CMake is running ${exports_file}")
+  include(${exports_file})
+endif ()
+
+check_required_components(@PROJECT_NAME@)
