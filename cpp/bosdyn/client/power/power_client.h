@@ -102,6 +102,8 @@ class PowerClient : public ServiceClient {
     FanPowerCommandFeedbackResultType FanPowerCommandFeedback(
         unsigned int id, const RPCParameters& parameters = RPCParameters());
 
+
+
     // Power Client Commands
 
     // Sets the QualityOfService enum for the power client to be used for network selection
@@ -161,6 +163,7 @@ class PowerClient : public ServiceClient {
         MessagePumpCallBase* call, const ::bosdyn::api::FanPowerCommandFeedbackRequest& request,
         ::bosdyn::api::FanPowerCommandFeedbackResponse&& response, const grpc::Status& status,
         std::promise<FanPowerCommandFeedbackResultType> promise);
+
 
     // Lease wallet for commands.
     std::shared_ptr<LeaseWallet> m_lease_wallet;

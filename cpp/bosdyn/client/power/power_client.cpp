@@ -211,6 +211,11 @@ void PowerClient::OnFanPowerCommandFeedbackComplete(
     promise.set_value({ret_status, std::move(response)});
 }
 
+// Reset Redundant Safety Stop Commands
+
+
+
+
 // Power Client Commands
 
 ServiceClient::QualityOfService PowerClient::GetQualityOfService() const {

@@ -452,7 +452,10 @@ class ServiceClient {
         }
         auto ret = one_time.get();
         m_message_pump->AddCall(std::move(one_time));
-        ret->Start(request, rpc_call, callback, std::move(promise));
+
+
+        ret->Start(request, rpc_call,
+                   callback, std::move(promise));
         return ret;
     }
 

@@ -381,6 +381,8 @@ class ResponseStreamCall : public MessagePumpCallBase {
                 return false;
 
             case NextStep::CallCallback:
+
+
                 // Everything is done, call the client callback with the responses.
                 if (m_callback != nullptr) {
                     m_callback(this, m_request, std::move(m_responses), m_status,

@@ -270,6 +270,7 @@ FanPowerCommandFeedbackResultType FanPowerCommandFeedback(PowerClient* power_cli
     return power_client->FanPowerCommandFeedback(command_id);
 }
 
+
 }  // namespace power_client_helper
 
 }  // namespace client
