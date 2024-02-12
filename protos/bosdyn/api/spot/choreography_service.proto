@@ -19,6 +19,9 @@ service ChoreographyService {
     // List the available choreography sequences currently on the robot.
     rpc ListAllSequences(ListAllSequencesRequest) returns (ListAllSequencesResponse) {}
 
+    // Return the ChoreographySequence with the given name and any Animations used in that sequence.
+    rpc GetChoreographySequence(GetChoreographySequenceRequest) returns (GetChoreographySequenceResponse) {}
+
     // Delete a retained choreography sequence from the collection of user uploaded 
     // choreography sequences.
     rpc DeleteSequence(DeleteSequenceRequest) returns (DeleteSequenceResponse) {}
@@ -56,5 +59,8 @@ service ChoreographyService {
 
     // Commands intended for individual dance moves that are currently executing.
     rpc ChoreographyCommand(ChoreographyCommandRequest) returns (ChoreographyCommandResponse) {}
+
+    // Adjust the time when a robot should start dancing within a tolerance.
+    rpc ChoreographyTimeAdjust(ChoreographyTimeAdjustRequest) returns (ChoreographyTimeAdjustResponse) {}
 
 }

@@ -68,7 +68,7 @@ It also downloads cmake in the location `downloads/tools/{CMAKE_VERSION}/{CMAKE_
 ```cmd
 git clone https://github.com/microsoft/vcpkg
 cd vcpkg
-git checkout c6592ce60ff394049905365865f59e3a4d93d35b
+git checkout 3b213864579b6fa686e38715508f7cd41a50900f
 ```
 
 2. On x86-64 Linux:
@@ -90,7 +90,7 @@ export VCPKG_FORCE_SYSTEM_BINARIES=arm
 ./vcpkg install cli11:arm64-linux
 ```
 
-4. On Windows, add `set(VCPKG_PLATFORM_TOOLSET v141)` in file `vcpkg\triplets\x64-windows.cmake` to get Visual Studio 2017 builds.
+4. On Windows, add `set(VCPKG_PLATFORM_TOOLSET v142)` in file `vcpkg\triplets\x64-windows.cmake` to get Visual Studio 2019 builds.
 
 ```cmd
 > .\bootstrap-vcpkg.bat
@@ -129,7 +129,7 @@ cd <SDK_clone_path>
 cd cpp
 mkdir build
 cd build
-cmake ../ -DCMAKE_TOOLCHAIN_FILE=<vcpkg_install_path>/scripts/buildsystems/vcpkg.cmake -DCMAKE_INSTALL_PREFIX=<SDK_install_path> -DCMAKE_FIND_PACKAGE_PREFER_CONFIG=TRUE
+cmake ../ -DCMAKE_TOOLCHAIN_FILE=<vcpkg_absolute_install_path>/scripts/buildsystems/vcpkg.cmake -DCMAKE_INSTALL_PREFIX=<SDK_absolute_install_path> -DCMAKE_FIND_PACKAGE_PREFER_CONFIG=TRUE
 ```
 
 The `cmake` commands need the flag `-DCMAKE_FIND_PACKAGE_PREFER_CONFIG=TRUE`, which instructs cmake to use its own version of find package instructions, instead of the one provided by the dependency. This is necessary for the protobuf dependency, which generates three versions of the find package instructions:

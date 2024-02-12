@@ -103,16 +103,6 @@ bool StripDownloadEdgeResponse(::google::protobuf::Message* proto_message) {
     return false;
 }
 
-bool StripLogAnnotationRequest(::google::protobuf::Message* proto_message) {
-    if (auto* req_msg = dynamic_cast<::bosdyn::api::AddLogAnnotationRequest*>(proto_message)) {
-        for (int i = 0; i < req_msg->mutable_annotations()->blob_data_size(); i++) {
-            req_msg->mutable_annotations()->mutable_blob_data(i)->clear_data();
-        }
-        return true;
-    }
-    return false;
-}
-
 bool StripRecordDataBlobsRequest(::google::protobuf::Message* proto_message) {
     if (auto* req_msg = dynamic_cast<::bosdyn::api::RecordDataBlobsRequest*>(proto_message)) {
         for (int i = 0; i < req_msg->blob_data_size(); i++) {

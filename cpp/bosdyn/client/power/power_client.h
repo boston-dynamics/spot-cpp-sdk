@@ -31,6 +31,8 @@ typedef Result<::bosdyn::api::PowerCommandFeedbackResponse> PowerCommandFeedback
 typedef Result<::bosdyn::api::FanPowerCommandResponse> FanPowerCommandResultType;
 // Return type for the FanPowerCommandFeedback method
 typedef Result<::bosdyn::api::FanPowerCommandFeedbackResponse> FanPowerCommandFeedbackResultType;
+// Return type for the ResetSafetyStop method
+typedef Result<::bosdyn::api::ResetSafetyStopResponse> ResetSafetyStopResultType;
 
 class PowerClient : public ServiceClient {
  public:
@@ -102,7 +104,14 @@ class PowerClient : public ServiceClient {
     FanPowerCommandFeedbackResultType FanPowerCommandFeedback(
         unsigned int id, const RPCParameters& parameters = RPCParameters());
 
+    // Asynchronous method to execute a reset safety stop command.
+    std::shared_future<ResetSafetyStopResultType> ResetSafetyStopAsync(
+        ::bosdyn::api::ResetSafetyStopRequest& request,
+        const RPCParameters& parameters = RPCParameters());
 
+    // Synchronous method to execute a reset safety stop command.
+    ResetSafetyStopResultType ResetSafetyStop(::bosdyn::api::ResetSafetyStopRequest& request,
+                                              const RPCParameters& parameters = RPCParameters());
 
     // Power Client Commands
 
@@ -164,6 +173,13 @@ class PowerClient : public ServiceClient {
         ::bosdyn::api::FanPowerCommandFeedbackResponse&& response, const grpc::Status& status,
         std::promise<FanPowerCommandFeedbackResultType> promise);
 
+    // Callback that will return the ResetSafetyStopResponse message after the
+    // ResetSafetyStop rpc returns to the client.
+    void OnResetSafetyStopComplete(MessagePumpCallBase* call,
+                                   const ::bosdyn::api::ResetSafetyStopRequest& request,
+                                   ::bosdyn::api::ResetSafetyStopResponse&& response,
+                                   const grpc::Status& status,
+                                   std::promise<ResetSafetyStopResultType> promise);
 
     // Lease wallet for commands.
     std::shared_ptr<LeaseWallet> m_lease_wallet;

@@ -7,11 +7,15 @@
  */
 
 
-#include "bosdyn/math/proto_math.h"
+#if defined(_MSC_VER) && !defined(_USE_MATH_DEFINES)
+// To get math constants (M_PI) in MSVC
+#    define _USE_MATH_DEFINES
+#endif
+#include <cmath>
+
 #include "bosdyn/math/api_common_frames.h"
 #include "bosdyn/math/frame_helpers.h"
-
-#define _USE_MATH_DEFINES
+#include "bosdyn/math/proto_math.h"
 
 namespace bosdyn {
 

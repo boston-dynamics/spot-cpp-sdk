@@ -51,8 +51,9 @@ int64_t NowSec() { return SecSinceEpoch().count(); }
 
 // now is always valid, but will return 0 time if shm hasn't been opened yet
 std::chrono::system_clock::time_point NowTimePoint() {
-    const std::chrono::nanoseconds time(NowNsec());
-    return std::chrono::system_clock::time_point(time);
+    using namespace std::chrono;
+    return system_clock::time_point(
+        duration_cast<system_clock::time_point::duration>(nanoseconds(NowNsec())));
 }
 
 int64_t NowNsecWall() { return _default_clock_fn().count(); }
@@ -117,7 +118,6 @@ double DurationToSec(const ::google::protobuf::Duration& duration) {
 ::google::protobuf::Duration SecToDuration(double seconds) {
     return google::protobuf::util::TimeUtil::NanosecondsToDuration(seconds * 1e9);
 }
-
 
 bool DurationIsLessThan(const ::google::protobuf::Duration& d1,
                         const ::google::protobuf::Duration& d2) {

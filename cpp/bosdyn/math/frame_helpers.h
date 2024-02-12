@@ -103,6 +103,17 @@ std::vector<std::string> ListFramesInTree(
 // Checks if the string frame name is a known gravity aligned frame.
 bool IsGravityAlignedFrameName(const std::string& frame_name);
 
+// Find the root of the frame tree, starting from the given leaf frame.
+ValidateFrameTreeSnapshotStatus FindTreeRoot(
+    const ::bosdyn::api::FrameTreeSnapshot& frame_tree_snapshot, const std::string& leaf_frame_name,
+    std::string* root_frame_name);
+
+// Replace the given child frame's parent with the new parent frame. The new parent frame will
+// become a child of the old parent frame. If the child frame is the current root of the tree,
+// the new parent frame will become the root of the tree.
+bool ReparentFrame(const std::string& new_parent_name, const std::string& child_frame_name,
+                   const ::bosdyn::api::SE3Pose& new_parent_T_child,
+                   FrameTreeSnapshot* frame_tree_snapshot);
 }  // namespace api
 
 }  // namespace bosdyn

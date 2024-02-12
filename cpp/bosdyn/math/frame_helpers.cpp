@@ -19,7 +19,8 @@ namespace api {
 namespace {
 
 std::vector<::bosdyn::api::FrameTreeSnapshot::ParentEdge> walk_tree_to_root(
-    const ::bosdyn::api::FrameTreeSnapshot& frame_tree_snapshot, const std::string& leaf_frame_name) {
+    const ::bosdyn::api::FrameTreeSnapshot& frame_tree_snapshot,
+    const std::string& leaf_frame_name) {
     // Assume a valid tree.
     std::vector<::bosdyn::api::FrameTreeSnapshot::ParentEdge> ret;
     const auto& child_to_parent_edge_map = frame_tree_snapshot.child_to_parent_edge_map();
@@ -45,38 +46,6 @@ std::vector<::bosdyn::api::FrameTreeSnapshot::ParentEdge> walk_tree_to_root(
     return ret;
 }
 
-ValidateFrameTreeSnapshotStatus find_tree_root(
-    const ::bosdyn::api::FrameTreeSnapshot& frame_tree_snapshot, const std::string& leaf_frame_name,
-    std::string* root_frame_name) {
-    std::string cur_frame_name = leaf_frame_name;
-    if (leaf_frame_name.empty()) {
-        return ValidateFrameTreeSnapshotStatus::EMPTY_CHILD_FRAME_NAME;
-    }
-    std::set<std::string> visited = std::set<std::string>();
-    visited.insert(leaf_frame_name);
-    const auto& child_to_parent_edge_map = frame_tree_snapshot.child_to_parent_edge_map();
-    while (true) {
-        auto it = child_to_parent_edge_map.find(cur_frame_name);
-        if (it == child_to_parent_edge_map.end()) {
-            return ValidateFrameTreeSnapshotStatus::UNKNOWN_PARENT_FRAME_NAME;
-        }
-        const auto& parent_edge = it->second;
-        const std::string& parent_frame_name = parent_edge.parent_frame_name();
-        if (parent_frame_name.empty()) {
-            break;
-        }
-        auto insert_result = visited.insert(parent_frame_name);
-        if (!insert_result.second) {
-            return ValidateFrameTreeSnapshotStatus::CYCLE;
-        }
-        cur_frame_name = parent_frame_name;
-    }
-    if (root_frame_name) {
-        *root_frame_name = cur_frame_name;
-    }
-    return ValidateFrameTreeSnapshotStatus::VALID;
-}
-
 }  // namespace
 
 ValidateFrameTreeSnapshotStatus ValidateFrameTreeSnapshot(
@@ -92,7 +61,7 @@ ValidateFrameTreeSnapshotStatus ValidateFrameTreeSnapshot(
         }
         std::string cur_root_frame_name;
         ValidateFrameTreeSnapshotStatus status =
-            find_tree_root(frame_tree_snapshot, key_value_pair.first, &cur_root_frame_name);
+            FindTreeRoot(frame_tree_snapshot, key_value_pair.first, &cur_root_frame_name);
         if (status != ValidateFrameTreeSnapshotStatus::VALID) {
             return status;
         }
@@ -156,9 +125,9 @@ bool get_a_tform_b(const ::bosdyn::api::FrameTreeSnapshot& frame_tree_snapshot,
 }
 
 bool ExpressVelocityInNewFrame(const ::bosdyn::api::FrameTreeSnapshot& frame_tree_snapshot,
-                                   const std::string& frame_b, const std::string& frame_c,
-                                   const ::bosdyn::api::SE3Velocity& vel_of_a_in_b,
-                                   ::bosdyn::api::SE3Velocity* output_vel_of_a_in_c) {
+                               const std::string& frame_b, const std::string& frame_c,
+                               const ::bosdyn::api::SE3Velocity& vel_of_a_in_b,
+                               ::bosdyn::api::SE3Velocity* output_vel_of_a_in_c) {
     // Find the SE(3) pose in the frame tree snapshot that represents c_tform_b.
     ::bosdyn::api::SE3Pose se3_c_tform_b;
     if (!get_a_tform_b(frame_tree_snapshot, frame_c, frame_b, &se3_c_tform_b)) {
@@ -172,9 +141,9 @@ bool ExpressVelocityInNewFrame(const ::bosdyn::api::FrameTreeSnapshot& frame_tre
 }
 
 bool ExpressVelocityInNewFrame(const ::bosdyn::api::FrameTreeSnapshot& frame_tree_snapshot,
-                                   const std::string& se2_frame_b, const std::string& se2_frame_c,
-                                   const ::bosdyn::api::SE2Velocity& vel_of_a_in_b,
-                                   ::bosdyn::api::SE2Velocity* output_vel_of_a_in_c) {
+                               const std::string& se2_frame_b, const std::string& se2_frame_c,
+                               const ::bosdyn::api::SE2Velocity& vel_of_a_in_b,
+                               ::bosdyn::api::SE2Velocity* output_vel_of_a_in_c) {
     // Find the closest SE(2) pose in the frame tree snapshot that represents c_tform_b.
     // This function will also check that the SE(3) pose frame name is considered to be a
     // gravity aligned frame.
@@ -191,37 +160,37 @@ bool ExpressVelocityInNewFrame(const ::bosdyn::api::FrameTreeSnapshot& frame_tre
 }
 
 bool CheckSE3_a_tform_b(const ::bosdyn::api::FrameTreeSnapshot& frame_tree_snapshot,
-                         const std::string& frame_a, const std::string& frame_b) {
+                        const std::string& frame_a, const std::string& frame_b) {
     ::bosdyn::api::SE3Pose dummy_a_tform_b;
     return get_a_tform_b(frame_tree_snapshot, frame_a, frame_b, &dummy_a_tform_b);
 }
 
 bool CheckSE2_a_tform_b(const ::bosdyn::api::FrameTreeSnapshot& frame_tree_snapshot,
-                         const std::string& frame_a, const std::string& frame_b) {
+                        const std::string& frame_a, const std::string& frame_b) {
     ::bosdyn::api::SE2Pose dummy_a_tform_b;
     return get_a_tform_b(frame_tree_snapshot, frame_a, frame_b, &dummy_a_tform_b);
 }
 
 bool IsFrameInTree(const ::bosdyn::api::FrameTreeSnapshot& frame_tree_snapshot,
-                      const std::string& frame_name) {
+                   const std::string& frame_name) {
     return frame_tree_snapshot.child_to_parent_edge_map().count(frame_name) > 0;
 }
 
 bool GetOdomTformBody(const ::bosdyn::api::FrameTreeSnapshot& frame_tree_snapshot,
-                       ::bosdyn::api::SE3Pose* out_pose) {
+                      ::bosdyn::api::SE3Pose* out_pose) {
     return get_a_tform_b(frame_tree_snapshot, ::bosdyn::api::kOdomFrame, ::bosdyn::api::kBodyFrame,
                          out_pose);
 }
 
 bool GetWorldTformBody(const ::bosdyn::api::FrameTreeSnapshot& frame_tree_snapshot,
-                          ::bosdyn::api::SE3Pose* out_pose) {
-    return get_a_tform_b(frame_tree_snapshot, ::bosdyn::api::kVisionFrame, ::bosdyn::api::kBodyFrame,
-                         out_pose);
+                       ::bosdyn::api::SE3Pose* out_pose) {
+    return get_a_tform_b(frame_tree_snapshot, ::bosdyn::api::kVisionFrame,
+                         ::bosdyn::api::kBodyFrame, out_pose);
 }
 
-bool AddEdgeToFrameTree(const std::string& parent_frame_name,
-                            const std::string& child_frame_name, const ::bosdyn::api::SE3Pose& pose,
-                            ::bosdyn::api::FrameTreeSnapshot* frame_tree_snapshot) {
+bool AddEdgeToFrameTree(const std::string& parent_frame_name, const std::string& child_frame_name,
+                        const ::bosdyn::api::SE3Pose& pose,
+                        ::bosdyn::api::FrameTreeSnapshot* frame_tree_snapshot) {
     if (IsFrameInTree(*frame_tree_snapshot, child_frame_name)) {
         return false;
     }
@@ -235,9 +204,8 @@ bool AddEdgeToFrameTree(const std::string& parent_frame_name,
 }
 
 bool SetPoseOnExistingEdge(const std::string& parent_frame_name,
-                               const std::string& child_frame_name,
-                               const ::bosdyn::api::SE3Pose& pose,
-                               ::bosdyn::api::FrameTreeSnapshot* frame_tree_snapshot) {
+                           const std::string& child_frame_name, const ::bosdyn::api::SE3Pose& pose,
+                           ::bosdyn::api::FrameTreeSnapshot* frame_tree_snapshot) {
     bool mutated_frame = false;
     auto* frame_to_parent_edge_map = frame_tree_snapshot->mutable_child_to_parent_edge_map();
     for (const auto& frame_to_parent_edge : *frame_to_parent_edge_map) {
@@ -273,6 +241,81 @@ bool IsGravityAlignedFrameName(const std::string& frame_name) {
     return false;
 }
 
+ValidateFrameTreeSnapshotStatus FindTreeRoot(
+    const ::bosdyn::api::FrameTreeSnapshot& frame_tree_snapshot, const std::string& leaf_frame_name,
+    std::string* root_frame_name) {
+    std::string cur_frame_name = leaf_frame_name;
+    if (leaf_frame_name.empty()) {
+        return ValidateFrameTreeSnapshotStatus::EMPTY_CHILD_FRAME_NAME;
+    }
+    std::set<std::string> visited = std::set<std::string>();
+    visited.insert(leaf_frame_name);
+    const auto& child_to_parent_edge_map = frame_tree_snapshot.child_to_parent_edge_map();
+    while (true) {
+        auto it = child_to_parent_edge_map.find(cur_frame_name);
+        if (it == child_to_parent_edge_map.end()) {
+            return ValidateFrameTreeSnapshotStatus::UNKNOWN_PARENT_FRAME_NAME;
+        }
+        const auto& parent_edge = it->second;
+        const std::string& parent_frame_name = parent_edge.parent_frame_name();
+        if (parent_frame_name.empty()) {
+            break;
+        }
+        auto insert_result = visited.insert(parent_frame_name);
+        if (!insert_result.second) {
+            return ValidateFrameTreeSnapshotStatus::CYCLE;
+        }
+        cur_frame_name = parent_frame_name;
+    }
+    if (root_frame_name) {
+        *root_frame_name = cur_frame_name;
+    }
+    return ValidateFrameTreeSnapshotStatus::VALID;
+}
+
+bool ReparentFrame(const std::string& new_parent_name, const std::string& child_frame_name,
+                   const ::bosdyn::api::SE3Pose& new_parent_T_child,
+                   FrameTreeSnapshot* frame_tree_snapshot) {
+    // Ensure the child frame is in the tree.
+    if (!IsFrameInTree(*frame_tree_snapshot, child_frame_name)) {
+        // Can't reparent a frame that isn't in the tree.
+        return false;
+    }
+
+    // Get the current parent edge for this child frame.
+    FrameTreeSnapshot::ParentEdge& current_parent_edge =
+        frame_tree_snapshot->mutable_child_to_parent_edge_map()->at(child_frame_name);
+    const std::string& current_parent_name = current_parent_edge.parent_frame_name();
+    const SE3Pose& current_parent_T_child = current_parent_edge.parent_tform_child();
+
+    // Special case: if the child frame is the root frame, make the new parent the root.
+    if (current_parent_name.empty()) {
+        current_parent_edge.set_parent_frame_name(new_parent_name);
+        current_parent_edge.mutable_parent_tform_child()->CopyFrom(new_parent_T_child);
+
+        FrameTreeSnapshot::ParentEdge new_parent_edge;
+        // Root frame has an empty parent frame and the SE3 Identity transform.
+        new_parent_edge.set_parent_frame_name("");
+        *(new_parent_edge.mutable_parent_tform_child()) = CreateSE3Pose();
+        frame_tree_snapshot->mutable_child_to_parent_edge_map()->insert(
+            {new_parent_name, new_parent_edge});
+        return true;
+    }
+
+    // Modify the child's parent edge to point to the new parent.
+    current_parent_edge.set_parent_frame_name(new_parent_name);
+    current_parent_edge.mutable_parent_tform_child()->CopyFrom(new_parent_T_child);
+
+    // Create a parent edge for current_parent <- new_parent
+    const SE3Pose current_parent_T_new_parent = current_parent_T_child * ~new_parent_T_child;
+    const bool success = AddEdgeToFrameTree(current_parent_name, new_parent_name,
+                                            current_parent_T_new_parent, frame_tree_snapshot);
+    if (!success) {
+        return false;
+    }
+
+    return true;
+}
 }  // namespace api
 
 }  // namespace bosdyn

@@ -263,10 +263,10 @@ message RandomRotateParams {
 
     // The specified speed values will be split into this many number of tiers between
     // the bounds of [speed - speed_variation, speed + speed variation]. Then a tier (with
-    // a specified speed) will be randomly choosen and performed for each axis.
+    // a specified speed) will be randomly chosen and performed for each axis.
     google.protobuf.Int32Value num_speed_tiers = 4;
 
-    // How much can the output speed vary from the choosen tiered speed.
+    // How much can the output speed vary from the chosen tiered speed.
     google.protobuf.DoubleValue tier_variation = 5;
 }
 

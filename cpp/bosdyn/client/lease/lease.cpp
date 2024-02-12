@@ -196,28 +196,43 @@ bool Lease::IsValid() const {
     return !m_lease_proto.resource().empty() && m_lease_proto.sequence_size() > 0;
 }
 
-void Lease::UpdateFromLeaseUseResult(const ::bosdyn::api::LeaseUseResult& lease_use_result) {
+bool Lease::UpdateFromLeaseUseResult(const ::bosdyn::api::LeaseUseResult& lease_use_result) {
     if (lease_use_result.status() == ::bosdyn::api::LeaseUseResult::STATUS_OLDER) {
-        // The lease from the lease wallet was an older lease.
-        if (Compare(Lease(lease_use_result.attempted_lease())) == CompareResult::SAME) {
-            // If the lease use result's lease matches this current lease, then mark it as other
-            // owner since it was found to be an older lease and we never incremented it.
-            m_lease_status = LeaseStatus::OTHER_OWNER;
+        // The lease was reported as being too old. Check if that applies to our current lease.
+        Lease latest_known_lease(lease_use_result.latest_known_lease());
+        if (latest_known_lease.IsValid()) {
+            const auto cmp = Compare(latest_known_lease);
+            if (cmp == Lease::CompareResult::NEWER || cmp == Lease::CompareResult::SAME) {
+                // The attempted lease was older, but the lease in the wallet has been updated in
+                // the meantime to something that is newer than what the robot has seen, so this
+                // OLDER result is no longer relevant.
+                return false;
+            }
         }
+        // The lease from the lease wallet was an older lease.
+        m_lease_status = LeaseStatus::OTHER_OWNER;
+        return true;
     } else if (lease_use_result.status() == ::bosdyn::api::LeaseUseResult::STATUS_WRONG_EPOCH) {
-        // The lease from the lease wallet is the wrong epoch.
-        if (Compare(Lease(lease_use_result.attempted_lease())) == CompareResult::SAME) {
+        // The lease is reported as having the wrong epoch.
+        // Check if that applies to our current lease.
+        if (m_lease_proto.epoch() != lease_use_result.latest_known_lease().epoch()) {
             // If the lease use result's lease matches this current lease, then mark it as unowned
             // because it is now entirely wrong (different epochs) for the resource.
             m_lease_status = LeaseStatus::UNOWNED;
+            return true;
         }
+        return false;
     } else if (lease_use_result.status() == ::bosdyn::api::LeaseUseResult::STATUS_REVOKED) {
-        // The lease from the lease wallet is the wrong epoch.
-        if (Compare(Lease(lease_use_result.attempted_lease())) == CompareResult::SAME) {
+        // The lease was reported as revoked. Check if that applies to our current lease.
+        auto comparison = Compare(Lease(lease_use_result.attempted_lease()));
+        if (comparison == CompareResult::SAME || comparison == CompareResult::SUB_LEASE) {
             // If the lease use result's lease matches this current lease, then mark it as revoked.
             m_lease_status = LeaseStatus::REVOKED;
+            return true;
         }
+        return false;
     }
+    return true;
 }
 
 Lease Lease::SplitLease(const std::string& resource, const ResourceHierarchy& hierarchy) const {
@@ -230,9 +245,7 @@ Lease Lease::SplitLease(const std::string& resource, const ResourceHierarchy& hi
     }
 
     Lease result(*this);
-    const auto& sub_hierarchy = hierarchy.GetHierarchy(resource);
-    const auto& resource_tree = sub_hierarchy.ResourceTree();
-    result.m_lease_proto.set_resource(resource_tree.resource());
+    result.m_lease_proto.set_resource(resource);
     return result;
 }
 

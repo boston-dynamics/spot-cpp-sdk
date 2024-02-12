@@ -12,3 +12,4 @@
 
 DEFINE_PROTO_ENUM_ERRORCODE_IMPL_API(PowerCommandStatus, valcode == 1 || valcode == 2)
 DEFINE_PROTO_ENUM_ERRORCODE_IMPL_API(FanPowerCommandResponse_Status, valcode == 1)
+DEFINE_PROTO_ENUM_ERRORCODE_IMPL_API(ResetSafetyStopResponse_Status, valcode == 1)

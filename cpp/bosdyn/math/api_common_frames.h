@@ -16,6 +16,11 @@ namespace bosdyn {
 
 namespace api {
 
+enum class RobotSpecies {
+    kSpot = 0,
+
+};
+
 enum class CommonApiFrames { kVisionFrame, kOdomFrame, kBodyFrame };
 
 // Common frame names for SE(3) Math.
@@ -28,7 +33,14 @@ const std::string kBodyFrame = "body";
 // If an arm is attached to the robot, the hand frame is a frame located with it's origin slightly
 // in front of the gripper's palm plate aligned with wrist's orientation.
 const std::string kHandFrame = "hand";
-const std::string kWristFrame = "link_wr1";
+// DEPRECATED.  In software version <4.0, we incorrectly used "link_wr1" in the kinematic_state's
+// transforms_snapshot instead of the URDF's link name of "arm0.link_wr1".  Starting in 4.0 we added
+// the arm0 prefix. New code should use kWr1Frame instead.
+[[deprecated("Use kWr1Frame instead.")]] const std::string kWristFrame = "link_wr1";
+// If an arm is attached, this frame is attached to the robot's distal wrist link and represents
+// that links position and orientation. The origin of the frame is at the end of the link on its
+// rotational axis.  It's x-axis is aligned with the rotational axis.
+const std::string kWr1Frame = "arm0.link_wr1";
 
 // Note that the frame name for a gravity aligned body frame is "flat_body" to create a shorter
 // string identifier that can be handled by all common compilers.
@@ -45,15 +57,27 @@ std::string FrameEnumToExternalString(CommonApiFrames frame);
 
 std::string ClosestSE2StringFromFrameEnum(CommonApiFrames frame);
 
-std::string ExternalStringToInternalString(const std::string& external_frame);
+/// @brief Converts frame name of specified robot species from External to Internal.
+/// @param [in] external_frame
+/// @param [in] robot_species Default is Spot.
+/// @return Internal frame name.
+std::string ExternalStringToInternalString(const std::string& external_frame,
+                                           const RobotSpecies robot_species = RobotSpecies::kSpot);
 
-std::string InternalStringToExternalString(const std::string& internal_frame);
+/// @brief Converts frame name of specified robot species from Internal to External.
+/// @param [in] internal_frame
+/// @param [in] robot_species Default is Spot.
+/// @return External frame name.
+std::string InternalStringToExternalString(const std::string& internal_frame,
+                                           const RobotSpecies robot_species = RobotSpecies::kSpot);
 
 std::string SE2StringToClosestSE3String(const std::string& se2_frame);
 
 std::string CombineNameAndId(const std::string& frame_name, int id);
 
 std::string ChannelToCameraFrameName(const std::string& channel_name);
+
+// Base names for BD robot species
 
 // Base frame names for world objects.
 const char kFiducialFrame[] =
@@ -105,6 +129,9 @@ const char kHindRightFootFrame[] = "hr_foot";
 const std::array<const char*, 4> kFootFrames{kFrontLeftFootFrame, kFrontRightFootFrame,
                                              kHindLeftFootFrame, kHindRightFootFrame};
 
+// Various frame names used for localization with respect to the Earth.
+const std::string kEarthFrame = "ecef"; // Earth Centered Earth Fixed
+const std::string kEnuFrame = "enu"; // East North Up
 }  // namespace api
 
 }  // namespace bosdyn

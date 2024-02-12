@@ -24,8 +24,7 @@ const char* RobotCommandClient::s_default_service_name = "robot-command";
 const char* RobotCommandClient::s_service_type = "bosdyn.api.RobotCommandService";
 
 std::shared_future<RobotCommandResultType> RobotCommandClient::RobotCommandAsync(
-    ::bosdyn::api::RobotCommandRequest& request,
-    const RPCParameters& parameters) {
+    ::bosdyn::api::RobotCommandRequest& request, const RPCParameters& parameters) {
     std::promise<RobotCommandResultType> response;
     std::shared_future<RobotCommandResultType> future = response.get_future();
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
@@ -34,7 +33,8 @@ std::shared_future<RobotCommandResultType> RobotCommandClient::RobotCommandAsync
     auto lease_status = ::bosdyn::client::ProcessRequestWithLease(&request, m_lease_wallet.get(),
                                                                   ::bosdyn::client::kBodyResource);
     if (!lease_status) {
-        // Failed to set a lease with the lease wallet. Return early since the request will fail without a lease.
+        // Failed to set a lease with the lease wallet. Return early since the request will fail
+        // without a lease.
         response.set_value({lease_status, {}});
         return future;
     }
@@ -43,7 +43,8 @@ std::shared_future<RobotCommandResultType> RobotCommandClient::RobotCommandAsync
         InitiateAsyncCall<::bosdyn::api::RobotCommandRequest, ::bosdyn::api::RobotCommandResponse,
                           ::bosdyn::api::RobotCommandResponse>(
             request,
-            std::bind(&::bosdyn::api::RobotCommandService::Stub::AsyncRobotCommand, m_stub.get(), _1, _2, _3),
+            std::bind(&::bosdyn::api::RobotCommandService::Stub::AsyncRobotCommand, m_stub.get(),
+                      _1, _2, _3),
             std::bind(&RobotCommandClient::OnRobotCommandComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
@@ -67,7 +68,8 @@ std::shared_future<RobotCommandResultType> RobotCommandClient::RobotCommandAsync
     if (time_sync_endpoint) {
         if (end_time != ::bosdyn::common::TimePoint(::bosdyn::common::Duration(0))) {
             // Update the end time to robot time and apply it to the command.
-            ::bosdyn::common::RobotTimeConverter time_converter = time_sync_endpoint->GetRobotTimeConverter();
+            ::bosdyn::common::RobotTimeConverter time_converter =
+                time_sync_endpoint->GetRobotTimeConverter();
             auto cmd_timestamp = time_converter.RobotTimestampFromLocal(end_time);
             MutateEndTime(request.mutable_command(), cmd_timestamp);
         }
@@ -81,7 +83,8 @@ std::shared_future<RobotCommandResultType> RobotCommandClient::RobotCommandAsync
     } else if (m_time_sync_endpoint) {
         if (end_time != ::bosdyn::common::TimePoint(::bosdyn::common::Duration(0))) {
             // Update the end time to robot time and apply it to the command.
-            ::bosdyn::common::RobotTimeConverter time_converter = m_time_sync_endpoint->GetRobotTimeConverter();
+            ::bosdyn::common::RobotTimeConverter time_converter =
+                m_time_sync_endpoint->GetRobotTimeConverter();
             auto cmd_timestamp = time_converter.RobotTimestampFromLocal(end_time);
             MutateEndTime(request.mutable_command(), cmd_timestamp);
         }
@@ -94,8 +97,10 @@ std::shared_future<RobotCommandResultType> RobotCommandClient::RobotCommandAsync
         request.set_clock_identifier(*clock_string.response);
     } else {
         // Unable to set the clock identifier for the robot command.
-        response.set_value({::bosdyn::common::Status(SDKErrorCode::GenericSDKError,
-                                   "Timesync endpoint is unset for the RobotCommand Client."), {}});
+        response.set_value(
+            {::bosdyn::common::Status(SDKErrorCode::GenericSDKError,
+                                      "Timesync endpoint is unset for the RobotCommand Client."),
+             {}});
         return future;
     }
 
@@ -103,9 +108,8 @@ std::shared_future<RobotCommandResultType> RobotCommandClient::RobotCommandAsync
     return RobotCommandAsync(request, parameters);
 }
 
-void RobotCommandClient::MutateEndTime(
-    ::bosdyn::api::MobilityCommand::Request* mobility_command,
-    const google::protobuf::Timestamp& end_time) {
+void RobotCommandClient::MutateEndTime(::bosdyn::api::MobilityCommand::Request* mobility_command,
+                                       const google::protobuf::Timestamp& end_time) {
     if (mobility_command->has_se2_velocity_request()) {
         // Velocity request has an endtime.
         mobility_command->mutable_se2_velocity_request()->mutable_end_time()->CopyFrom(end_time);
@@ -116,54 +120,52 @@ void RobotCommandClient::MutateEndTime(
     }
 }
 
-void RobotCommandClient::MutateEndTime(
-    ::bosdyn::api::RobotCommand* robot_command, const google::protobuf::Timestamp& end_time) {
-    if (robot_command->has_synchronized_command()) {
-        if (robot_command->synchronized_command().has_mobility_command()) {
-            MutateEndTime(robot_command->mutable_synchronized_command()->mutable_mobility_command(),
-                          end_time);
-        }
-    } else if (robot_command->has_mobility_command()) {
-        MutateEndTime(robot_command->mutable_mobility_command(), end_time);
+void RobotCommandClient::MutateEndTime(::bosdyn::api::RobotCommand* robot_command,
+                                       const google::protobuf::Timestamp& end_time) {
+    if (robot_command->synchronized_command().has_mobility_command()) {
+        MutateEndTime(robot_command->mutable_synchronized_command()->mutable_mobility_command(),
+                      end_time);
     }
 }
 
-void RobotCommandClient::OnRobotCommandComplete(
-    MessagePumpCallBase* call, const ::bosdyn::api::RobotCommandRequest& request,
-    ::bosdyn::api::RobotCommandResponse&& response, const grpc::Status& status,
-    std::promise<RobotCommandResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseWithLeaseAndGetFinalStatus<::bosdyn::api::RobotCommandResponse>(
-        status, response, response.status(), m_lease_wallet.get());
+void RobotCommandClient::OnRobotCommandComplete(MessagePumpCallBase* call,
+                                                const ::bosdyn::api::RobotCommandRequest& request,
+                                                ::bosdyn::api::RobotCommandResponse&& response,
+                                                const grpc::Status& status,
+                                                std::promise<RobotCommandResultType> promise) {
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseWithLeaseAndGetFinalStatus<::bosdyn::api::RobotCommandResponse>(
+            status, response, response.status(), m_lease_wallet.get());
     promise.set_value({ret_status, std::move(response)});
 }
 
-RobotCommandResultType RobotCommandClient::RobotCommand(
-    ::bosdyn::api::RobotCommandRequest& request, const RPCParameters& parameters) {
+RobotCommandResultType RobotCommandClient::RobotCommand(::bosdyn::api::RobotCommandRequest& request,
+                                                        const RPCParameters& parameters) {
     return RobotCommandAsync(request, parameters).get();
 }
 
-RobotCommandResultType RobotCommandClient::RobotCommand(
-    ::bosdyn::api::RobotCommand& command, Lease* lease, TimeSyncEndpoint* time_sync_endpoint,
-    ::bosdyn::common::TimePoint end_time, const RPCParameters& parameters) {
+RobotCommandResultType RobotCommandClient::RobotCommand(::bosdyn::api::RobotCommand& command,
+                                                        Lease* lease,
+                                                        TimeSyncEndpoint* time_sync_endpoint,
+                                                        ::bosdyn::common::TimePoint end_time,
+                                                        const RPCParameters& parameters) {
     return RobotCommandAsync(command, lease, time_sync_endpoint, end_time, parameters).get();
 }
 
 std::shared_future<RobotCommandFeedbackResultType> RobotCommandClient::RobotCommandFeedbackAsync(
-    ::bosdyn::api::RobotCommandFeedbackRequest& request,
-    const RPCParameters& parameters) {
+    ::bosdyn::api::RobotCommandFeedbackRequest& request, const RPCParameters& parameters) {
     std::promise<RobotCommandFeedbackResultType> response;
     std::shared_future<RobotCommandFeedbackResultType> future = response.get_future();
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
 
-    MessagePumpCallBase* one_time =
-        InitiateAsyncCall<::bosdyn::api::RobotCommandFeedbackRequest, ::bosdyn::api::RobotCommandFeedbackResponse,
-                          ::bosdyn::api::RobotCommandFeedbackResponse>(
-            request,
-            std::bind(&::bosdyn::api::RobotCommandService::Stub::AsyncRobotCommandFeedback, m_stub.get(), _1,
-                      _2, _3),
-            std::bind(&RobotCommandClient::OnRobotCommandFeedbackComplete, this, _1, _2, _3, _4,
-                      _5),
-            std::move(response), parameters);
+    MessagePumpCallBase* one_time = InitiateAsyncCall<::bosdyn::api::RobotCommandFeedbackRequest,
+                                                      ::bosdyn::api::RobotCommandFeedbackResponse,
+                                                      ::bosdyn::api::RobotCommandFeedbackResponse>(
+        request,
+        std::bind(&::bosdyn::api::RobotCommandService::Stub::AsyncRobotCommandFeedback,
+                  m_stub.get(), _1, _2, _3),
+        std::bind(&RobotCommandClient::OnRobotCommandFeedbackComplete, this, _1, _2, _3, _4, _5),
+        std::move(response), parameters);
 
     return future;
 }
@@ -174,21 +176,20 @@ void RobotCommandClient::OnRobotCommandFeedbackComplete(
     std::promise<RobotCommandFeedbackResultType> promise) {
     // Feedback indicates the command conditions and does not represent an error code. As
     // such, the response.status will always be a success, regardless of the feedback status value.
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::RobotCommandFeedbackResponse>(
-        status, response, SDKErrorCode::Success);
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::RobotCommandFeedbackResponse>(
+            status, response, SDKErrorCode::Success);
 
     promise.set_value({ret_status, std::move(response)});
 }
 
 RobotCommandFeedbackResultType RobotCommandClient::RobotCommandFeedback(
-    ::bosdyn::api::RobotCommandFeedbackRequest& request,
-    const RPCParameters& parameters) {
+    ::bosdyn::api::RobotCommandFeedbackRequest& request, const RPCParameters& parameters) {
     return RobotCommandFeedbackAsync(request, parameters).get();
 }
 
 std::shared_future<ClearBehaviorFaultResultType> RobotCommandClient::ClearBehaviorFaultAsync(
-    ::bosdyn::api::ClearBehaviorFaultRequest& request,
-    const RPCParameters& parameters) {
+    ::bosdyn::api::ClearBehaviorFaultRequest& request, const RPCParameters& parameters) {
     std::promise<ClearBehaviorFaultResultType> response;
     std::shared_future<ClearBehaviorFaultResultType> future = response.get_future();
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
@@ -198,19 +199,20 @@ std::shared_future<ClearBehaviorFaultResultType> RobotCommandClient::ClearBehavi
     auto lease_status = bosdyn::client::ProcessRequestWithLease(&request, m_lease_wallet.get(),
                                                                 ::bosdyn::client::kBodyResource);
     if (!lease_status) {
-        // Failed to set a lease with the lease wallet. Return early since the request will fail without a lease.
+        // Failed to set a lease with the lease wallet. Return early since the request will fail
+        // without a lease.
         response.set_value({lease_status, {}});
         return future;
     }
 
-    MessagePumpCallBase* one_time =
-        InitiateAsyncCall<::bosdyn::api::ClearBehaviorFaultRequest, ::bosdyn::api::ClearBehaviorFaultResponse,
-                          ::bosdyn::api::ClearBehaviorFaultResponse>(
-            request,
-            std::bind(&::bosdyn::api::RobotCommandService::Stub::AsyncClearBehaviorFault, m_stub.get(), _1,
-                      _2, _3),
-            std::bind(&RobotCommandClient::OnClearBehaviorFaultComplete, this, _1, _2, _3, _4, _5),
-            std::move(response), parameters);
+    MessagePumpCallBase* one_time = InitiateAsyncCall<::bosdyn::api::ClearBehaviorFaultRequest,
+                                                      ::bosdyn::api::ClearBehaviorFaultResponse,
+                                                      ::bosdyn::api::ClearBehaviorFaultResponse>(
+        request,
+        std::bind(&::bosdyn::api::RobotCommandService::Stub::AsyncClearBehaviorFault, m_stub.get(),
+                  _1, _2, _3),
+        std::bind(&RobotCommandClient::OnClearBehaviorFaultComplete, this, _1, _2, _3, _4, _5),
+        std::move(response), parameters);
 
     return future;
 }
@@ -219,14 +221,14 @@ void RobotCommandClient::OnClearBehaviorFaultComplete(
     MessagePumpCallBase* call, const ::bosdyn::api::ClearBehaviorFaultRequest& request,
     ::bosdyn::api::ClearBehaviorFaultResponse&& response, const grpc::Status& status,
     std::promise<ClearBehaviorFaultResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseWithLeaseAndGetFinalStatus<::bosdyn::api::ClearBehaviorFaultResponse>(
-        status, response, response.status(), m_lease_wallet.get());
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseWithLeaseAndGetFinalStatus<::bosdyn::api::ClearBehaviorFaultResponse>(
+            status, response, response.status(), m_lease_wallet.get());
     promise.set_value({ret_status, std::move(response)});
 }
 
 ClearBehaviorFaultResultType RobotCommandClient::ClearBehaviorFault(
-    ::bosdyn::api::ClearBehaviorFaultRequest& request,
-    const RPCParameters& parameters) {
+    ::bosdyn::api::ClearBehaviorFaultRequest& request, const RPCParameters& parameters) {
     return ClearBehaviorFaultAsync(request, parameters).get();
 }
 

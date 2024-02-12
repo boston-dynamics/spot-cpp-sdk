@@ -231,6 +231,25 @@ FanPowerCommandResultType FanPowerCommand(PowerClient* power_client, int percent
 FanPowerCommandFeedbackResultType FanPowerCommandFeedback(PowerClient* power_client,
                                                           int command_id);
 
+/**
+ * Send ResetPrimarySafetyStop Command to the robot and return response.
+ *
+ * @param power_client (::bosdyn::api::PowerClient): Client for calling Power Service
+ *
+ * @return ResetSafetyStopResultType Get ResetSafetyStop Response for lease and
+ * status
+ */
+ResetSafetyStopResultType ResetPrimarySafetyStop(PowerClient* power_client);
+
+/**
+ * Send ResetRedundantSafetyStop Command to the robot and return response.
+ *
+ * @param power_client (::bosdyn::api::PowerClient): Client for calling Power Service
+ *
+ * @return ResetSafetyStopResultType Get ResetSafetyStop Response for lease and
+ * status
+ */
+ResetSafetyStopResultType ResetRedundantSafetyStop(PowerClient* power_client);
 
 }  // namespace power_client_helper
 

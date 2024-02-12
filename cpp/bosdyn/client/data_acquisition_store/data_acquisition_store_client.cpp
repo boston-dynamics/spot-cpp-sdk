@@ -358,6 +358,91 @@ void DataAcquisitionStoreClient::OnStoreAlertDataComplete(
     promise.set_value({ret_status, std::move(response)});
 }
 
+std::shared_future<DataAcquisitionStoreQueryStoredCapturesResultType>
+DataAcquisitionStoreClient::QueryStoredCapturesAsync(
+    ::bosdyn::api::QueryStoredCapturesRequest& request, const RPCParameters& parameters) {
+    std::promise<DataAcquisitionStoreQueryStoredCapturesResultType> response;
+    std::shared_future<DataAcquisitionStoreQueryStoredCapturesResultType> future =
+        response.get_future();
+    BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
+
+    MessagePumpCallBase* one_time =
+        InitiateResponseStreamAsyncCall<::bosdyn::api::QueryStoredCapturesRequest,
+                                        ::bosdyn::api::DataChunk,
+                                        ::bosdyn::api::QueryStoredCapturesResponse>(
+            request,
+            std::bind(&::bosdyn::api::DataAcquisitionStoreService::Stub::AsyncQueryStoredCaptures,
+                      m_stub.get(), _1, _2, _3, _4),
+            std::bind(&DataAcquisitionStoreClient::OnQueryStoredCapturesComplete, this, _1, _2, _3,
+                      _4, _5),
+            std::move(response), parameters);
+
+    return future;
+}
+
+DataAcquisitionStoreQueryStoredCapturesResultType DataAcquisitionStoreClient::QueryStoredCaptures(
+    ::bosdyn::api::QueryStoredCapturesRequest& request, const RPCParameters& parameters) {
+    return QueryStoredCapturesAsync(request, parameters).get();
+}
+
+void DataAcquisitionStoreClient::OnQueryStoredCapturesComplete(
+    MessagePumpCallBase* call, const ::bosdyn::api::QueryStoredCapturesRequest& request,
+    std::vector<::bosdyn::api::DataChunk>&& responses, const grpc::Status& status,
+    std::promise<DataAcquisitionStoreQueryStoredCapturesResultType> promise) {
+    std::vector<const ::bosdyn::api::DataChunk*> chunks;
+    for (auto& chunk : responses) {
+        chunks.push_back(&chunk);
+    }
+
+    auto response_result =
+        MessageFromDataChunks<::bosdyn::api::QueryStoredCapturesResponse>(chunks);
+    if (!response_result) {
+        promise.set_value(response_result);
+        return;
+    }
+
+    ::bosdyn::api::QueryStoredCapturesResponse&& response = response_result.move();
+    auto ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::QueryStoredCapturesResponse>(
+        status, response, SDKErrorCode::Success);
+    promise.set_value({ret_status, std::move(response)});
+}
+
+std::shared_future<DataAcquisitionStoreQueryMaxCaptureIdResultType>
+DataAcquisitionStoreClient::QueryMaxCaptureIdAsync(const RPCParameters& parameters) {
+    ::bosdyn::api::QueryMaxCaptureIdRequest request;
+    std::promise<DataAcquisitionStoreQueryMaxCaptureIdResultType> response;
+    std::shared_future<DataAcquisitionStoreQueryMaxCaptureIdResultType> future =
+        response.get_future();
+    BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
+
+    MessagePumpCallBase* one_time = InitiateAsyncCall<::bosdyn::api::QueryMaxCaptureIdRequest,
+                                                      ::bosdyn::api::QueryMaxCaptureIdResponse,
+                                                      ::bosdyn::api::QueryMaxCaptureIdResponse>(
+        request,
+        std::bind(&::bosdyn::api::DataAcquisitionStoreService::Stub::AsyncQueryMaxCaptureId,
+                  m_stub.get(), _1, _2, _3),
+        std::bind(&DataAcquisitionStoreClient::OnQueryMaxCaptureIdComplete, this, _1, _2, _3, _4,
+                  _5),
+        std::move(response), parameters);
+
+    return future;
+}
+
+DataAcquisitionStoreQueryMaxCaptureIdResultType DataAcquisitionStoreClient::QueryMaxCaptureId(
+    const RPCParameters& parameters) {
+    return QueryMaxCaptureIdAsync(parameters).get();
+}
+
+void DataAcquisitionStoreClient::OnQueryMaxCaptureIdComplete(
+    MessagePumpCallBase* call, const ::bosdyn::api::QueryMaxCaptureIdRequest& request,
+    ::bosdyn::api::QueryMaxCaptureIdResponse&& response, const grpc::Status& status,
+    std::promise<DataAcquisitionStoreQueryMaxCaptureIdResultType> promise) {
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::QueryMaxCaptureIdResponse>(
+            status, response, SDKErrorCode::Success);
+
+    promise.set_value({ret_status, std::move(response)});
+}
 
 // Start of ServiceClient overrides.
 ServiceClient::QualityOfService DataAcquisitionStoreClient::GetQualityOfService() const {

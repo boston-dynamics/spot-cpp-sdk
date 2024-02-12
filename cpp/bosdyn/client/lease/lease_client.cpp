@@ -35,19 +35,22 @@ std::shared_future<AcquireLeaseResultType> LeaseClient::AcquireLeaseAsync(
         InitiateAsyncCall<::bosdyn::api::AcquireLeaseRequest, ::bosdyn::api::AcquireLeaseResponse,
                           ::bosdyn::api::AcquireLeaseResponse>(
             request,
-            std::bind(&::bosdyn::api::LeaseService::Stub::AsyncAcquireLease, m_stub.get(), _1, _2, _3),
+            std::bind(&::bosdyn::api::LeaseService::Stub::AsyncAcquireLease, m_stub.get(), _1, _2,
+                      _3),
             std::bind(&LeaseClient::OnAcquireLeaseComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
     return future;
 }
 
-void LeaseClient::OnAcquireLeaseComplete(
-    MessagePumpCallBase* call, const ::bosdyn::api::AcquireLeaseRequest& request,
-    ::bosdyn::api::AcquireLeaseResponse&& response, const grpc::Status& status,
-    std::promise<AcquireLeaseResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::AcquireLeaseResponse>(
-        status, response, response.status());
+void LeaseClient::OnAcquireLeaseComplete(MessagePumpCallBase* call,
+                                         const ::bosdyn::api::AcquireLeaseRequest& request,
+                                         ::bosdyn::api::AcquireLeaseResponse&& response,
+                                         const grpc::Status& status,
+                                         std::promise<AcquireLeaseResultType> promise) {
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::AcquireLeaseResponse>(status, response,
+                                                                              response.status());
 
     if (m_lease_wallet) {
         if (ret_status) {
@@ -59,8 +62,8 @@ void LeaseClient::OnAcquireLeaseComplete(
     promise.set_value({ret_status, std::move(response)});
 }
 
-AcquireLeaseResultType LeaseClient::AcquireLease(
-    const std::string& resource, const RPCParameters& parameters) {
+AcquireLeaseResultType LeaseClient::AcquireLease(const std::string& resource,
+                                                 const RPCParameters& parameters) {
     return AcquireLeaseAsync(resource, parameters).get();
 }
 
@@ -72,21 +75,25 @@ std::shared_future<TakeLeaseResultType> LeaseClient::TakeLeaseAsync(
 
     ::bosdyn::api::TakeLeaseRequest request;
     request.set_resource(resource);
-    MessagePumpCallBase* one_time = InitiateAsyncCall<::bosdyn::api::TakeLeaseRequest, ::bosdyn::api::TakeLeaseResponse,
-                                                      ::bosdyn::api::TakeLeaseResponse>(
-        request, std::bind(&::bosdyn::api::LeaseService::Stub::AsyncTakeLease, m_stub.get(), _1, _2, _3),
-        std::bind(&LeaseClient::OnTakeLeaseComplete, this, _1, _2, _3, _4, _5),
-        std::move(response), parameters);
+    MessagePumpCallBase* one_time =
+        InitiateAsyncCall<::bosdyn::api::TakeLeaseRequest, ::bosdyn::api::TakeLeaseResponse,
+                          ::bosdyn::api::TakeLeaseResponse>(
+            request,
+            std::bind(&::bosdyn::api::LeaseService::Stub::AsyncTakeLease, m_stub.get(), _1, _2, _3),
+            std::bind(&LeaseClient::OnTakeLeaseComplete, this, _1, _2, _3, _4, _5),
+            std::move(response), parameters);
 
     return future;
 }
 
-void LeaseClient::OnTakeLeaseComplete(
-    MessagePumpCallBase* call, const ::bosdyn::api::TakeLeaseRequest& request,
-    ::bosdyn::api::TakeLeaseResponse&& response, const grpc::Status& status,
-    std::promise<TakeLeaseResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::TakeLeaseResponse>(status, response,
-                                                                                 response.status());
+void LeaseClient::OnTakeLeaseComplete(MessagePumpCallBase* call,
+                                      const ::bosdyn::api::TakeLeaseRequest& request,
+                                      ::bosdyn::api::TakeLeaseResponse&& response,
+                                      const grpc::Status& status,
+                                      std::promise<TakeLeaseResultType> promise) {
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::TakeLeaseResponse>(status, response,
+                                                                           response.status());
 
     if (m_lease_wallet) {
         if (ret_status) {
@@ -98,8 +105,8 @@ void LeaseClient::OnTakeLeaseComplete(
     promise.set_value({ret_status, std::move(response)});
 }
 
-TakeLeaseResultType LeaseClient::TakeLease(
-    const std::string& resource, const RPCParameters& parameters) {
+TakeLeaseResultType LeaseClient::TakeLease(const std::string& resource,
+                                           const RPCParameters& parameters) {
     return TakeLeaseAsync(resource, parameters).get();
 }
 
@@ -113,19 +120,22 @@ std::shared_future<ReturnLeaseResultType> LeaseClient::ReturnLeaseAsync(
         InitiateAsyncCall<::bosdyn::api::ReturnLeaseRequest, ::bosdyn::api::ReturnLeaseResponse,
                           ::bosdyn::api::ReturnLeaseResponse>(
             request,
-            std::bind(&::bosdyn::api::LeaseService::Stub::AsyncReturnLease, m_stub.get(), _1, _2, _3),
+            std::bind(&::bosdyn::api::LeaseService::Stub::AsyncReturnLease, m_stub.get(), _1, _2,
+                      _3),
             std::bind(&LeaseClient::OnReturnLeaseComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
     return future;
 }
 
-void LeaseClient::OnReturnLeaseComplete(
-    MessagePumpCallBase* call, const ::bosdyn::api::ReturnLeaseRequest& request,
-    ::bosdyn::api::ReturnLeaseResponse&& response, const grpc::Status& status,
-    std::promise<ReturnLeaseResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::ReturnLeaseResponse>(
-        status, response, response.status());
+void LeaseClient::OnReturnLeaseComplete(MessagePumpCallBase* call,
+                                        const ::bosdyn::api::ReturnLeaseRequest& request,
+                                        ::bosdyn::api::ReturnLeaseResponse&& response,
+                                        const grpc::Status& status,
+                                        std::promise<ReturnLeaseResultType> promise) {
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::ReturnLeaseResponse>(status, response,
+                                                                             response.status());
 
     // Remove the lease from the wallet regardless of the status because all statuses indicated
     // it is no longer being managed by this client somehow.
@@ -134,8 +144,8 @@ void LeaseClient::OnReturnLeaseComplete(
     promise.set_value({ret_status, std::move(response)});
 }
 
-ReturnLeaseResultType LeaseClient::ReturnLease(
-    ::bosdyn::api::ReturnLeaseRequest& request, const RPCParameters& parameters) {
+ReturnLeaseResultType LeaseClient::ReturnLease(::bosdyn::api::ReturnLeaseRequest& request,
+                                               const RPCParameters& parameters) {
     return ReturnLeaseAsync(request, parameters).get();
 }
 
@@ -150,25 +160,29 @@ std::shared_future<ListLeasesResultType> LeaseClient::ListLeasesAsync(
     MessagePumpCallBase* one_time =
         InitiateAsyncCall<::bosdyn::api::ListLeasesRequest, ::bosdyn::api::ListLeasesResponse,
                           ::bosdyn::api::ListLeasesResponse>(
-            request, std::bind(&::bosdyn::api::LeaseService::Stub::AsyncListLeases, m_stub.get(), _1, _2, _3),
+            request,
+            std::bind(&::bosdyn::api::LeaseService::Stub::AsyncListLeases, m_stub.get(), _1, _2,
+                      _3),
             std::bind(&LeaseClient::OnListLeasesComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
     return future;
 }
 
-void LeaseClient::OnListLeasesComplete(
-    MessagePumpCallBase* call, const ::bosdyn::api::ListLeasesRequest& request,
-    ::bosdyn::api::ListLeasesResponse&& response, const grpc::Status& status,
-    std::promise<ListLeasesResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::ListLeasesResponse>(
-        status, response, SDKErrorCode::Success);
+void LeaseClient::OnListLeasesComplete(MessagePumpCallBase* call,
+                                       const ::bosdyn::api::ListLeasesRequest& request,
+                                       ::bosdyn::api::ListLeasesResponse&& response,
+                                       const grpc::Status& status,
+                                       std::promise<ListLeasesResultType> promise) {
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::ListLeasesResponse>(status, response,
+                                                                            SDKErrorCode::Success);
 
     promise.set_value({ret_status, std::move(response)});
 }
 
-ListLeasesResultType LeaseClient::ListLeases(
-    bool include_full_lease_info, const RPCParameters& parameters) {
+ListLeasesResultType LeaseClient::ListLeases(bool include_full_lease_info,
+                                             const RPCParameters& parameters) {
     return ListLeasesAsync(include_full_lease_info, parameters).get();
 }
 
@@ -182,25 +196,28 @@ std::shared_future<RetainLeaseResultType> LeaseClient::RetainLeaseAsync(
         InitiateAsyncCall<::bosdyn::api::RetainLeaseRequest, ::bosdyn::api::RetainLeaseResponse,
                           ::bosdyn::api::RetainLeaseResponse>(
             request,
-            std::bind(&::bosdyn::api::LeaseService::Stub::AsyncRetainLease, m_stub.get(), _1, _2, _3),
+            std::bind(&::bosdyn::api::LeaseService::Stub::AsyncRetainLease, m_stub.get(), _1, _2,
+                      _3),
             std::bind(&LeaseClient::OnRetainLeaseComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
     return future;
 }
 
-void LeaseClient::OnRetainLeaseComplete(
-    MessagePumpCallBase* call, const ::bosdyn::api::RetainLeaseRequest& request,
-    ::bosdyn::api::RetainLeaseResponse&& response, const grpc::Status& status,
-    std::promise<RetainLeaseResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::RetainLeaseResponse>(
-        status, response, response.lease_use_result().status());
+void LeaseClient::OnRetainLeaseComplete(MessagePumpCallBase* call,
+                                        const ::bosdyn::api::RetainLeaseRequest& request,
+                                        ::bosdyn::api::RetainLeaseResponse&& response,
+                                        const grpc::Status& status,
+                                        std::promise<RetainLeaseResultType> promise) {
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseWithLeaseAndGetFinalStatus<::bosdyn::api::RetainLeaseResponse>(
+            status, response, response.lease_use_result().status(), m_lease_wallet.get());
 
     promise.set_value({ret_status, std::move(response)});
 }
 
-RetainLeaseResultType LeaseClient::RetainLease(
-    ::bosdyn::api::RetainLeaseRequest& request, const RPCParameters& parameters) {
+RetainLeaseResultType LeaseClient::RetainLease(::bosdyn::api::RetainLeaseRequest& request,
+                                               const RPCParameters& parameters) {
     return RetainLeaseAsync(request, parameters).get();
 }
 

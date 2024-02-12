@@ -15,8 +15,7 @@ namespace bosdyn {
 
 namespace client {
 
-LeaseKeepAlive::LeaseKeepAlive(LeaseClient* lease_client,
-                               std::shared_ptr<LeaseWallet> lease_wallet,
+LeaseKeepAlive::LeaseKeepAlive(LeaseClient* lease_client, std::shared_ptr<LeaseWallet> lease_wallet,
                                const std::string& resource,
                                ::bosdyn::common::Duration rpc_interval_time,
                                OnRetainLeaseFailure<LeaseKeepAlive> on_failure_fn)
@@ -70,7 +69,7 @@ void LeaseKeepAlive::PeriodicCheckIn() {
                 }
             }
             auto retain_lease_result = future.get();
-            if (!retain_lease_result) {
+            if (!retain_lease_result && !m_lease_wallet->GetOwnedLease(m_resource)) {
                 fprintf(stderr, "LeaseKeepAlive RetainLeases RPC failed: '%s'\n",
                         retain_lease_result.status.DebugString().c_str());
                 if (m_on_retain_lease_failure_func) {

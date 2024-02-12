@@ -215,7 +215,9 @@ class Lease {
     bool IsValid() const;
 
     // Update internal instance of LeaseState from given lease.
-    void UpdateFromLeaseUseResult(const ::bosdyn::api::LeaseUseResult& lease_use_result);
+    // Returns true if the lease_use_result is still applicable to this lease.  False if it
+    // has been superseded.
+    bool UpdateFromLeaseUseResult(const ::bosdyn::api::LeaseUseResult& lease_use_result);
 
     // Get the current ownership status of the lease.
     LeaseStatus GetLeaseStatus() const { return m_lease_status; }

@@ -211,10 +211,52 @@ void PowerClient::OnFanPowerCommandFeedbackComplete(
     promise.set_value({ret_status, std::move(response)});
 }
 
-// Reset Redundant Safety Stop Commands
+// Reset Safety Stop Commands
 
+std::shared_future<ResetSafetyStopResultType> PowerClient::ResetSafetyStopAsync(
+    ::bosdyn::api::ResetSafetyStopRequest& request, const RPCParameters& parameters) {
+    std::promise<ResetSafetyStopResultType> response;
+    std::shared_future<ResetSafetyStopResultType> future = response.get_future();
+    BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
+    // Run a lease processor function to attempt to automatically apply a lease to the request if
+    // a lease is not already set.
+    auto lease_status =
+        ProcessRequestWithLease(&request, m_lease_wallet.get(), ::bosdyn::client::kBodyResource);
+    if (!lease_status) {
+        // Failed to set a lease with the lease wallet. Return early since the request will fail
+        // without a lease.
+        response.set_value({lease_status, {}});
+        return future;
+    }
 
+    MessagePumpCallBase* one_time = InitiateAsyncCall<::bosdyn::api::ResetSafetyStopRequest,
+                                                      ::bosdyn::api::ResetSafetyStopResponse,
+                                                      ::bosdyn::api::ResetSafetyStopResponse>(
+        request,
+        std::bind(&::bosdyn::api::PowerService::Stub::AsyncResetSafetyStop, m_stub.get(), _1, _2,
+                  _3),
+        std::bind(&PowerClient::OnResetSafetyStopComplete, this, _1, _2, _3, _4, _5),
+        std::move(response), parameters);
 
+    return future;
+}
+
+ResetSafetyStopResultType PowerClient::ResetSafetyStop(
+    ::bosdyn::api::ResetSafetyStopRequest& request, const RPCParameters& parameters) {
+    return ResetSafetyStopAsync(request, parameters).get();
+}
+
+void PowerClient::OnResetSafetyStopComplete(MessagePumpCallBase* call,
+                                            const ::bosdyn::api::ResetSafetyStopRequest& request,
+                                            ::bosdyn::api::ResetSafetyStopResponse&& response,
+                                            const grpc::Status& status,
+                                            std::promise<ResetSafetyStopResultType> promise) {
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseWithLeaseAndGetFinalStatus<::bosdyn::api::ResetSafetyStopResponse>(
+            status, response, response.status(), m_lease_wallet.get());
+
+    promise.set_value({ret_status, std::move(response)});
+}
 
 // Power Client Commands
 

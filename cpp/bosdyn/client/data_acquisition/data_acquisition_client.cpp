@@ -162,6 +162,40 @@ void DataAcquisitionClient::OnCancelAcquisitionComplete(
     promise.set_value({ret_status, std::move(response)});
 }
 
+// RPC to request live data for each capability
+std::shared_future<DataAcquisitionLiveDataResultType> DataAcquisitionClient::GetLiveDataAsync(
+    ::bosdyn::api::LiveDataRequest& request, const RPCParameters& parameters) {
+    std::promise<DataAcquisitionLiveDataResultType> response;
+    std::shared_future<DataAcquisitionLiveDataResultType> future = response.get_future();
+    BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
+
+    MessagePumpCallBase* one_time =
+        InitiateAsyncCall<::bosdyn::api::LiveDataRequest, ::bosdyn::api::LiveDataResponse,
+                          ::bosdyn::api::LiveDataResponse>(
+            request,
+            std::bind(&::bosdyn::api::DataAcquisitionService::Stub::AsyncGetLiveData, m_stub.get(), _1, _2,
+                      _3),
+            std::bind(&DataAcquisitionClient::OnLiveDataComplete, this, _1, _2, _3, _4, _5),
+            std::move(response), parameters);
+
+    return future;
+}
+
+DataAcquisitionLiveDataResultType DataAcquisitionClient::GetLiveData(
+    ::bosdyn::api::LiveDataRequest& request, const RPCParameters& parameters) {
+    return GetLiveDataAsync(request, parameters).get();
+}
+
+void DataAcquisitionClient::OnLiveDataComplete(
+    MessagePumpCallBase* call, const ::bosdyn::api::LiveDataRequest& request,
+    ::bosdyn::api::LiveDataResponse&& response, const grpc::Status& status,
+    std::promise<DataAcquisitionLiveDataResultType> promise) {
+    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::LiveDataResponse>(
+        status, response, SDKErrorCode::Success);
+
+    promise.set_value({ret_status, std::move(response)});
+}
+
 // Start of ServiceClient overrides.
 ServiceClient::QualityOfService DataAcquisitionClient::GetQualityOfService() const {
     return QualityOfService::NORMAL;

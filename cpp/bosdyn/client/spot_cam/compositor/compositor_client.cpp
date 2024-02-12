@@ -148,7 +148,9 @@ std::shared_future<SetIrMeterOverlayResultType> CompositorClient::SetIrMeterOver
     coords.set_x(x);
     coords.set_y(y);
     ::bosdyn::api::spot_cam::IrMeterOverlay overlay;
-    overlay.mutable_coords()->MergeFrom(coords);
+    // setting both coords and meter fields for backwards compatibility
+    *overlay.mutable_coords() = coords;
+    *overlay.add_meter() = coords;
     overlay.set_enable(enable);
     request.mutable_overlay()->MergeFrom(overlay);
 
@@ -168,7 +170,9 @@ std::shared_future<SetIrMeterOverlayResultType> CompositorClient::SetIrMeterOver
     coords.set_x(x);
     coords.set_y(y);
     ::bosdyn::api::spot_cam::IrMeterOverlay overlay;
-    overlay.mutable_coords()->MergeFrom(coords);
+    // setting both coords and meter fields for backwards compatibility
+    *overlay.mutable_coords() = coords;
+    *overlay.add_meter() = coords;
     overlay.set_enable(enable);
     overlay.mutable_unit()->CopyFrom(unit);
     request.mutable_overlay()->MergeFrom(overlay);

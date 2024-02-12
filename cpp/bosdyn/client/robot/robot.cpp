@@ -41,7 +41,7 @@ Robot::Robot(const std::string& client_name, const bool bypass_proxy,
             PayloadRegistrationClient::GetDefaultServiceAuthority()}}),
       m_bypass_proxy(bypass_proxy),
       m_bootstrap_endpoints_by_name(
-          
+
           {
           {DirectoryClient::GetDefaultServiceName(),
             {"127.0.0.1", 65033, DirectoryClient::GetServiceType()}},
@@ -481,14 +481,16 @@ Result<std::shared_ptr<const ::bosdyn::api::FrameTreeSnapshot>> Robot::GetFrameT
 }
 
 void Robot::UpdateUserToken(const std::string& user_token, const std::string& username) {
-    {
-        std::lock_guard<std::mutex> lock(m_token_mutex);
-        m_user_token = user_token;
-    }
+    SetUserToken(user_token);
     UpdateTokenCache(username);
 }
 
-const std::string& Robot::GetUserToken() {
+void Robot::SetUserToken(const std::string& user_token) {
+    std::lock_guard<std::mutex> lock(m_token_mutex);
+    m_user_token = user_token;
+}
+
+std::string Robot::GetUserToken() {
     std::lock_guard<std::mutex> lock(m_token_mutex);
     return m_user_token;
 }

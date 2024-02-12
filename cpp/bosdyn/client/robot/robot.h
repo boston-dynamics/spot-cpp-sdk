@@ -147,10 +147,13 @@ class Robot {
     // Access the robot's wallet, which should be shared between its clients.
     std::shared_ptr<LeaseWallet> GetWallet() { return m_lease_wallet; }
 
-    // Update user token in the robot.
+    // Update user token in the robot, and periodically refresh it.
     void UpdateUserToken(const std::string& user_token, const std::string& username = "");
 
-    const std::string& GetUserToken();
+    // Update user token in the robot, but do not periodically refresh it.
+    void SetUserToken(const std::string& user_token);
+
+    std::string GetUserToken();
 
     // Set certificate in the robot.
     void SetRobotCert(const std::string& cert) { m_cert = cert; }

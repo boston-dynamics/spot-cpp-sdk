@@ -9,31 +9,80 @@
 
 #include "api_common_frames.h"
 
+#include <optional>
+#include <string>
+#include <unordered_map>
+
+
 namespace bosdyn {
 
 namespace api {
 
-std::string ExternalStringToInternalString(const std::string& external_frame) {
-    if (external_frame == kVisionFrame) {
-        return kVisionFrameInternal;
-    } else if (external_frame == kOdomFrame) {
-        return kOdomFrameInternal;
-    } else if (external_frame == kBodyFrame) {
-        return kBodyFrameInternal;
-    } else if (external_frame == kGravAlignedBodyFrame){
-        return kGravAlignedBodyFrame;
-    }
+namespace {
+/// Spot's Internal to External Frame naming conversion.
+const std::unordered_map<std::string, std::string> kSpotInternalToExternalFrameMap{
+    {kVisionFrameInternal, kVisionFrame},
+    {kOdomFrameInternal, kOdomFrame},
+    {kBodyFrameInternal, kBodyFrame}};
+
+/// Spot's External to Internal Frame naming conversion.
+const std::unordered_map<std::string, std::string> kSpotExternalToInternalFrameMap{
+    {kVisionFrame, kVisionFrameInternal},
+    {kOdomFrame, kOdomFrameInternal},
+    {kBodyFrame, kBodyFrameInternal},
+    {kGravAlignedBodyFrame, kGravAlignedBodyFrame}};
+
+}  // namespace
+
+std::string ExternalStringToInternalString(const std::string& external_frame,
+                                           const RobotSpecies robot_species) {
+    auto get_internal_string =
+        [](const std::unordered_map<std::string, std::string>& external_to_internal_frame_map,
+           const std::string& external_frame) -> std::optional<std::string> {
+        // Find the frame name conversion in the map.
+        if (auto itr{external_to_internal_frame_map.find(external_frame)};
+            itr != external_to_internal_frame_map.end()) {
+            return itr->second;
+        }
+        return std::nullopt;
+    };
+
+    switch (robot_species) {
+        case RobotSpecies::kSpot:
+            if (const auto internal_string{
+                    get_internal_string(kSpotExternalToInternalFrameMap, external_frame)};
+                internal_string.has_value()) {
+                return internal_string.value();
+            }
+            break;
+    };
+
     return external_frame;
 }
 
-std::string InternalStringToExternalString(const std::string& internal_frame) {
-    if (internal_frame == kVisionFrameInternal) {
-        return kVisionFrame;
-    } else if (internal_frame == kOdomFrameInternal) {
-        return kOdomFrame;
-    } else if (internal_frame == kBodyFrameInternal) {
-        return kBodyFrame;
-    }
+std::string InternalStringToExternalString(const std::string& internal_frame,
+                                           const RobotSpecies robot_species) {
+    auto get_external_string =
+        [](const std::unordered_map<std::string, std::string>& internal_to_external_frame_map,
+           const std::string& internal_frame) -> std::optional<std::string> {
+        // Find the frame name conversion in the map.
+        if (auto itr{internal_to_external_frame_map.find(internal_frame)};
+            itr != internal_to_external_frame_map.end()) {
+            return itr->second;
+        }
+        return std::nullopt;
+    };
+
+    switch (robot_species) {
+        case RobotSpecies::kSpot:
+            if (const auto external_string{
+                    get_external_string(kSpotInternalToExternalFrameMap, internal_frame)};
+                external_string.has_value()) {
+                return external_string.value();
+            }
+            break;
+    };
+
     return internal_frame;
 }
 

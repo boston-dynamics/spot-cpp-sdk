@@ -70,10 +70,10 @@ class LicenseClient : public ServiceClient {
 
     std::unique_ptr<::bosdyn::api::LicenseService::Stub> m_stub;
 
-    // Default service name for the LogAnnotation service.
+    // Default service name for the license service.
     static const char* s_default_service_name;
 
-    // Default service type for the LogAnnotation service.
+    // Default service type for the license service.
     static const char* s_service_type;
 };
 

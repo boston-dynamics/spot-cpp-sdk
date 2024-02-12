@@ -118,6 +118,9 @@ class MissionClient : public ServiceClient {
     std::shared_future<GetInfoResultType> GetInfoAsync(
         const RPCParameters& parameters = RPCParameters());
 
+    std::shared_future<GetInfoResultType> GetInfoAsChunksAsync(
+        const RPCParameters& parameters);
+
     GetMissionResultType GetMission(
         ::bosdyn::api::mission::GetMissionRequest& request,
         const RPCParameters& parameters = RPCParameters());
@@ -199,6 +202,12 @@ class MissionClient : public ServiceClient {
         MessagePumpCallBase* call, const ::bosdyn::api::mission::GetInfoRequest& request,
         ::bosdyn::api::mission::GetInfoResponse&& response, const grpc::Status& status,
         std::promise<GetInfoResultType> promise);
+
+    void OnGetInfoAsChunksComplete(MessagePumpCallBase* call,
+                                                 const ::bosdyn::api::mission::GetInfoRequest& request,
+                                                 std::vector<::bosdyn::api::DataChunk>&& responses,
+                                                 const grpc::Status& status,
+                                                 std::promise<GetInfoResultType> promise);
 
     void OnGetMissionComplete(
         MessagePumpCallBase* call, const ::bosdyn::api::mission::GetMissionRequest& request,

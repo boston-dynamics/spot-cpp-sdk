@@ -25,7 +25,6 @@
 #include "bosdyn/client/image/image_client.h"
 #include "bosdyn/client/lease/lease_client.h"
 #include "bosdyn/client/local_grid/local_grid_client.h"
-#include "bosdyn/client/log_annotation/log_annotation_client.h"
 #include "bosdyn/client/mission/mission_client.h"
 #include "bosdyn/client/payload/payload_client.h"
 #include "bosdyn/client/payload_registration/payload_registration_client.h"
@@ -98,10 +97,12 @@ ClientSdk::~ClientSdk() = default;
 
 void ClientSdk::SetClientName(const std::string& client_name) {
     // Must set the client name for the SDK before it is initialized.
-    BOSDYN_ASSERT_PRECONDITION(!m_is_initialized, "Client name cannot be set after the SDK is initialized.");
+    BOSDYN_ASSERT_PRECONDITION(!m_is_initialized,
+                               "Client name cannot be set after the SDK is initialized.");
     // Must set the client name for the SDK before any robot instances are created
     // with the SDK.
-    BOSDYN_ASSERT_PRECONDITION(!m_is_robot_created, " Client name cannot be set after any robot instances are created.");
+    BOSDYN_ASSERT_PRECONDITION(!m_is_robot_created,
+                               " Client name cannot be set after any robot instances are created.");
 
     m_client_name = client_name;
 }
@@ -114,7 +115,8 @@ void ClientSdk::SetClientName(const std::string& client_name) {
 
     inFile.open(cert_resource_path);
     if (!inFile) {
-        return ::bosdyn::common::Status(SDKErrorCode::GenericSDKError, "Unable to open file:" + cert_resource_path);
+        return ::bosdyn::common::Status(SDKErrorCode::GenericSDKError,
+                                        "Unable to open file:" + cert_resource_path);
     }
 
     std::string line;
@@ -131,9 +133,11 @@ void ClientSdk::Init() {
     // SDK cannot be initialized before calling Init().
     BOSDYN_ASSERT_PRECONDITION(!m_is_initialized, "SDK cannot be initialized multiple times.");
     // The robot object cannot be created before calling Init().
-    BOSDYN_ASSERT_PRECONDITION(!m_is_robot_created, "SDK cannot be initialized after creating robot objects.");
+    BOSDYN_ASSERT_PRECONDITION(!m_is_robot_created,
+                               "SDK cannot be initialized after creating robot objects.");
     // Need to set the client name for the SDK before calling Init().
-    BOSDYN_ASSERT_PRECONDITION(!m_client_name.empty(), "SDK cannot be initialized when the client name is empty/unset.");
+    BOSDYN_ASSERT_PRECONDITION(!m_client_name.empty(),
+                               "SDK cannot be initialized when the client name is empty/unset.");
     CreateDefaultProcessors();
     m_is_initialized = true;
 }
@@ -141,9 +145,11 @@ void ClientSdk::Init() {
 void ClientSdk::AddCustomRequestProcessor(const std::shared_ptr<RequestProcessor>& processor) {
     // Verify that all the information is set correctly
     // Must initialize the SDK before calling.
-    BOSDYN_ASSERT_PRECONDITION(m_is_initialized, "SDK must be initialized before adding request processors.");
+    BOSDYN_ASSERT_PRECONDITION(m_is_initialized,
+                               "SDK must be initialized before adding request processors.");
     // Must not have a robot instance created with the SDK before calling.
-    BOSDYN_ASSERT_PRECONDITION(!m_is_robot_created, "Request processors cannot be added after creating robot objects.");
+    BOSDYN_ASSERT_PRECONDITION(!m_is_robot_created,
+                               "Request processors cannot be added after creating robot objects.");
 
     m_request_processor_chain.AppendProcessor(processor);
 }
@@ -151,27 +157,30 @@ void ClientSdk::AddCustomRequestProcessor(const std::shared_ptr<RequestProcessor
 void ClientSdk::AddCustomResponseProcessor(const std::shared_ptr<ResponseProcessor>& processor) {
     // Verify that all the information is set correctly
     // Must initialize the SDK before calling.
-    BOSDYN_ASSERT_PRECONDITION(m_is_initialized, "SDK must be initialized before adding processors.");
+    BOSDYN_ASSERT_PRECONDITION(m_is_initialized,
+                               "SDK must be initialized before adding processors.");
     // Must not have a robot instance created with the SDK before calling.
-    BOSDYN_ASSERT_PRECONDITION(!m_is_robot_created, "Response processors cannot be added after creating robot objects.");
+    BOSDYN_ASSERT_PRECONDITION(!m_is_robot_created,
+                               "Response processors cannot be added after creating robot objects.");
 
     m_response_processor_chain.AppendProcessor(processor);
 }
 
 Result<std::unique_ptr<::bosdyn::client::Robot>> ClientSdk::CreateRobot(
-    const std::string& network_address,
-    const ProxyUseType& proxy_use, ::bosdyn::common::Duration timeout,
-    std::shared_ptr<MessagePump> message_pump,
+    const std::string& network_address, const ProxyUseType& proxy_use,
+    ::bosdyn::common::Duration timeout, std::shared_ptr<MessagePump> message_pump,
     std::shared_ptr<LeaseWallet> lease_wallet) {
     // The SDK must be initialized before the robot object can be created.
-    BOSDYN_ASSERT_PRECONDITION(m_is_initialized, "SDK must be initialized before creating robot objects.");
+    BOSDYN_ASSERT_PRECONDITION(m_is_initialized,
+                               "SDK must be initialized before creating robot objects.");
 
     // Check if a port is passed by mistake in the network_address.
     if (network_address.find(':') != std::string::npos &&
         network_address.find("::") == std::string::npos) {
-        return {::bosdyn::common::Status(SDKErrorCode::GenericSDKError,
-                       "ERROR, network address contains :, but string is supposed to contain"
-                       "only network address without a port"),
+        return {::bosdyn::common::Status(
+                    SDKErrorCode::GenericSDKError,
+                    "ERROR, network address contains :, but string is supposed to contain"
+                    "only network address without a port"),
                 nullptr};
     }
 
@@ -211,7 +220,6 @@ Result<std::unique_ptr<::bosdyn::client::Robot>> ClientSdk::CreateRobot(
 void ClientSdk::CreateDefaultProcessors() {
     // Create RequestProcessor's whose lifetime is owned by ClientSdk.
     m_default_request_processors.push_back(std::make_unique<CommonRequestProcessor>(m_client_name));
-    // m_default_request_processors.push_back(std::make_unique<AppTokenRequestProcessor>(m_app_token));
 
     // Create ResponseProcessor's whose lifetime is owned by ClientSdk.
     m_default_response_processors.push_back(std::make_unique<CommonResponseProcessor>());

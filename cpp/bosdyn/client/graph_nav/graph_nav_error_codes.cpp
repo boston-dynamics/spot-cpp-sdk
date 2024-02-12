@@ -19,3 +19,6 @@ DEFINE_PROTO_ENUM_ERRORCODE_IMPL_GRAPHNAV(NavigateToAnchorResponse_Status, valco
 // NOTE: NavigationFeedbackResponse is not converted to std::error_code on purpose.
 DEFINE_PROTO_ENUM_ERRORCODE_IMPL_GRAPHNAV(DownloadWaypointSnapshotResponse_Status, valcode == 1)
 DEFINE_PROTO_ENUM_ERRORCODE_IMPL_GRAPHNAV(DownloadEdgeSnapshotResponse_Status, valcode == 1)
+DEFINE_PROTO_ENUM_ERRORCODE_IMPL_GRAPHNAV(UploadWaypointSnapshotResponse_Status, valcode == 1)
+DEFINE_PROTO_ENUM_ERRORCODE_IMPL_GRAPHNAV(UploadGraphResponse_Status, valcode == 1)
+

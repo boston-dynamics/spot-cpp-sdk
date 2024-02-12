@@ -14,7 +14,6 @@
 #include <bosdyn/api/data_buffer.pb.h>
 #include <bosdyn/api/graph_nav/graph_nav.pb.h>
 #include <bosdyn/api/graph_nav/nav.pb.h>
-#include <bosdyn/api/log_annotation.pb.h>
 #include <functional>
 
 namespace bosdyn {
@@ -42,7 +41,6 @@ bool StripUploadWaypointRequest(::google::protobuf::Message* proto_message);
 bool StripUploadEdgeRequest(::google::protobuf::Message* proto_message);
 bool StripDownloadWaypointResponse(::google::protobuf::Message* proto_message);
 bool StripDownloadEdgeResponse(::google::protobuf::Message* proto_message);
-bool StripLogAnnotationRequest(::google::protobuf::Message* proto_message);
 bool StripRecordDataBlobsRequest(::google::protobuf::Message* proto_message);
 bool StripRecordSignalTickRequest(::google::protobuf::Message* proto_message);
 bool StripStoreImageRequest(::google::protobuf::Message* proto_message);

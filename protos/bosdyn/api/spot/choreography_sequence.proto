@@ -82,12 +82,42 @@ message SequenceInfo {
     MoveInfo.TransitionState exit_state = 4;
 }
 
+// Request all the information needed to play a choreography sequence, this includes the sequence
+// itself and any animations the sequence uses.
+message GetChoreographySequenceRequest {
+    // Common request header
+    RequestHeader header = 1;
+
+    // Name of the requested sequence.
+    string sequence_name = 2;
+}
+
+//
+message GetChoreographySequenceResponse {
+    // Common response header.
+    ResponseHeader header = 1;
+
+    enum Status {
+        STATUS_UNKNOWN = 0;  // Do not use.
+        STATUS_OK = 1;       // Finding + returning the sequence succeeded.
+        // The requested sequence was not found.
+        STATUS_UNKNOWN_SEQUENCE = 2;
+    }
+    Status status = 2;
+
+    // ChoreographySequence with the name of the requested sequence.
+    ChoreographySequence choreography_sequence = 3;
+
+    // All Animations used in the returned ChoreographySequence.
+    repeated Animation animated_moves = 4;
+}
+
 // Delete the retained file for a choreography sequence so the sequence will be forgotten on reboot
 message DeleteSequenceRequest {
     // Common request header
     RequestHeader header = 1;
 
-    // Name of the sequence to delete, sequence will be forgotten on the next reboot
+    // Name of the sequence to delete.
     string sequence_name = 2;
 }
 
@@ -273,7 +303,7 @@ message ExecuteChoreographyRequest {
     // synchronize music playing and the robot's choreography.
     google.protobuf.Timestamp start_time = 3;
 
-    // The slice (betas/sub-beats) that the choreography should begin excution at.
+    // The slice (betas/sub-beats) that the choreography should begin execution at.
     double choreography_starting_slice = 4;
 
     /// The Lease to show ownership of the robot body.
@@ -291,11 +321,12 @@ message ExecuteChoreographyResponse {
         STATUS_INVALID_UPLOADED_CHOREOGRAPHY = 2;
         STATUS_ROBOT_COMMAND_ISSUES = 3;
         STATUS_LEASE_ERROR = 4;
+        STATUS_UNKNOWN_SEQUENCE = 5;
     }
     Status status = 3;
 
     // Unique ID for the execution.
-    // Will increment whenever an ExecuteChoreographRequest is received.
+    // Will increment whenever an ExecuteChoreographyRequest is received.
     // Will reset upon robot boot.
     int32 execution_id = 4;
 }
@@ -674,7 +705,7 @@ message ChoreographySequence {
     ChoreographyInfo choreography_info = 4;
 
     // Can be used to specify an explicit entrance_state in the case where the first legs-track move
-    // accepts multiple entrace_states.
+    // accepts multiple entrance_states.
     // Will also be used if the sequence contains no legs-track moves.
     // Can otherwise be left unset.
     // If set and not within the set of acceptable entrance_states for the first legs-track move,
@@ -705,7 +736,7 @@ message ChoreographerSave {
     double choreography_start_slice = 4;
 }
 
-// Represents an animated dance move that can be used whithin choreographies after uploading.
+// Represents an animated dance move that can be used within choreographies after uploading.
 message Animation {
     // The name of the animated move, which is how it will be referenced in choreographies.
     string name = 1;
@@ -913,7 +944,7 @@ message AnimateSingleLeg {
     google.protobuf.BoolValue stance = 3;
 }
 
-// Descprition of each leg joint angle (hip x/y and knee) in radians.
+// Description of each leg joint angle (hip x/y and knee) in radians.
 message LegJointAngles {
     double hip_x = 1;
     double hip_y = 2;
@@ -972,4 +1003,58 @@ message ChoreographyStatusResponse {
 
     // When this was true in robot time.
     google.protobuf.Timestamp validity_time = 8;
+
+    // Name of the active sequence, None if the robot is not in a dance state.
+    string sequence_name = 9;
+}
+
+message ChoreographyTimeAdjustRequest {
+    // Common request header
+    RequestHeader header = 1;
+
+    // The absolute time to start the choreography at. This start time will override the start time
+    // defined in an ExecuteChoreographyRequest if it fits within the limits defined by the
+    // acceptable_time_difference and the override_validity_time. This should be in the robot's
+    // clock.
+    google.protobuf.Timestamp override_start_time = 2;
+
+    // The maximum difference in time, in seconds, between an ExecuteChoreography start time and the
+    // override time where the override start time will used instead of the ExecuteChoreography
+    // start time. If the difference between the override time and the ExecuteChoreographyRequest
+    // time is bigger than the acceptable_time_difference value, the override time will not be used.
+    // When specified the acceptable_time_difference can be at most 2 minutes. If not specified, the
+    // acceptable_time_difference will be 20 seconds.
+    google.protobuf.Duration acceptable_time_difference = 3;
+
+    // For what period of time, in seconds from the current moment, should this override start time
+    // be considered valid. override start times that are further in the future than the override
+    // validity period won't be accepted when received. When specified, override_validity_time can
+    // be at most 5 minutes past the current time. If not specified override_validity_time will be
+    // 60 seconds.
+    google.protobuf.Duration validity_time = 4;
+}
+
+message ChoreographyTimeAdjustResponse {
+    // Common response header
+    ResponseHeader header = 1;
+
+    enum Status {
+        // Status unknown. Do not use.
+        STATUS_UNKNOWN = 0;
+        // The adjusted time value was accepted and stored.
+        STATUS_OK = 1;
+        // The adjusted time was not stored, time requested is too far in the past.
+        STATUS_BEFORE_CURRENT_TIME = 2;
+        // The override time was not stored, time requested exceeded the validity time limit.
+        STATUS_EXCEEDS_VALIDITY_TIME = 3;
+        // No override start time was provided.
+        STATUS_OVERRIDE_TIME_UNSET = 4;
+    }
+    Status status = 2;
+
+    // If certain parameters didn't fall within the correct limits warning messages describing those
+    // issues will be populated here to indicate those problems. If there were issues with
+    // parameters other than the override_start_time there may be warnings even if the response
+    // status was STATUS_OK.
+    repeated string warnings = 3;
 }

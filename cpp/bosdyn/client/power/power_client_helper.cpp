@@ -270,6 +270,17 @@ FanPowerCommandFeedbackResultType FanPowerCommandFeedback(PowerClient* power_cli
     return power_client->FanPowerCommandFeedback(command_id);
 }
 
+ResetSafetyStopResultType ResetPrimarySafetyStop(PowerClient* power_client) {
+    ::bosdyn::api::ResetSafetyStopRequest request;
+    request.set_safety_stop_type(::bosdyn::api::ResetSafetyStopRequest::SAFETY_STOP_PRIMARY);
+    return power_client->ResetSafetyStop(request);
+}
+
+ResetSafetyStopResultType ResetRedundantSafetyStop(PowerClient* power_client) {
+    ::bosdyn::api::ResetSafetyStopRequest request;
+    request.set_safety_stop_type(::bosdyn::api::ResetSafetyStopRequest::SAFETY_STOP_REDUNDANT);
+    return power_client->ResetSafetyStop(request);
+}
 
 }  // namespace power_client_helper
 

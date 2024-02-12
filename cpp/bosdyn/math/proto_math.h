@@ -13,9 +13,10 @@
 // To get math constants (M_PI) in MSVC
 #    define _USE_MATH_DEFINES
 #endif
+#include <cmath>
+
 #include <Eigen/Core>
 #include <Eigen/Geometry>
-#include <cmath>
 
 #include <bosdyn/api/geometry.pb.h>
 

@@ -22,6 +22,7 @@ typedef Result<::bosdyn::api::AcquireDataResponse> DataAcquisitionAcquireDataRes
 typedef Result<::bosdyn::api::GetStatusResponse> DataAcquisitionGetStatusResultType;
 typedef Result<::bosdyn::api::GetServiceInfoResponse> DataAcquisitionServiceInfoResultType;
 typedef Result<::bosdyn::api::CancelAcquisitionResponse> DataAcquisitionCancelAcquisitionResultType;
+typedef Result<::bosdyn::api::LiveDataResponse> DataAcquisitionLiveDataResultType;
 
 class DataAcquisitionClient : public ServiceClient {
  public:
@@ -61,6 +62,14 @@ class DataAcquisitionClient : public ServiceClient {
     DataAcquisitionCancelAcquisitionResultType CancelAcquisition(
         ::bosdyn::api::CancelAcquisitionRequest& request, const RPCParameters& parameters = RPCParameters());
 
+    // Asynchronous RPC to request live data for each capability.
+    std::shared_future<DataAcquisitionLiveDataResultType> GetLiveDataAsync(
+        ::bosdyn::api::LiveDataRequest& request, const RPCParameters& parameters = RPCParameters());
+
+    // Synchronous RPC to request live data for each capability.
+    DataAcquisitionLiveDataResultType GetLiveData(
+        ::bosdyn::api::LiveDataRequest& request, const RPCParameters& parameters = RPCParameters());
+
     // Start of ServiceClient overrides.
     QualityOfService GetQualityOfService() const override;
     void SetComms(const std::shared_ptr<grpc::ChannelInterface>& channel) override;
@@ -94,6 +103,11 @@ private:
         MessagePumpCallBase* call, const ::bosdyn::api::CancelAcquisitionRequest& request,
         ::bosdyn::api::CancelAcquisitionResponse&& response, const grpc::Status& status,
         std::promise<DataAcquisitionCancelAcquisitionResultType> promise);
+
+    // Callback function registered for the asynchronous calls to get live data.
+    void OnLiveDataComplete(MessagePumpCallBase* call, const ::bosdyn::api::LiveDataRequest& request,
+        ::bosdyn::api::LiveDataResponse&& response, const grpc::Status& status,
+        std::promise<DataAcquisitionLiveDataResultType> promise);
 
     std::unique_ptr<::bosdyn::api::DataAcquisitionService::Stub> m_stub;
 

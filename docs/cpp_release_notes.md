@@ -8,9 +8,77 @@ Development Kit License (20191101-BDSDK-SL).
 
 # Spot C++ SDK Release Notes
 
-## Spot C++ SDK version 3.3.2 BETA
+## Spot C++ SDK version 4.0.0 BETA
 
-No changes from 3.3.0
+### Breaking Changes
+
+The following fields and services have been **removed**.
+
+- `LogAnnotationService`
+- Auth application token.
+- Robot commands: non-synchronized mobility commands. Top-level feedback messages.
+- Graph Nav map edge annotations: `vel_limit`, `ground_mu_hint`, `grated_floor`
+- SpotCheck feedback: `foot_height_results` and `leg_pair_results`
+- The choreography proto libraries have been deprecated and removed. The protos included in `libbosdyn_choreography_protos.so` and `libbosdyn_choreography_protos_static.a` will now be included in `libbosdyn_api.so` and `libbosdyn_api_static.a`.
+
+### Bug Fixes and Improvements
+
+#### API
+
+Please see the Release Notes in https://dev.bostondynamics.com for a description of the API changes included in release 4.0.0.
+
+#### SDK
+
+The C++ standard in the CMake file has been changed from cxx_std_14 to cxx_std_17.
+
+Clients are now configured with a default 5s keep-alive time, which triggers a faster reconnect with the service, when the network connection goes down.
+
+Lease update change: ignore failed old leases in the case the wallet contains the new lease.
+
+Data Acquisition Client
+
+- Added `GetLiveData` method to allow payloads to publish live data to the robot that is displayed on the tablet and Orbit during teleoperation
+
+Data Acquisition Store Client
+
+- Added `QueryStoredCaptures` method to enable retrieval of data from the robot using gRPC instead of the `/v1/data-buffer/daq-data/` endpoint
+- Added `QueryMaxCaptureId` method, which returns the the `max_capture_id` corresponding to the greatest capture ID on the robot; this can be used to exclude preexisting data on the robot from retrieval by setting the `captures_from_id` field in the `QueryParameters` message accordingly.
+
+Mission Client
+
+- Added `GetInfoAsChunks` method, which enables the retrieval of static information describing the mission for missions whose size exceeds the maximum message size.
+
+Power Client
+
+- Added `ResetSafetyStop` method, which enables the primary and redundant safety stops on a Safety-Related Stopping Function (SRSF) configured robot. Robots equipped with this feature will be listed as SRSF "Enabled" under the hardware information section found in the "About" page on the robot's admin console.
+- Added a set of helper functions in `power_client_helper.h` to be used with a power client.
+
+SpotCam Compositor Client
+
+- Now sets both the `coords` (deprecated in v3.3) and `meter` fields for backwards compability purposes in the corresponding methods.
+
+Math & Frame Helpers
+
+- The `ExternalStringToInternalString` and `InternalStringToExternalString` methods now return `std::nullopt` if the frame name does not exist.
+- The kinematic_state's transforms_snapshot now uses "arm0.link_wr1" instead of "link_wr1" for the name of the frame attached to the SpotArm's wr1 link. This is (1) the name used in the URDF description of the robot and (2) the name used in the image service snapshots. We will continue to publish the kinematic_state's snapshot with the deprecated name in the 4.0 release, but it will be removed in a future release.
+- An enum class called `RobotSpecies` has been added.
+- Two frame names have been added, namely `ecef` (Earth-centered, Earth-fixed) and `enu` (East-North-Up), that are used for localization with respect to the Earth.
+- Renamed `find_tree_root` method as `FindTreeRoot`
+- Added a helper function `ReparentFrame`
+
+Autowalk Player
+
+- Sets `navigation_id` instead of `root_id` in the `SetNodeMap` method; the latter is deprecated as of v4.0
+
+### Deprecations
+
+Please see the Release Notes in https://dev.bostondynamics.com for a description of the API deprecations included in release 4.0.0.
+
+### Dependencies
+
+### Known Issues
+
+### Sample Code
 
 ## Spot C++ SDK version 3.3.1 BETA
 
@@ -128,7 +196,7 @@ No changes from 3.2.0.
 
 #### Autowalk Service
 
-Enables API clients to specify high level autonomous behaviors for Spot using an easily editable format. The autowalk format is a list of actions and their associated locations. Using this service, users can program the robot to “go to location A, perform action A, go to location B, perform action B, etc”. The autowalk service compiles the autowalk into a behavior tree that can then be uploaded to the robot and played using the mission service. Previously this feature was only available on the tablet, but now it is a service for all client applications.
+Enables API clients to specify high level autonomous behaviors for Spot using an easily editable format. The autowalk format is a list of actions and their associated locations. Using this service, users can program the robot to “go to location A, perform action A, go to location B, perform action B, etc.”. The autowalk service compiles the autowalk into a behavior tree that can then be uploaded to the robot and played using the mission service. Previously this feature was only available on the tablet, but now it is a service for all client applications.
 
 #### Graph Nav – Area Callbacks
 

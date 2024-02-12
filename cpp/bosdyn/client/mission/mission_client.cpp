@@ -355,6 +355,24 @@ std::shared_future<GetInfoResultType> MissionClient::GetInfoAsync(
     return future;
 }
 
+std::shared_future<GetInfoResultType> MissionClient::GetInfoAsChunksAsync(
+    const RPCParameters& parameters) {
+    std::promise<GetInfoResultType> response;
+    std::shared_future<GetInfoResultType> future = response.get_future();
+    BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
+    ::bosdyn::api::mission::GetInfoRequest request;
+    MessagePumpCallBase* one_time =
+        InitiateResponseStreamAsyncCall<::bosdyn::api::mission::GetInfoRequest, ::bosdyn::api::DataChunk,
+                                        ::bosdyn::api::mission::GetInfoResponse>(
+            request,
+            std::bind(&::bosdyn::api::mission::MissionService::Stub::AsyncGetInfoAsChunks, m_stub.get(),
+                      _1, _2, _3, _4),
+            std::bind(&MissionClient::OnGetInfoAsChunksComplete, this, _1, _2, _3, _4, _5),
+            std::move(response), parameters);
+
+    return future;
+}
+
 void MissionClient::OnGetInfoComplete(
     MessagePumpCallBase* call, const ::bosdyn::api::mission::GetInfoRequest& request,
     ::bosdyn::api::mission::GetInfoResponse&& response, const grpc::Status& status,
@@ -367,6 +385,35 @@ void MissionClient::OnGetInfoComplete(
 
 GetInfoResultType MissionClient::GetInfo(const ::bosdyn::client::RPCParameters& parameters) {
     return GetInfoAsync(parameters).get();
+}
+
+void MissionClient::OnGetInfoAsChunksComplete(MessagePumpCallBase* call,
+                                                 const ::bosdyn::api::mission::GetInfoRequest& request,
+                                                 std::vector<::bosdyn::api::DataChunk>&& responses,
+                                                 const grpc::Status& status,
+                                                 std::promise<GetInfoResultType> promise) {
+    if (responses.empty()) {
+        promise.set_value({::bosdyn::common::Status(SDKErrorCode::GenericSDKError,
+                                  "Recieved empty vector of GetInfoResponse protos."),
+                           {}});
+        return;
+    }
+
+    std::vector<const ::bosdyn::api::DataChunk*> chunk_ptrs;
+    for (auto& response : responses) {
+        chunk_ptrs.push_back(&response);
+    }
+
+    auto full_response = MessageFromDataChunks<::bosdyn::api::mission::GetInfoResponse>(chunk_ptrs);
+    if (!full_response) {
+        promise.set_value(full_response);
+        return;
+    }
+
+    // Process the full response now if it got de-chunkified!
+    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::mission::GetInfoResponse>(
+        status, full_response.response, SDKErrorCode::Success);
+    promise.set_value({ret_status, full_response.response});
 }
 
 std::shared_future<GetMissionResultType> MissionClient::GetMissionAsync(

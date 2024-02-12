@@ -146,8 +146,9 @@ void AutowalkPlayer::SetNodeMap(
         // Map element identifier node ids to debug string and status
         const std::string debug_string =
             "Element " + std::to_string(i) + ": " + element_name + "\n";
-        if (element_identifier.root_id().user_data_id().size() > 0) {
-            AddToMap(element_identifier.root_id().node_id(), debug_string + "Root Status: ");
+        if (element_identifier.navigation_id().user_data_id().size() > 0) {
+            AddToMap(element_identifier.navigation_id().node_id(),
+                     debug_string + "Navigation Status: ");
         }
         if (element_identifier.action_id().user_data_id().size() > 0) {
             AddToMap(element_identifier.action_id().node_id(), debug_string + "Action Status: ");

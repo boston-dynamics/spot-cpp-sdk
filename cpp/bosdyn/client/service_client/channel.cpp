@@ -16,7 +16,7 @@ namespace bosdyn {
 namespace client {
 
 std::shared_ptr<grpc::ChannelCredentials> Channel::CreateSecureChannelCreds(
-    const std::string& cert, const std::function<const std::string&()>& getter_function) {
+    const std::string& cert, const std::function<std::string()>& getter_function) {
     // Set transport creds.
     grpc::SslCredentialsOptions creds;
     creds.pem_root_certs = cert;
@@ -39,6 +39,7 @@ void Channel::SetupChannelArgs(grpc::ChannelArguments* channel_args) {
     channel_args->SetInt(GRPC_ARG_MIN_RECONNECT_BACKOFF_MS, 10000);
     channel_args->SetInt(GRPC_ARG_MAX_RECEIVE_MESSAGE_LENGTH, kDefaultMaxMessageLengthBytes);
     channel_args->SetInt(GRPC_ARG_MAX_SEND_MESSAGE_LENGTH, kDefaultMaxMessageLengthBytes);
+    channel_args->SetInt(GRPC_ARG_KEEPALIVE_TIME_MS, kDefaultKeepAlivePingTimeMs);
 }
 
 std::shared_ptr<grpc::Channel> Channel::CreateSecureChannel(
@@ -60,7 +61,7 @@ std::shared_ptr<grpc::Channel> Channel::CreateInsecureChannel(const std::string&
 
     std::string dest = address + ":" + std::to_string(port);
     std::shared_ptr<grpc::Channel> insecure_channel =
-            grpc::CreateCustomChannel(dest, grpc::InsecureChannelCredentials(), channel_args);
+        grpc::CreateCustomChannel(dest, grpc::InsecureChannelCredentials(), channel_args);
     return insecure_channel;
 }
 

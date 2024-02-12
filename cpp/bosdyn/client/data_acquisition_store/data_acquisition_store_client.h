@@ -30,6 +30,10 @@ typedef Result<::bosdyn::api::StoreMetadataResponse> DataAcquisitionStoreStoreMe
 typedef Result<::bosdyn::api::ListStoredAlertDataResponse>
     DataAcquisitionStoreListStoredAlertDataResultType;
 typedef Result<::bosdyn::api::StoreAlertDataResponse> DataAcquisitionStoreStoreAlertDataResultType;
+typedef Result<::bosdyn::api::QueryStoredCapturesResponse>
+    DataAcquisitionStoreQueryStoredCapturesResultType;
+typedef Result<::bosdyn::api::QueryMaxCaptureIdResponse>
+    DataAcquisitionStoreQueryMaxCaptureIdResultType;
 
 class DataAcquisitionStoreClient : public ServiceClient {
  public:
@@ -127,6 +131,23 @@ class DataAcquisitionStoreClient : public ServiceClient {
         ::bosdyn::api::StoreAlertDataRequest& request,
         const RPCParameters& parameters = RPCParameters());
 
+    // Asynchronous RPC to trigger data acquisition store to query stored captures.
+    std::shared_future<DataAcquisitionStoreQueryStoredCapturesResultType> QueryStoredCapturesAsync(
+        ::bosdyn::api::QueryStoredCapturesRequest& request,
+        const RPCParameters& parameters = RPCParameters());
+
+    // Synchronous RPC to trigger data acquisition store to query stored captures.
+    DataAcquisitionStoreQueryStoredCapturesResultType QueryStoredCaptures(
+        ::bosdyn::api::QueryStoredCapturesRequest& request,
+        const RPCParameters& parameters = RPCParameters());
+
+    // Asynchronous RPC to get the maximum stored capture_id.
+    std::shared_future<DataAcquisitionStoreQueryMaxCaptureIdResultType> QueryMaxCaptureIdAsync(
+        const RPCParameters& parameters = RPCParameters());
+
+    // Synchronous RPC to get the maximum stored capture_id.
+    DataAcquisitionStoreQueryMaxCaptureIdResultType QueryMaxCaptureId(
+        const RPCParameters& parameters = RPCParameters());
 
     // Start of ServiceClient overrides.
     QualityOfService GetQualityOfService() const override;
@@ -197,6 +218,15 @@ class DataAcquisitionStoreClient : public ServiceClient {
         ::bosdyn::api::StoreAlertDataResponse&& response, const grpc::Status& status,
         std::promise<DataAcquisitionStoreStoreAlertDataResultType> promise);
 
+    void OnQueryStoredCapturesComplete(
+        MessagePumpCallBase* call, const ::bosdyn::api::QueryStoredCapturesRequest& request,
+        std::vector<::bosdyn::api::DataChunk>&& responses, const grpc::Status& status,
+        std::promise<DataAcquisitionStoreQueryStoredCapturesResultType> promise);
+
+    void OnQueryMaxCaptureIdComplete(
+        MessagePumpCallBase* call, const ::bosdyn::api::QueryMaxCaptureIdRequest& request,
+        ::bosdyn::api::QueryMaxCaptureIdResponse&& response, const grpc::Status& status,
+        std::promise<DataAcquisitionStoreQueryMaxCaptureIdResultType> promise);
 
     std::unique_ptr<::bosdyn::api::DataAcquisitionStoreService::Stub> m_stub;
 

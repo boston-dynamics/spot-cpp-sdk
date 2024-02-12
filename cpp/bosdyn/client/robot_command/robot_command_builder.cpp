@@ -343,31 +343,24 @@ Result<::bosdyn::api::RobotCommand> ArmPoseCommand(
                                              ::bosdyn::api::RobotCommand* combined_command) {
     if (combined_command->has_full_body_command() || additional_command.has_full_body_command()) {
         return {SDKErrorCode::GenericSDKError,
-                "This function only takes RobotCommands containing "
-                "mobility or synchro commands."};
+                "This function only takes RobotCommands containing synchronized commands."};
     }
 
     bool has_command = false;
-    if (additional_command.has_mobility_command()) {
+    if (additional_command.synchronized_command().has_mobility_command()) {
         *(combined_command->mutable_synchronized_command()->mutable_mobility_command()) =
-            additional_command.mobility_command();
+            additional_command.synchronized_command().mobility_command();
         has_command = true;
-    } else if (additional_command.has_synchronized_command()) {
-        if (additional_command.synchronized_command().has_mobility_command()) {
-            *(combined_command->mutable_synchronized_command()->mutable_mobility_command()) =
-                additional_command.synchronized_command().mobility_command();
-            has_command = true;
-        }
-        if (additional_command.synchronized_command().has_arm_command()) {
-            *(combined_command->mutable_synchronized_command()->mutable_arm_command()) =
-                additional_command.synchronized_command().arm_command();
-            has_command = true;
-        }
-        if (additional_command.synchronized_command().has_gripper_command()) {
-            *(combined_command->mutable_synchronized_command()->mutable_gripper_command()) =
-                additional_command.synchronized_command().gripper_command();
-            has_command = true;
-        }
+    }
+    if (additional_command.synchronized_command().has_arm_command()) {
+        *(combined_command->mutable_synchronized_command()->mutable_arm_command()) =
+            additional_command.synchronized_command().arm_command();
+        has_command = true;
+    }
+    if (additional_command.synchronized_command().has_gripper_command()) {
+        *(combined_command->mutable_synchronized_command()->mutable_gripper_command()) =
+            additional_command.synchronized_command().gripper_command();
+        has_command = true;
     }
 
     if (has_command) {

@@ -68,10 +68,10 @@ Result<Lease> LeaseWallet::GetLease(const std::string& resource) {
     std::lock_guard<std::mutex> lock(m_mutex);
     auto it = m_lease_map.find(resource);
     if (it == m_lease_map.end()) {
-        return {::bosdyn::common::Status(
-            LeaseWalletErrorCode::ResourceNotInWalletError,
-            "LeaseWallet could not find the lease because the lease resource is not in the wallet"),
-            {}};
+        return {::bosdyn::common::Status(LeaseWalletErrorCode::ResourceNotInWalletError,
+                                         "LeaseWallet could not find the lease because the lease "
+                                         "resource is not in the wallet"),
+                {}};
     }
     return {::bosdyn::common::Status(LeaseWalletErrorCode::Success), it->second};
 }
@@ -99,9 +99,9 @@ Result<Lease> LeaseWallet::GetOwnedLease(const std::string& resource) {
                 std::move(lease_result.response)};
     } else {
         return {::bosdyn::common::Status(
-            LeaseWalletErrorCode::ResourceNotOwnedError,
-            "LeaseWallet could not find a self-owned lease for this resource."),
-            {}};
+                    LeaseWalletErrorCode::ResourceNotOwnedError,
+                    "LeaseWallet could not find a self-owned lease for this resource."),
+                {}};
     }
 }
 
@@ -126,6 +126,7 @@ std::vector<Lease> LeaseWallet::GetAllLeases() const {
 }
 
 std::vector<std::string> LeaseWallet::GetAllOwnedResources() const {
+    std::lock_guard<std::mutex> lock(m_mutex);
     std::vector<std::string> owned_resources;
     for (auto resc_lease_pair : m_lease_map) {
         if (resc_lease_pair.second.IsLeaseSelfOwned()) {
@@ -154,7 +155,6 @@ Result<Lease> LeaseWallet::AdvanceLease(const std::string& resource) {
 ::bosdyn::common::Status LeaseWallet::OnLeaseUseResult(
     const ::bosdyn::api::LeaseUseResult& lease_use_result) {
     std::string resource = lease_use_result.attempted_lease().resource();
-    Lease found_lease;
     auto lease_found_result = this->GetLease(resource);
     if (!lease_found_result.status) {
         // Couldn't find a lease for this resource.

@@ -11,7 +11,15 @@
 
 #include <fcntl.h>
 #include <sys/stat.h>
-#include <unistd.h>
+
+#ifdef WIN32
+#    include <io.h>
+#    define open _open
+#    define close(a) _close(a)
+#    define fsync(a) _commit(a)
+#else
+#    include <unistd.h>
+#endif
 
 
 namespace {
