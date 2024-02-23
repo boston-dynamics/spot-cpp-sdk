@@ -1,0 +1,121 @@
+# Commented out due to speed of runners. Uncomment when we get the better ones.
+
+# # This workflow automatically releases binaries upon tagging.
+# name: spot-cpp-sdk CD
+
+# on:
+#   push:
+#     tags:
+#       - '*'
+
+# concurrency:
+#   group: ${{ github.workflow }}-${{ github.ref }}
+#   cancel-in-progress: true
+
+# env:
+#   REGISTRY: ghcr.io
+#   # github.repository as <account>/<repo>
+#   IMAGE_NAME: bdaiinstitute/spot_cpp_sdk_builder
+
+# jobs:
+  # build-docker-image:
+  #   permissions:
+  #     contents: read
+  #     packages: write
+  #     # This is used to complete the identity challenge
+  #     # with sigstore/fulcio when running outside of PRs.
+  #     id-token: write
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       config:
+  #         - { arch: "amd64" }
+  #         - { arch: "arm64" }
+  #   name: Build docker image for ${{ matrix.config.arch }}
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
+
+  #     - name: Set up QEMU  # as virtualization is necessary to build container images
+  #       uses: docker/setup-qemu-action@v3
+
+  #     - name: Setup Docker buildx  # to workaround: https://github.com/docker/build-push-action/issues/461
+  #       uses: docker/setup-buildx-action@79abd3f86f79a9d68a23c75a09a9a85889262adf
+
+  #     - name: Log into registry ${{ env.REGISTRY }}
+  #       uses: docker/login-action@v3  # https://github.com/docker/login-action
+  #       with:
+  #         registry: ${{ env.REGISTRY }}
+  #         username: ${{ github.actor }}
+  #         password: ${{ secrets.GITHUB_TOKEN }}
+
+  #     # Extract metadata (tags, labels) for Docker
+  #     # https://github.com/docker/metadata-action
+  #     - name: Extract Docker metadata
+  #       id: meta
+  #       uses: docker/metadata-action@v5
+  #       with:
+  #         images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_${{ matrix.config.arch }}
+
+  #     - name: Build and push
+  #       uses: docker/build-push-action@v5  # https://github.com/docker/build-push-action
+  #       id: build
+  #       with:
+  #         context: .
+  #         file: .devcontainer/Dockerfile.${{ matrix.config.arch }}
+  #         tags: ${{ steps.meta.outputs.tags }}
+  #         labels: ${{ steps.meta.outputs.labels }}
+  #         cache-from: type=gha
+  #         cache-to: type=gha,mode=max
+  #         push: true
+
+  # build-artifacts:
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       config:
+  #         - { arch: "amd64" }
+  #         - { arch: "arm64" }
+  #   name: Build spot-cpp-sdk for ${{ matrix.config.arch }}
+  #   # needs: build-docker-image
+  #   runs-on: ubuntu-latest
+  #   container:
+  #     # env cannot be used here...
+  #     image: ghcr.io/bdaiinstitute/spot_cpp_sdk_builder_${{ matrix.config.arch }}:latest
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
+
+  #     - name: Build spot-sdk-cpp
+  #       run: |
+  #         cd spot-sdk-cpp/cpp
+  #         mkdir build
+  #         cd build
+  #         cmake ../ -DCMAKE_TOOLCHAIN_FILE=/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_FIND_PACKAGE_PREFER_CONFIG=TRUE -DBUILD_CHOREOGRAPHY_LIBS=ON
+  #         make -j2 install package
+
+  #     - name: Upload ${{ matrix.config.arch }} artifact
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: ${{ matrix.config.arch }}-artifact
+  #         path: '*.deb'
+  #         retention-days: 1
+
+  # bundle-debians:
+  #   name: Release artifacts
+  #   runs-on: ubuntu-latest
+  #   needs: build-artifacts
+  #   steps:
+  #     - name: Download artifacts
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         pattern: '*-artifact'
+  #         merge-multiple: true
+
+  #     - name: Release to GitHub
+  #       uses: softprops/action-gh-release@v1
+  #       with:
+  #         name: Release ${{ github.ref_name }}
+  #         files: '*.deb'
+      

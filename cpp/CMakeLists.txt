@@ -44,7 +44,7 @@ file(GLOB_RECURSE bosdyn_protos_files CONFIGURE_DEPENDS
 if (bosdyn_protos_files)
   add_library(bosdyn_api_obj OBJECT ${bosdyn_protos_files})
   set_property(TARGET bosdyn_api_obj PROPERTY POSITION_INDEPENDENT_CODE 1)
-  target_link_libraries(bosdyn_api_obj PUBLIC ${PROTOBUF_LIBRARIES} gRPC::grpc gRPC::grpc++)
+  target_link_libraries(bosdyn_api_obj PUBLIC protobuf::libprotobuf gRPC::grpc gRPC::grpc++)
   target_include_directories(bosdyn_api_obj PUBLIC
     $<BUILD_INTERFACE:${protos_OUTPUT_DIR}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
