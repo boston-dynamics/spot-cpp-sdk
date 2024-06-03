@@ -67,15 +67,23 @@ const std::error_category& BlockingRobotCommandErrorCategory() {
 RobotCommandFeedbackResultType BlockUntilArmArrives(
     ::bosdyn::client::RobotCommandClient& robot_command_client, int cmd_id, int timeout_sec,
     int poll_period_msec) {
+    return BlockUntilArmArrives(robot_command_client, cmd_id, std::chrono::seconds(timeout_sec),
+                                std::chrono::milliseconds(poll_period_msec));
+}
+
+RobotCommandFeedbackResultType BlockUntilArmArrives(
+    ::bosdyn::client::RobotCommandClient& robot_command_client, int cmd_id,
+    ::bosdyn::common::Duration timeout, ::bosdyn::common::Duration poll_period) {
     ::bosdyn::api::RobotCommandFeedbackRequest feedback_req;
     feedback_req.set_robot_command_id(cmd_id);
 
     ::bosdyn::client::RobotCommandFeedbackResultType feedback_res;
 
-    auto start_time = ::bosdyn::common::NowNsec();
-    const auto end_time = start_time + ::bosdyn::common::SecToNsec(timeout_sec);
+    auto start_time = ::bosdyn::common::NsecSinceEpoch();
+    const auto end_time = start_time + timeout;
 
-    while (timeout_sec <= 0 || ::bosdyn::common::NowNsec() < end_time) {
+    while (timeout <= ::bosdyn::common::Duration(0) ||
+           ::bosdyn::common::NsecSinceEpoch() < end_time) {
         feedback_res = robot_command_client.RobotCommandFeedback(feedback_req);
         // If the RPC timed out but this function hasn't timed out, keep trying.
         if (!feedback_res.status &&
@@ -137,7 +145,7 @@ RobotCommandFeedbackResultType BlockUntilArmArrives(
                     feedback_res.move()};
         }
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(poll_period_msec));
+        std::this_thread::sleep_for(poll_period);
     }
     return {{BlockingRobotCommandErrorCode::CommandTimeoutError, "ArmCommand failed or timed out."},
             feedback_res.response};
@@ -146,15 +154,23 @@ RobotCommandFeedbackResultType BlockUntilArmArrives(
 RobotCommandFeedbackResultType BlockUntilGripperArrives(
     ::bosdyn::client::RobotCommandClient& robot_command_client, int cmd_id, int timeout_sec,
     int poll_period_msec) {
+    return BlockUntilGripperArrives(robot_command_client, cmd_id, std::chrono::seconds(timeout_sec),
+                                    std::chrono::milliseconds(poll_period_msec));
+}
+
+RobotCommandFeedbackResultType BlockUntilGripperArrives(
+    ::bosdyn::client::RobotCommandClient& robot_command_client, int cmd_id,
+    ::bosdyn::common::Duration timeout, ::bosdyn::common::Duration poll_period) {
     ::bosdyn::api::RobotCommandFeedbackRequest feedback_req;
     feedback_req.set_robot_command_id(cmd_id);
 
     ::bosdyn::client::RobotCommandFeedbackResultType feedback_res;
 
-    auto start_time = ::bosdyn::common::NowNsec();
-    const auto end_time = start_time + ::bosdyn::common::SecToNsec(timeout_sec);
+    auto start_time = ::bosdyn::common::NsecSinceEpoch();
+    const auto end_time = start_time + timeout;
 
-    while (timeout_sec <= 0 || ::bosdyn::common::NowNsec() < end_time) {
+    while (timeout <= ::bosdyn::common::Duration(0) ||
+           ::bosdyn::common::NsecSinceEpoch() < end_time) {
         feedback_res = robot_command_client.RobotCommandFeedback(feedback_req);
         // If the RPC timed out but this function hasn't timed out, keep trying.
         if (!feedback_res.status &&
@@ -174,10 +190,46 @@ RobotCommandFeedbackResultType BlockUntilGripperArrives(
             return {{BlockingRobotCommandErrorCode::Success}, feedback_res.move()};
         }
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(poll_period_msec));
+        std::this_thread::sleep_for(poll_period);
     }
     return {{BlockingRobotCommandErrorCode::CommandTimeoutError,
              "The GripperCommand failed or timed out."},
+            feedback_res.move()};
+}
+
+RobotCommandFeedbackResultType BlockUntilStandComplete(
+    ::bosdyn::client::RobotCommandClient& robot_command_client, int cmd_id,
+    ::bosdyn::common::Duration timeout, ::bosdyn::common::Duration poll_period) {
+    ::bosdyn::api::RobotCommandFeedbackRequest feedback_req;
+    feedback_req.set_robot_command_id(cmd_id);
+
+    ::bosdyn::client::RobotCommandFeedbackResultType feedback_res;
+
+    auto start_time = ::bosdyn::common::NsecSinceEpoch();
+    const auto end_time = start_time + timeout;
+
+    while (timeout <= ::bosdyn::common::Duration(0) ||
+           ::bosdyn::common::NsecSinceEpoch() < end_time) {
+        feedback_res = robot_command_client.RobotCommandFeedback(feedback_req);
+        // If the RPC timed out but this function hasn't timed out, keep trying.
+        if (!feedback_res.status &&
+            feedback_res.status.code() != ::bosdyn::client::RPCErrorCode::TimedOutError) {
+            return feedback_res;
+        }
+
+        auto stand_feedback = feedback_res.response.feedback()
+                                  .synchronized_feedback()
+                                  .mobility_command_feedback()
+                                  .stand_feedback();
+
+        if (stand_feedback.status() == ::bosdyn::api::StandCommand::Feedback::STATUS_IS_STANDING) {
+            return {{BlockingRobotCommandErrorCode::Success}, feedback_res.move()};
+        }
+
+        std::this_thread::sleep_for(poll_period);
+    }
+    return {{BlockingRobotCommandErrorCode::CommandTimeoutError,
+             "The StandCommand failed or timed out."},
             feedback_res.move()};
 }
 }  // namespace client

@@ -8,6 +8,48 @@ Development Kit License (20191101-BDSDK-SL).
 
 # Spot C++ SDK Release Notes
 
+## Spot C++ SDK version 4.0.2 BETA
+
+Please see the Release Notes in https://dev.bostondynamics.com for a description of the API changes included in release 4.0.2.
+
+### New Features
+
+#### Joint Control
+
+The Joint Control API allows for low-level control of the robot's joints. Note that this API is experimental and license-limited; the robot must have a Joint Level Control license installed in order for this API to be used. Please see the [documentation](concepts/joint_control/README.md) for more information and [supplemental](concepts/joint_control/supplemental_data.md) robot information which may be useful for development or simulation of the robot.
+
+### Bug Fixes and Improvements
+
+#### API
+
+Please see the Release Notes in https://dev.bostondynamics.com for a description of the API changes included in release 4.0.2.
+
+#### SDK
+
+- Added [RobotCommandStreamingClient](../cpp/bosdyn/client/robot_command/robot_command_streaming_client.cpp) client to support corresponding proto additions
+
+- Added [RobotStateStreamingClient](../cpp/bosdyn/client/robot_state/robot_state_streaming_client.cpp) client to support corresponding proto additions
+
+- Added `JointCommand` method to [robot_command_builder.cpp](../cpp/bosdyn/client/robot_command/robot_command_builder.cpp)
+
+- Added helpers for the Joint Control API to [joint_api_helper.cpp](../cpp/examples/joint_control/joint_api_helper.cpp).
+
+- Added `BlockUntilStandComplete` function to [robot_command_helpers.cpp](../cpp/bosdyn/client/robot_command/robot_command_helpers.cpp)
+
+### Deprecations
+
+- Deprecated `ValidateRequestHeaderAndRespond` method in [common_header_handling.h](../cpp/bosdyn/common/common_header_handling.h). Please use the other overload of `ValidateRequestHeaderAndRespond` going forward.
+
+- Deprecated `BlockUntilArmArrives` and `BlockUntilGripperArrives` methods in [robot_command_helpers.h](../cpp/bosdyn/client/robot_command/robot_command_helpers.h). Please use the other overloads of `BlockUntilArmArrives` and `BlockUntilGripperArrives` going forward.
+
+### Spot Sample Code
+
+#### New
+
+- [Joint Control: Robot Squat](../cpp/examples/joint_control/README.md#armless-robot-squat): An example that utilizes the joint control API to move the robot for a robot without an arm attached.
+
+- [Joint Control: Wiggle Arm](../cpp/examples/joint_control/README.md#arm-wiggle): An example that utilizes the joint control API to move the robot for a robot with an arm attached.
+
 ## Spot C++ SDK version 4.0.1 BETA
 
 Please see the Release Notes in https://dev.bostondynamics.com for a description of the API changes included in release 4.0.1.

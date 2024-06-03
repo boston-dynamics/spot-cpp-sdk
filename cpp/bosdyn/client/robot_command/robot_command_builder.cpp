@@ -52,6 +52,12 @@ constexpr double kClawGripperClosedAngle = 0;
     return command;
 }
 
+::bosdyn::api::RobotCommand JointCommand() {
+    ::bosdyn::api::RobotCommand command;
+    command.mutable_full_body_command()->mutable_joint_request();
+    return command;
+}
+
 ::bosdyn::api::RobotCommand SitCommand(const ::bosdyn::api::spot::MobilityParams& params) {
     ::bosdyn::api::RobotCommand command;
     command.mutable_synchronized_command()->mutable_mobility_command()->mutable_params()->CopyFrom(

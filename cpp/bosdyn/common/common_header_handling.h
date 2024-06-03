@@ -144,7 +144,8 @@ enum RequestReflectOption {
     REQUEST_COPY = 1,
 };
 
-/// Call at the start of GRPC to validate the request_header and initialize the response header.
+/// DEPRECATED: Call at the start of GRPC to validate the request_header and initialize the response
+/// header.
 ///
 /// This is called on a request proto message with a RequestHeader field 'header', and a
 /// response message with a ResponseHeader field 'header'.
@@ -155,13 +156,35 @@ enum RequestReflectOption {
 /// \param[out] out_response           Response, whose header is to be updated by this call.
 /// \return     False if header was not validated, true if validated.
 template <class RequestType, class ResponseType>
+[[deprecated("Call the other overload of ValidateRequestHeaderAndRespond instead")]] \
 bool ValidateRequestHeaderAndRespond(const RequestType& request,
-                                     RequestReflectOption response_reflect_option,
-                                     ResponseType* out_response) {
+                                RequestReflectOption response_reflect_option,
+                                ResponseType* out_response) {
+    return ValidateRequestHeaderAndRespond(request, out_response, response_reflect_option);
+}
+
+/// Call at the start of GRPC to validate the request_header and initialize the response header.
+/// Defaults reflect option to NO_REQUEST_COPY.
+/// Defaults invalid reflect option to REQUEST_COPY.
+///
+/// This is called on a request proto message with a RequestHeader field 'header', and a
+/// response message with a ResponseHeader field 'header'.
+/// If request has 'header' filled in, it validates the header and fills in the response.
+///
+/// \param      request                Request proto.
+/// \param[out] out_response           Response, whose header is to be updated by this call.
+/// \param      request_reflect_option Specifies whether request will be copied into header.
+/// \param      invalid_reflect_option Specifies whether invalid request will be copied into header.
+/// \return     False if header was not validated, true if validated.
+template <class RequestType, class ResponseType>
+
+bool ValidateRequestHeaderAndRespond(const RequestType& request, ResponseType* out_response,
+                                     RequestReflectOption response_reflect_option = NO_REQUEST_COPY,
+                                     RequestReflectOption invalid_reflect_option = REQUEST_COPY) {
     if (!request.has_header()) {
         SetTimestamp(::bosdyn::common::NowNsec(),
                      out_response->mutable_header()->mutable_request_received_timestamp());
-        if (REQUEST_COPY == response_reflect_option) {
+        if (REQUEST_COPY == invalid_reflect_option) {
             out_response->mutable_header()->mutable_request()->PackFrom(request);
         }
         return SetInvalidRequest("No header message present in request",
