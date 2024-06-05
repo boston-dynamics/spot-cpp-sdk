@@ -65,6 +65,8 @@ namespace client {
  */
 ::bosdyn::api::RobotCommand SafePowerOffCommand();
 
+::bosdyn::api::RobotCommand JointCommand();
+
 /**
  * Command the robot to sit.
  *
