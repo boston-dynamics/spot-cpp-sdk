@@ -8,6 +8,10 @@ Development Kit License (20191101-BDSDK-SL).
 
 # Spot C++ SDK Release Notes
 
+## Spot C++ SDK version 4.0.3 BETA
+
+No changes from 4.0.2.
+
 ## Spot C++ SDK version 4.0.2 BETA
 
 Please see the Release Notes in https://dev.bostondynamics.com for a description of the API changes included in release 4.0.2.
