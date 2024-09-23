@@ -31,7 +31,8 @@ class [[nodiscard]] Status {
     // Check if this matches a certain error enum.
     template <typename ENUM>
     bool Is() const {
-        static_assert(std::is_error_code_enum<ENUM>::value, "Must check against an error code enum");
+        static_assert(std::is_error_code_enum<ENUM>::value,
+                      "Must check against an error code enum");
         return std::error_code(ENUM{}).category() == m_code.category();
     }
 

@@ -15,9 +15,9 @@
 
 #include <future>
 
+#include "bosdyn/client/fault/fault_error_codes.h"
 #include "bosdyn/client/service_client/service_client.h"
 #include "bosdyn/common/status.h"
-#include "bosdyn/client/fault/fault_error_codes.h"
 
 namespace bosdyn {
 
@@ -85,7 +85,7 @@ class FaultClient : public ServiceClient {
 
  private:
     // The stub for the client to communicate it's rpc with (and pass to the robot).
-    std::unique_ptr<::bosdyn::api::FaultService::Stub> m_stub;
+    std::unique_ptr<::bosdyn::api::FaultService::StubInterface> m_stub;
 
     // Default service name for the fault service.
     static const char* s_default_service_name;
@@ -94,16 +94,18 @@ class FaultClient : public ServiceClient {
     static const char* s_service_type;
 
     // Callback for TriggerServiceFault.
-    void OnTriggerServiceFaultComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::TriggerServiceFaultRequest& request,
-        ::bosdyn::api::TriggerServiceFaultResponse&& response, const grpc::Status& status,
-        std::promise<TriggerServiceFaultResultType> promise);
+    void OnTriggerServiceFaultComplete(MessagePumpCallBase* call,
+                                       const ::bosdyn::api::TriggerServiceFaultRequest& request,
+                                       ::bosdyn::api::TriggerServiceFaultResponse&& response,
+                                       const grpc::Status& status,
+                                       std::promise<TriggerServiceFaultResultType> promise);
 
     // Callback for ClearServiceFault
-    void OnClearServiceFaultComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::ClearServiceFaultRequest& request,
-        ::bosdyn::api::ClearServiceFaultResponse&& response, const grpc::Status& status,
-        std::promise<ClearServiceFaultResultType> promise);
+    void OnClearServiceFaultComplete(MessagePumpCallBase* call,
+                                     const ::bosdyn::api::ClearServiceFaultRequest& request,
+                                     ::bosdyn::api::ClearServiceFaultResponse&& response,
+                                     const grpc::Status& status,
+                                     std::promise<ClearServiceFaultResultType> promise);
 };
 
 }  // namespace client

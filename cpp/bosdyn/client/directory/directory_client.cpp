@@ -29,25 +29,27 @@ std::shared_future<DirectoryListResultType> DirectoryClient::ListServiceEntriesA
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
 
     ::bosdyn::api::ListServiceEntriesRequest request;
-    MessagePumpCallBase* one_time =
-        InitiateAsyncCall<::bosdyn::api::ListServiceEntriesRequest, ::bosdyn::api::ListServiceEntriesResponse,
-                          ::bosdyn::api::ListServiceEntriesResponse>(
-            request,
-            std::bind(&::bosdyn::api::DirectoryService::Stub::AsyncListServiceEntries, m_stub.get(), _1, _2,
-                      _3),
-            std::bind(&DirectoryClient::OnGetListComplete, this, _1, _2, _3, _4, _5),
-            std::move(response), parameters);
+    MessagePumpCallBase* one_time = InitiateAsyncCall<::bosdyn::api::ListServiceEntriesRequest,
+                                                      ::bosdyn::api::ListServiceEntriesResponse,
+                                                      ::bosdyn::api::ListServiceEntriesResponse>(
+        request,
+        std::bind(&::bosdyn::api::DirectoryService::StubInterface::AsyncListServiceEntries,
+                  m_stub.get(), _1, _2, _3),
+        std::bind(&DirectoryClient::OnGetListComplete, this, _1, _2, _3, _4, _5),
+        std::move(response), parameters);
 
     return future;
 }
 
 // Set the outstanding response, which will update any futures. Reset it.
-void DirectoryClient::OnGetListComplete(
-    MessagePumpCallBase* call, const ::bosdyn::api::ListServiceEntriesRequest& request,
-    ::bosdyn::api::ListServiceEntriesResponse&& response, const grpc::Status& status,
-    std::promise<DirectoryListResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::ListServiceEntriesResponse>(
-        status, response, SDKErrorCode::Success);
+void DirectoryClient::OnGetListComplete(MessagePumpCallBase* call,
+                                        const ::bosdyn::api::ListServiceEntriesRequest& request,
+                                        ::bosdyn::api::ListServiceEntriesResponse&& response,
+                                        const grpc::Status& status,
+                                        std::promise<DirectoryListResultType> promise) {
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::ListServiceEntriesResponse>(
+            status, response, SDKErrorCode::Success);
     if (!ret_status) {
         promise.set_value({ret_status, std::move(response)});
         return;
@@ -56,8 +58,7 @@ void DirectoryClient::OnGetListComplete(
     promise.set_value({ret_status, std::move(response)});
 }
 
-DirectoryListResultType DirectoryClient::ListServiceEntries(
-    const RPCParameters& parameters) {
+DirectoryListResultType DirectoryClient::ListServiceEntries(const RPCParameters& parameters) {
     return ListServiceEntriesAsync(parameters).get();
 }
 
@@ -71,24 +72,27 @@ std::shared_future<DirectoryEntryResultType> DirectoryClient::GetServiceEntryAsy
     ::bosdyn::api::GetServiceEntryRequest request;
     request.set_service_name(service_name);
 
-    MessagePumpCallBase* one_time =
-        InitiateAsyncCall<::bosdyn::api::GetServiceEntryRequest, ::bosdyn::api::GetServiceEntryResponse,
-                          ::bosdyn::api::GetServiceEntryResponse>(
-            request,
-            std::bind(&::bosdyn::api::DirectoryService::Stub::AsyncGetServiceEntry, m_stub.get(), _1, _2, _3),
-            std::bind(&DirectoryClient::OnGetEntryComplete, this, _1, _2, _3, _4, _5),
-            std::move(response), parameters);
+    MessagePumpCallBase* one_time = InitiateAsyncCall<::bosdyn::api::GetServiceEntryRequest,
+                                                      ::bosdyn::api::GetServiceEntryResponse,
+                                                      ::bosdyn::api::GetServiceEntryResponse>(
+        request,
+        std::bind(&::bosdyn::api::DirectoryService::StubInterface::AsyncGetServiceEntry,
+                  m_stub.get(), _1, _2, _3),
+        std::bind(&DirectoryClient::OnGetEntryComplete, this, _1, _2, _3, _4, _5),
+        std::move(response), parameters);
 
     return future;
 }
 
 // Set the outstanding response, which will update any futures. Reset it.
-void DirectoryClient::OnGetEntryComplete(
-    MessagePumpCallBase* call, const ::bosdyn::api::GetServiceEntryRequest& request,
-    ::bosdyn::api::GetServiceEntryResponse&& response, const grpc::Status& status,
-    std::promise<DirectoryEntryResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::GetServiceEntryResponse>(
-        status, response, response.status());
+void DirectoryClient::OnGetEntryComplete(MessagePumpCallBase* call,
+                                         const ::bosdyn::api::GetServiceEntryRequest& request,
+                                         ::bosdyn::api::GetServiceEntryResponse&& response,
+                                         const grpc::Status& status,
+                                         std::promise<DirectoryEntryResultType> promise) {
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::GetServiceEntryResponse>(status, response,
+                                                                                 response.status());
     if (!ret_status) {
         promise.set_value({ret_status, std::move(response)});
         return;
@@ -97,8 +101,8 @@ void DirectoryClient::OnGetEntryComplete(
     promise.set_value({ret_status, std::move(response)});
 }
 
-DirectoryEntryResultType DirectoryClient::GetServiceEntry(
-    const std::string& service_name, const RPCParameters& parameters) {
+DirectoryEntryResultType DirectoryClient::GetServiceEntry(const std::string& service_name,
+                                                          const RPCParameters& parameters) {
     return GetServiceEntryAsync(service_name, parameters).get();
 }
 

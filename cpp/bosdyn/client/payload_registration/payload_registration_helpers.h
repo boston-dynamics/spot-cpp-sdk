@@ -15,8 +15,8 @@
 #include <bosdyn/api/payload.pb.h>
 
 #include "payload_registration_client.h"
-#include "bosdyn/client/service_client/common_result_types.h"
 #include "bosdyn/client/robot/robot.h"
+#include "bosdyn/client/service_client/common_result_types.h"
 
 namespace bosdyn {
 
@@ -30,9 +30,10 @@ payload was registered with a timeout.
 */
 class PayloadRegistrationKeepAlive {
  public:
-    PayloadRegistrationKeepAlive(PayloadRegistrationClient* payload_registration_client,
-                                 const ::bosdyn::api::Payload& payload, const std::string& secret,
-                                 ::bosdyn::common::Duration rpc_interval = std::chrono::seconds(30));
+    PayloadRegistrationKeepAlive(
+        PayloadRegistrationClient* payload_registration_client,
+        const ::bosdyn::api::Payload& payload, const std::string& secret,
+        ::bosdyn::common::Duration rpc_interval = std::chrono::seconds(30));
 
     ~PayloadRegistrationKeepAlive();
 

@@ -77,7 +77,7 @@ class InverseKinematicsClient : public ServiceClient {
                                      const grpc::Status& status,
                                      std::promise<InverseKinematicsResultType> promise);
 
-    std::unique_ptr<::bosdyn::api::spot::InverseKinematicsService::Stub> m_stub;
+    std::unique_ptr<::bosdyn::api::spot::InverseKinematicsService::StubInterface> m_stub;
 
     // Default service name for the inverse kinematics service.
     static const char* s_default_service_name;

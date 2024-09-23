@@ -278,6 +278,7 @@ void AutowalkPlayer::SetNodeMap(
         ::bosdyn::api::graph_nav::Edge::Annotations::PathFollowingMode::
             Edge_Annotations_PathFollowingMode_PATH_MODE_DEFAULT);
 
+
     int last_counter = -1;
     bosdyn::api::mission::State mission_state;
     mission_state.set_status(bosdyn::api::mission::State_Status::State_Status_STATUS_NONE);

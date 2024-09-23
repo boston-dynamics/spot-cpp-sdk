@@ -8,9 +8,9 @@
 
 
 #include "bosdyn/client/auto_return/auto_return_client.h"
-#include "bosdyn/common/success_condition.h"
 #include "bosdyn/client/lease/lease_processors.h"
 #include "bosdyn/client/lease/lease_resources.h"
+#include "bosdyn/common/success_condition.h"
 
 using namespace std::placeholders;
 
@@ -23,8 +23,7 @@ const char* AutoReturnClient::s_default_service_name = "auto-return";
 const char* AutoReturnClient::s_service_type = "bosdyn.api.auto_return.AutoReturnService";
 
 std::shared_future<ConfigureResultType> AutoReturnClient::ConfigureAsync(
-    ::bosdyn::api::auto_return::ConfigureRequest& request,
-    const RPCParameters& parameters) {
+    ::bosdyn::api::auto_return::ConfigureRequest& request, const RPCParameters& parameters) {
     std::promise<ConfigureResultType> response;
     std::shared_future<ConfigureResultType> future = response.get_future();
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
@@ -40,11 +39,12 @@ std::shared_future<ConfigureResultType> AutoReturnClient::ConfigureAsync(
     }
 
     MessagePumpCallBase* one_time =
-        InitiateAsyncCall<::bosdyn::api::auto_return::ConfigureRequest, ::bosdyn::api::auto_return::ConfigureResponse,
+        InitiateAsyncCall<::bosdyn::api::auto_return::ConfigureRequest,
+                          ::bosdyn::api::auto_return::ConfigureResponse,
                           ::bosdyn::api::auto_return::ConfigureResponse>(
             request,
-            std::bind(&::bosdyn::api::auto_return::AutoReturnService::Stub::AsyncConfigure, m_stub.get(), _1,
-                      _2, _3),
+            std::bind(&::bosdyn::api::auto_return::AutoReturnService::StubInterface::AsyncConfigure,
+                      m_stub.get(), _1, _2, _3),
             std::bind(&AutoReturnClient::OnConfigureComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
@@ -52,8 +52,7 @@ std::shared_future<ConfigureResultType> AutoReturnClient::ConfigureAsync(
 }
 
 ConfigureResultType AutoReturnClient::Configure(
-    ::bosdyn::api::auto_return::ConfigureRequest& request,
-    const RPCParameters& parameters) {
+    ::bosdyn::api::auto_return::ConfigureRequest& request, const RPCParameters& parameters) {
     return ConfigureAsync(request, parameters).get();
 }
 
@@ -61,35 +60,34 @@ void AutoReturnClient::OnConfigureComplete(
     MessagePumpCallBase* call, const ::bosdyn::api::auto_return::ConfigureRequest& request,
     ::bosdyn::api::auto_return::ConfigureResponse&& response, const grpc::Status& status,
     std::promise<ConfigureResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::auto_return::ConfigureResponse>(
-        status, response, response.status());
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::auto_return::ConfigureResponse>(
+            status, response, response.status());
     promise.set_value({ret_status, std::move(response)});
 }
 
-
 std::shared_future<GetConfigurationResultType> AutoReturnClient::GetConfigurationAsync(
-    ::bosdyn::api::auto_return::GetConfigurationRequest& request,
-    const RPCParameters& parameters) {
+    ::bosdyn::api::auto_return::GetConfigurationRequest& request, const RPCParameters& parameters) {
     std::promise<GetConfigurationResultType> response;
     std::shared_future<GetConfigurationResultType> future = response.get_future();
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
 
-    MessagePumpCallBase* one_time =
-        InitiateAsyncCall<::bosdyn::api::auto_return::GetConfigurationRequest,
-                          ::bosdyn::api::auto_return::GetConfigurationResponse,
-                          ::bosdyn::api::auto_return::GetConfigurationResponse>(
-            request,
-            std::bind(&::bosdyn::api::auto_return::AutoReturnService::Stub::AsyncGetConfiguration,
-                      m_stub.get(), _1, _2, _3),
-            std::bind(&AutoReturnClient::OnGetConfigurationComplete, this, _1, _2, _3, _4, _5),
-            std::move(response), parameters);
+    MessagePumpCallBase* one_time = InitiateAsyncCall<
+        ::bosdyn::api::auto_return::GetConfigurationRequest,
+        ::bosdyn::api::auto_return::GetConfigurationResponse,
+        ::bosdyn::api::auto_return::GetConfigurationResponse>(
+        request,
+        std::bind(
+            &::bosdyn::api::auto_return::AutoReturnService::StubInterface::AsyncGetConfiguration,
+            m_stub.get(), _1, _2, _3),
+        std::bind(&AutoReturnClient::OnGetConfigurationComplete, this, _1, _2, _3, _4, _5),
+        std::move(response), parameters);
 
     return future;
 }
 
 GetConfigurationResultType AutoReturnClient::GetConfiguration(
-    ::bosdyn::api::auto_return::GetConfigurationRequest& request,
-    const RPCParameters& parameters) {
+    ::bosdyn::api::auto_return::GetConfigurationRequest& request, const RPCParameters& parameters) {
     return GetConfigurationAsync(request, parameters).get();
 }
 
@@ -104,44 +102,43 @@ void AutoReturnClient::OnGetConfigurationComplete(
 }
 
 std::shared_future<StartResultType> AutoReturnClient::StartAsync(
-    ::bosdyn::api::auto_return::StartRequest& request,
-    const RPCParameters& parameters) {
+    ::bosdyn::api::auto_return::StartRequest& request, const RPCParameters& parameters) {
     std::promise<StartResultType> response;
     std::shared_future<StartResultType> future = response.get_future();
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
 
-    MessagePumpCallBase* one_time =
-        InitiateAsyncCall<::bosdyn::api::auto_return::StartRequest, ::bosdyn::api::auto_return::StartResponse,
-                          ::bosdyn::api::auto_return::StartResponse>(
-            request,
-            std::bind(&::bosdyn::api::auto_return::AutoReturnService::Stub::AsyncStart, m_stub.get(), _1,
-                      _2, _3),
-            std::bind(&AutoReturnClient::OnStartComplete, this, _1, _2, _3, _4, _5),
-            std::move(response), parameters);
+    MessagePumpCallBase* one_time = InitiateAsyncCall<::bosdyn::api::auto_return::StartRequest,
+                                                      ::bosdyn::api::auto_return::StartResponse,
+                                                      ::bosdyn::api::auto_return::StartResponse>(
+        request,
+        std::bind(&::bosdyn::api::auto_return::AutoReturnService::StubInterface::AsyncStart,
+                  m_stub.get(), _1, _2, _3),
+        std::bind(&AutoReturnClient::OnStartComplete, this, _1, _2, _3, _4, _5),
+        std::move(response), parameters);
 
     return future;
 }
 
-StartResultType AutoReturnClient::Start(
-    ::bosdyn::api::auto_return::StartRequest& request,
-    const RPCParameters& parameters) {
+StartResultType AutoReturnClient::Start(::bosdyn::api::auto_return::StartRequest& request,
+                                        const RPCParameters& parameters) {
     return StartAsync(request, parameters).get();
 }
 
-void AutoReturnClient::OnStartComplete(
-    MessagePumpCallBase* call, const ::bosdyn::api::auto_return::StartRequest& request,
-    ::bosdyn::api::auto_return::StartResponse&& response, const grpc::Status& status,
-    std::promise<StartResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::auto_return::StartResponse>(
-        status, response, SDKErrorCode::Success);
+void AutoReturnClient::OnStartComplete(MessagePumpCallBase* call,
+                                       const ::bosdyn::api::auto_return::StartRequest& request,
+                                       ::bosdyn::api::auto_return::StartResponse&& response,
+                                       const grpc::Status& status,
+                                       std::promise<StartResultType> promise) {
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::auto_return::StartResponse>(
+            status, response, SDKErrorCode::Success);
     promise.set_value({ret_status, std::move(response)});
 }
 
-
 ::bosdyn::common::Status AutoReturnClient::Init(const Lease& new_lease,
-                              const ::bosdyn::api::auto_return::Params& params,
-                              const std::string& client_name,
-                              std::shared_ptr<LeaseWallet> lease_wallet) {
+                                                const ::bosdyn::api::auto_return::Params& params,
+                                                const std::string& client_name,
+                                                std::shared_ptr<LeaseWallet> lease_wallet) {
     // Create a lease for auto_return of the form [A, B, ... , (N+1)].
     Lease auto_return_lease = new_lease.Increment();
 
@@ -164,10 +161,10 @@ void AutoReturnClient::OnStartComplete(
         cmd_lease_str =
             lease_wallet->GetLease(new_lease.GetResource()).response.GetProto().DebugString();
     }
-    return ::bosdyn::common::Status(SDKErrorCode::Success,
-                  "Successfully initialized auto return. Command lease: " +
-                      cmd_lease_str +
-                      " Auto return lease: " + auto_return_lease.GetProto().DebugString());
+    return ::bosdyn::common::Status(
+        SDKErrorCode::Success,
+        "Successfully initialized auto return. Command lease: " + cmd_lease_str +
+            " Auto return lease: " + auto_return_lease.GetProto().DebugString());
 }
 
 // Start of ServiceClient overrides.
@@ -179,10 +176,9 @@ void AutoReturnClient::SetComms(const std::shared_ptr<grpc::ChannelInterface>& c
     m_stub.reset(new ::bosdyn::api::auto_return::AutoReturnService::Stub(channel));
 }
 
-void AutoReturnClient::UpdateServiceFrom(
-    RequestProcessorChain& request_processor_chain,
-    ResponseProcessorChain& response_processor_chain,
-    const std::shared_ptr<LeaseWallet>& lease_wallet) {
+void AutoReturnClient::UpdateServiceFrom(RequestProcessorChain& request_processor_chain,
+                                         ResponseProcessorChain& response_processor_chain,
+                                         const std::shared_ptr<LeaseWallet>& lease_wallet) {
     // Set the lease wallet.
     m_lease_wallet = lease_wallet;
 

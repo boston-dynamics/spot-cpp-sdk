@@ -131,6 +131,26 @@ RobotCommandFeedbackResultType BlockUntilStandComplete(
     ::bosdyn::client::RobotCommandClient& robot_command_client, int cmd_id,
     ::bosdyn::common::Duration timeout = std::chrono::seconds(10),
     ::bosdyn::common::Duration poll_period = std::chrono::milliseconds(100));
+
+/**
+ * Blocks until the Robot completes TrajectoryCommand
+ *
+ * @param robot_command_client (bosdyn.client.RobotCommandClient): The robot command client, used to
+ * request command feedback.
+ * @param cmd_id (int): The command ID returned by the robot when the Trajectory command was sent.
+ * @param timeout (Duration): Duration after which we'll return no matter what the
+ * robot's state is. If unset, 0, or negative, this function will never time out and only return
+ * when there is finished command feedback.
+ * @param poll_period (Duration): Duration to wait between requesting feedback updates. Default is
+ * 100 ms.
+ *
+ * @return True if the robot successfully completed trajectory.
+ * False if the robot failed to complete trajectory.
+ */
+RobotCommandFeedbackResultType BlockUntilSE2TrajectoryComplete(
+    ::bosdyn::client::RobotCommandClient& robot_command_client, int cmd_id,
+    ::bosdyn::common::Duration timeout = std::chrono::seconds(10),
+    ::bosdyn::common::Duration poll_period = std::chrono::milliseconds(100));
 }  // namespace client
 
 }  // namespace bosdyn

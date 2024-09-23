@@ -9,32 +9,33 @@
 
 #include <CLI/CLI.hpp>
 
-#include "bosdyn/client/sdk/client_sdk.h"
 #include "bosdyn/client/data_buffer/data_buffer_client.h"
 #include "bosdyn/client/directory/directory_client.h"
 #include "bosdyn/client/payload/payload_client.h"
 #include "bosdyn/client/robot_id/robot_id_client.h"
 #include "bosdyn/client/robot_state/robot_state_client.h"
+#include "bosdyn/client/sdk/client_sdk.h"
 #include "bosdyn/client/time_sync/time_sync_helpers.h"
 #include "bosdyn/client/util/cli_util.h"
 
-
-// Show how to add additional processor in the SDK that logs requests and responses to standard error.
-class StderrProcessor : public ::bosdyn::client::RequestProcessor, public ::bosdyn::client::ResponseProcessor {
+// Show how to add additional processor in the SDK that logs requests and responses to standard
+// error.
+class StderrProcessor : public ::bosdyn::client::RequestProcessor,
+                        public ::bosdyn::client::ResponseProcessor {
  public:
     StderrProcessor() = default;
     ~StderrProcessor() override = default;
 
     // RequestProcessor
     ::bosdyn::common::Status Process(grpc::ClientContext*, bosdyn::api::RequestHeader*,
-                           google::protobuf::Message* full_request) override {
+                                     google::protobuf::Message* full_request) override {
         std::cerr << "Request: " << full_request->DebugString() << std::endl;
         return {::bosdyn::client::SDKErrorCode::Success};
     }
 
     // ResponseProcessor
     ::bosdyn::common::Status Process(const grpc::Status& status, const bosdyn::api::ResponseHeader&,
-                           const google::protobuf::Message& full_response) override {
+                                     const google::protobuf::Message& full_response) override {
         std::cerr << "status: " << status.error_code() << std::endl;
         std::cerr << "response: " << full_response.DebugString() << std::endl;
         return {::bosdyn::client::SDKErrorCode::Success};
@@ -58,7 +59,6 @@ class StderrProcessor : public ::bosdyn::client::RequestProcessor, public ::bosd
     std::cout << "RobotId result: " << result.response.DebugString() << std::endl;
     return {::bosdyn::client::SDKErrorCode::Success};
 }
-
 
 ::bosdyn::common::Status GetServiceInformation(::bosdyn::client::Robot* robot) {
     // Synchronously retrieve the list of services running on the robot and print them out.
@@ -114,7 +114,6 @@ class StderrProcessor : public ::bosdyn::client::RequestProcessor, public ::bosd
     return {::bosdyn::client::SDKErrorCode::Success};
 }
 
-
 ::bosdyn::common::Status LogToDataBuffer(::bosdyn::client::Robot* robot) {
     // Create a DataBufferClient.
     auto log_client_result = robot->EnsureServiceClient<::bosdyn::client::DataBufferClient>();
@@ -145,7 +144,6 @@ class StderrProcessor : public ::bosdyn::client::RequestProcessor, public ::bosd
     return {::bosdyn::client::SDKErrorCode::Success};
 }
 
-
 ::bosdyn::common::Status GetPayloadInformation(::bosdyn::client::Robot* robot) {
     // Create a PayloadClient.
     auto payload_client_result = robot->EnsureServiceClient<::bosdyn::client::PayloadClient>();
@@ -154,7 +152,8 @@ class StderrProcessor : public ::bosdyn::client::RequestProcessor, public ::bosd
     }
 
     // Synchronously get the list of payloads.
-    ::bosdyn::client::ListPayloadsResultType payloads_result = payload_client_result.response->ListPayloads();
+    ::bosdyn::client::ListPayloadsResultType payloads_result =
+        payload_client_result.response->ListPayloads();
     if (!payloads_result) {
         std::cerr << "Could not get payload information " << payloads_result.status.DebugString()
                   << std::endl;
@@ -164,7 +163,6 @@ class StderrProcessor : public ::bosdyn::client::RequestProcessor, public ::bosd
     std::cout << "---Payloads---:\n" << payloads_result.response.DebugString() << std::endl;
     return {::bosdyn::client::SDKErrorCode::Success};
 }
-
 
 ::bosdyn::common::Status GetRobotStateInformation(::bosdyn::client::Robot* robot) {
     // Get the current robot state, hardware config and metrics.
@@ -206,7 +204,6 @@ class StderrProcessor : public ::bosdyn::client::RequestProcessor, public ::bosd
     return {::bosdyn::client::SDKErrorCode::Success};
 }
 
-
 ::bosdyn::common::Status EstablishTimeSync(::bosdyn::client::Robot* robot) {
     // Establish time synchronization with the robot.
     auto time_sync_client_resp = robot->EnsureServiceClient<::bosdyn::client::TimeSyncClient>();
@@ -215,22 +212,24 @@ class StderrProcessor : public ::bosdyn::client::RequestProcessor, public ::bosd
     }
     ::bosdyn::client::TimeSyncThread time_sync_thread(time_sync_client_resp.move());
     if (time_sync_thread.HasEstablishedTimeSync()) {
-        return {::bosdyn::client::SDKErrorCode::GenericSDKError, "Faulty establishment of time sync."};
+        return {::bosdyn::client::SDKErrorCode::GenericSDKError,
+                "Faulty establishment of time sync."};
     }
     time_sync_thread.Start();
     if (!time_sync_thread.WaitForSync(std::chrono::seconds(5))) {
         time_sync_thread.Stop();
-        return {::bosdyn::client::SDKErrorCode::GenericSDKError, "Failed to establish time sync before timing out."};
+        return {::bosdyn::client::SDKErrorCode::GenericSDKError,
+                "Failed to establish time sync before timing out."};
     }
     time_sync_thread.Stop();
 
     return {::bosdyn::client::SDKErrorCode::Success};
 }
 
-
 ::bosdyn::common::Status run(const ::bosdyn::client::CommonCLIArgs& args) {
     // Create a Client SDK object.
-    std::unique_ptr<::bosdyn::client::ClientSdk> client_sdk = ::bosdyn::client::CreateStandardSDK("hello_spot");
+    std::unique_ptr<::bosdyn::client::ClientSdk> client_sdk =
+        ::bosdyn::client::CreateStandardSDK("hello_spot");
     std::cout << "------Created SDK" << std::endl;
 
     // Create a debugging processor. Clients can add custom request and response processors which
@@ -295,9 +294,7 @@ class StderrProcessor : public ::bosdyn::client::RequestProcessor, public ::bosd
     return {::bosdyn::client::SDKErrorCode::Success};
 }
 
-
 int main(int argc, char** argv) {
-
     // Parse the arguments.
     CLI::App parser{"HelloSpot"};
     ::bosdyn::client::CommonCLIArgs common_args;

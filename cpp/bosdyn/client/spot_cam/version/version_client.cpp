@@ -35,18 +35,20 @@ std::shared_future<GetSoftwareVersionResultType> VersionClient::GetSoftwareVersi
 
     ::bosdyn::api::spot_cam::GetSoftwareVersionRequest request;
     MessagePumpCallBase* one_time =
-        InitiateAsyncCall<::bosdyn::api::spot_cam::GetSoftwareVersionRequest, ::bosdyn::api::spot_cam::GetSoftwareVersionResponse,
+        InitiateAsyncCall<::bosdyn::api::spot_cam::GetSoftwareVersionRequest,
+                          ::bosdyn::api::spot_cam::GetSoftwareVersionResponse,
                           ::bosdyn::api::spot_cam::GetSoftwareVersionResponse>(
             request,
-            std::bind(&::bosdyn::api::spot_cam::VersionService::Stub::AsyncGetSoftwareVersion, m_stub.get(), _1, _2, _3),
+            std::bind(
+                &::bosdyn::api::spot_cam::VersionService::StubInterface::AsyncGetSoftwareVersion,
+                m_stub.get(), _1, _2, _3),
             std::bind(&VersionClient::OnGetSoftwareVersionComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
     return future;
 }
 
-GetSoftwareVersionResultType VersionClient::GetSoftwareVersion(
-    const RPCParameters& parameters) {
+GetSoftwareVersionResultType VersionClient::GetSoftwareVersion(const RPCParameters& parameters) {
     return GetSoftwareVersionAsync(parameters).get();
 }
 
@@ -54,8 +56,9 @@ void VersionClient::OnGetSoftwareVersionComplete(
     MessagePumpCallBase* call, const ::bosdyn::api::spot_cam::GetSoftwareVersionRequest& request,
     ::bosdyn::api::spot_cam::GetSoftwareVersionResponse&& response, const grpc::Status& status,
     std::promise<GetSoftwareVersionResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::spot_cam::GetSoftwareVersionResponse>(
-        status, response, SDKErrorCode::Success);
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::spot_cam::GetSoftwareVersionResponse>(
+            status, response, SDKErrorCode::Success);
 
     promise.set_value({ret_status, std::move(response)});
 }

@@ -33,8 +33,8 @@ std::shared_future<GetPowerStatusResultType> PowerClient::GetPowerStatusAsync(
                           ::bosdyn::api::spot_cam::GetPowerStatusResponse,
                           ::bosdyn::api::spot_cam::GetPowerStatusResponse>(
             request,
-            std::bind(&::bosdyn::api::spot_cam::PowerService::Stub::AsyncGetPowerStatus, m_stub.get(), _1, _2,
-                      _3),
+            std::bind(&::bosdyn::api::spot_cam::PowerService::StubInterface::AsyncGetPowerStatus,
+                      m_stub.get(), _1, _2, _3),
             std::bind(&PowerClient::OnGetPowerStatusComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
@@ -45,13 +45,13 @@ GetPowerStatusResultType PowerClient::GetPowerStatus(const RPCParameters& parame
     return GetPowerStatusAsync(parameters).get();
 }
 
-void PowerClient::OnGetPowerStatusComplete(MessagePumpCallBase* call,
-                                           const ::bosdyn::api::spot_cam::GetPowerStatusRequest& request,
-                                           ::bosdyn::api::spot_cam::GetPowerStatusResponse&& response,
-                                           const grpc::Status& status,
-                                           std::promise<GetPowerStatusResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::spot_cam::GetPowerStatusResponse>(
-        status, response, SDKErrorCode::Success);
+void PowerClient::OnGetPowerStatusComplete(
+    MessagePumpCallBase* call, const ::bosdyn::api::spot_cam::GetPowerStatusRequest& request,
+    ::bosdyn::api::spot_cam::GetPowerStatusResponse&& response, const grpc::Status& status,
+    std::promise<GetPowerStatusResultType> promise) {
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::spot_cam::GetPowerStatusResponse>(
+            status, response, SDKErrorCode::Success);
 
     promise.set_value({ret_status, std::move(response)});
 }
@@ -125,26 +125,26 @@ std::shared_future<SetPowerStatusResultType> PowerClient::SetPowerStatusAsync(
                           ::bosdyn::api::spot_cam::SetPowerStatusResponse,
                           ::bosdyn::api::spot_cam::SetPowerStatusResponse>(
             request,
-            std::bind(&::bosdyn::api::spot_cam::PowerService::Stub::AsyncSetPowerStatus, m_stub.get(), _1, _2,
-                      _3),
+            std::bind(&::bosdyn::api::spot_cam::PowerService::StubInterface::AsyncSetPowerStatus,
+                      m_stub.get(), _1, _2, _3),
             std::bind(&PowerClient::OnSetPowerStatusComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
     return future;
 }
 
-SetPowerStatusResultType PowerClient::SetPowerStatus(::bosdyn::api::spot_cam::SetPowerStatusRequest& request,
-                                                     const RPCParameters& parameters) {
+SetPowerStatusResultType PowerClient::SetPowerStatus(
+    ::bosdyn::api::spot_cam::SetPowerStatusRequest& request, const RPCParameters& parameters) {
     return SetPowerStatusAsync(request, parameters).get();
 }
 
-void PowerClient::OnSetPowerStatusComplete(MessagePumpCallBase* call,
-                                           const ::bosdyn::api::spot_cam::SetPowerStatusRequest& request,
-                                           ::bosdyn::api::spot_cam::SetPowerStatusResponse&& response,
-                                           const grpc::Status& status,
-                                           std::promise<SetPowerStatusResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::spot_cam::SetPowerStatusResponse>(
-        status, response, SDKErrorCode::Success);
+void PowerClient::OnSetPowerStatusComplete(
+    MessagePumpCallBase* call, const ::bosdyn::api::spot_cam::SetPowerStatusRequest& request,
+    ::bosdyn::api::spot_cam::SetPowerStatusResponse&& response, const grpc::Status& status,
+    std::promise<SetPowerStatusResultType> promise) {
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::spot_cam::SetPowerStatusResponse>(
+            status, response, SDKErrorCode::Success);
     promise.set_value({ret_status, std::move(response)});
 }
 
@@ -210,14 +210,14 @@ std::shared_future<CyclePowerResultType> PowerClient::CyclePowerAsync(
     std::shared_future<CyclePowerResultType> future = response.get_future();
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
 
-    MessagePumpCallBase* one_time =
-        InitiateAsyncCall<::bosdyn::api::spot_cam::CyclePowerRequest, ::bosdyn::api::spot_cam::CyclePowerResponse,
-                          ::bosdyn::api::spot_cam::CyclePowerResponse>(
-            request,
-            std::bind(&::bosdyn::api::spot_cam::PowerService::Stub::AsyncCyclePower, m_stub.get(), _1, _2,
-                      _3),
-            std::bind(&PowerClient::OnCyclePowerComplete, this, _1, _2, _3, _4, _5),
-            std::move(response), parameters);
+    MessagePumpCallBase* one_time = InitiateAsyncCall<::bosdyn::api::spot_cam::CyclePowerRequest,
+                                                      ::bosdyn::api::spot_cam::CyclePowerResponse,
+                                                      ::bosdyn::api::spot_cam::CyclePowerResponse>(
+        request,
+        std::bind(&::bosdyn::api::spot_cam::PowerService::StubInterface::AsyncCyclePower,
+                  m_stub.get(), _1, _2, _3),
+        std::bind(&PowerClient::OnCyclePowerComplete, this, _1, _2, _3, _4, _5),
+        std::move(response), parameters);
 
     return future;
 }
@@ -232,8 +232,9 @@ void PowerClient::OnCyclePowerComplete(MessagePumpCallBase* call,
                                        ::bosdyn::api::spot_cam::CyclePowerResponse&& response,
                                        const grpc::Status& status,
                                        std::promise<CyclePowerResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::spot_cam::CyclePowerResponse>(
-        status, response, SDKErrorCode::Success);
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::spot_cam::CyclePowerResponse>(
+            status, response, SDKErrorCode::Success);
     promise.set_value({ret_status, std::move(response)});
 }
 

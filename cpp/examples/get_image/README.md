@@ -11,7 +11,9 @@ Development Kit License (20191101-BDSDK-SL).
 This example program gets various images from the robot cameras by calling the synchronous and asynchronous client methods.
 
 ## Run the Example
+
 To run the example, set BOSDYN_CLIENT_USERNAME and BOSDYN_CLIENT_PASSWORD environment variables with the robot credentials and then run:
+
 ```
 ./get_image {ROBOT_IP}
 ```

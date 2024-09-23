@@ -35,8 +35,8 @@ std::shared_future<AcquireLeaseResultType> LeaseClient::AcquireLeaseAsync(
         InitiateAsyncCall<::bosdyn::api::AcquireLeaseRequest, ::bosdyn::api::AcquireLeaseResponse,
                           ::bosdyn::api::AcquireLeaseResponse>(
             request,
-            std::bind(&::bosdyn::api::LeaseService::Stub::AsyncAcquireLease, m_stub.get(), _1, _2,
-                      _3),
+            std::bind(&::bosdyn::api::LeaseService::StubInterface::AsyncAcquireLease, m_stub.get(),
+                      _1, _2, _3),
             std::bind(&LeaseClient::OnAcquireLeaseComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
@@ -79,7 +79,8 @@ std::shared_future<TakeLeaseResultType> LeaseClient::TakeLeaseAsync(
         InitiateAsyncCall<::bosdyn::api::TakeLeaseRequest, ::bosdyn::api::TakeLeaseResponse,
                           ::bosdyn::api::TakeLeaseResponse>(
             request,
-            std::bind(&::bosdyn::api::LeaseService::Stub::AsyncTakeLease, m_stub.get(), _1, _2, _3),
+            std::bind(&::bosdyn::api::LeaseService::StubInterface::AsyncTakeLease, m_stub.get(), _1,
+                      _2, _3),
             std::bind(&LeaseClient::OnTakeLeaseComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
@@ -120,8 +121,8 @@ std::shared_future<ReturnLeaseResultType> LeaseClient::ReturnLeaseAsync(
         InitiateAsyncCall<::bosdyn::api::ReturnLeaseRequest, ::bosdyn::api::ReturnLeaseResponse,
                           ::bosdyn::api::ReturnLeaseResponse>(
             request,
-            std::bind(&::bosdyn::api::LeaseService::Stub::AsyncReturnLease, m_stub.get(), _1, _2,
-                      _3),
+            std::bind(&::bosdyn::api::LeaseService::StubInterface::AsyncReturnLease, m_stub.get(),
+                      _1, _2, _3),
             std::bind(&LeaseClient::OnReturnLeaseComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
@@ -161,8 +162,8 @@ std::shared_future<ListLeasesResultType> LeaseClient::ListLeasesAsync(
         InitiateAsyncCall<::bosdyn::api::ListLeasesRequest, ::bosdyn::api::ListLeasesResponse,
                           ::bosdyn::api::ListLeasesResponse>(
             request,
-            std::bind(&::bosdyn::api::LeaseService::Stub::AsyncListLeases, m_stub.get(), _1, _2,
-                      _3),
+            std::bind(&::bosdyn::api::LeaseService::StubInterface::AsyncListLeases, m_stub.get(),
+                      _1, _2, _3),
             std::bind(&LeaseClient::OnListLeasesComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
@@ -196,8 +197,8 @@ std::shared_future<RetainLeaseResultType> LeaseClient::RetainLeaseAsync(
         InitiateAsyncCall<::bosdyn::api::RetainLeaseRequest, ::bosdyn::api::RetainLeaseResponse,
                           ::bosdyn::api::RetainLeaseResponse>(
             request,
-            std::bind(&::bosdyn::api::LeaseService::Stub::AsyncRetainLease, m_stub.get(), _1, _2,
-                      _3),
+            std::bind(&::bosdyn::api::LeaseService::StubInterface::AsyncRetainLease, m_stub.get(),
+                      _1, _2, _3),
             std::bind(&LeaseClient::OnRetainLeaseComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 

@@ -58,7 +58,7 @@ class Robot {
     explicit Robot(const std::string& client_name, bool bypass_proxy = false,
                    ::bosdyn::common::Duration timeout = kRPCTimeoutNotSpecified);
 
-    ~Robot();
+    virtual ~Robot();
 
     // Authenticate with user credentials.
     ::bosdyn::common::Status Authenticate(const std::string& username, const std::string& password);
@@ -180,11 +180,12 @@ class Robot {
     // Return pointer to the TimeSyncThread. Start if not yet started.
     Result<std::shared_ptr<TimeSyncThread>> GetTimeSyncThread();
 
-    // Set the default MessagePump instance to be used by the ServiceClient instances used by the
-    // robot.
+    // Set/get the default MessagePump instance to be used by the ServiceClient
+    // instances used by the robot.
     void SetDefaultMessagePump(std::shared_ptr<MessagePump> message_pump) {
         m_default_message_pump = message_pump;
     }
+    std::shared_ptr<MessagePump> GetDefaultMessagePump() { return m_default_message_pump; }
 
 
     /**
@@ -254,7 +255,8 @@ class Robot {
      * @param secure_channel_port New port to use for creating secure channels.
      */
     void UpdateSecureChannelPort(int secure_channel_port) {
-        m_secure_channel_port = secure_channel_port; }
+        m_secure_channel_port = secure_channel_port;
+    }
 
  protected:
     // Updates the cache with the existing user token.

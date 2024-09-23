@@ -35,8 +35,9 @@ DockingCommandFeedbackResultType WaitOnFeedback(
             if (docking_fb_res_future.wait_for(interval) == std::future_status::ready) break;
         }
         // Set sleep duration for the next loop.
-        sleep_duration = interval - (
-            ::bosdyn::common::TimePoint(::bosdyn::common::NsecSinceEpoch()) - rpc_start);
+        sleep_duration =
+            interval -
+            (::bosdyn::common::TimePoint(::bosdyn::common::NsecSinceEpoch()) - rpc_start);
         docking_fb_res = docking_fb_res_future.get();
 
         // Keep checking feedback if the RPC failed or the response indicated "in progress"
@@ -50,7 +51,8 @@ DockingCommandFeedbackResultType WaitOnFeedback(
     } else if (docking_fb_res) {
         // If we got a non-success status, but the Result indicates success, override the Status
         // code to indicate the command we were looking at failed.
-        return {::bosdyn::common::Status(DockingHelperErrorCode::CommandFailed), docking_fb_res.response};
+        return {::bosdyn::common::Status(DockingHelperErrorCode::CommandFailed),
+                docking_fb_res.response};
     }
     // Otherwise (non-success status, non-success Result) we can return the whole Result.
     return docking_fb_res;
@@ -85,8 +87,9 @@ Result<BlockingDockDetails> BlockingDock(DockingClient* client,
         ++details.attempts_made;
         // For the first attempt, and every OTHER attempt after that, use the prep pose.
         const ::bosdyn::api::docking::PrepPoseBehavior pose =
-            (details.attempts_made) % 2 == 1 ? ::bosdyn::api::docking::PrepPoseBehavior::PREP_POSE_USE_POSE
-                                             : ::bosdyn::api::docking::PrepPoseBehavior::PREP_POSE_SKIP_POSE;
+            (details.attempts_made) % 2 == 1
+                ? ::bosdyn::api::docking::PrepPoseBehavior::PREP_POSE_USE_POSE
+                : ::bosdyn::api::docking::PrepPoseBehavior::PREP_POSE_SKIP_POSE;
         docking_command.response.set_prep_pose_behavior(pose);
         auto docking_cmd_res_future = client->DockingCommandAsync(docking_command.response);
 
@@ -109,9 +112,10 @@ Result<BlockingDockDetails> BlockingDock(DockingClient* client,
 
             // Wait for feedback on that command.
             const auto docking_fb_res = WaitOnFeedback(
-                client, cmd_id, ::bosdyn::api::docking::DockingCommandFeedbackResponse::STATUS_DOCKED,
-                ::bosdyn::api::docking::DockingCommandFeedbackResponse::STATUS_IN_PROGRESS, interval,
-                early_end);
+                client, cmd_id,
+                ::bosdyn::api::docking::DockingCommandFeedbackResponse::STATUS_DOCKED,
+                ::bosdyn::api::docking::DockingCommandFeedbackResponse::STATUS_IN_PROGRESS,
+                interval, early_end);
 
             // If feedback indicated a successful dock, return success!
             if (docking_fb_res) {
@@ -124,8 +128,9 @@ Result<BlockingDockDetails> BlockingDock(DockingClient* client,
     // Failed to dock after num_attempts. Go to prep pose, to guarantee we are not awkwardly
     // standing over the dock.
     const auto end_time = ::bosdyn::common::NsecSinceEpoch() + end_duration;
-    Result<::bosdyn::api::docking::DockingCommandRequest> prep_command = client->DockingCommandBuilder(
-        dock_id, ::bosdyn::common::TimePoint(end_time), time_sync_endpoint);
+    Result<::bosdyn::api::docking::DockingCommandRequest> prep_command =
+        client->DockingCommandBuilder(dock_id, ::bosdyn::common::TimePoint(end_time),
+                                      time_sync_endpoint);
     if (!prep_command) {
         return {prep_command.status, details};
     }
@@ -148,12 +153,12 @@ Result<BlockingDockDetails> BlockingDock(DockingClient* client,
     if (cmd_id_given) cmd_id_given(cmd_id);
     const auto docking_fb_res = WaitOnFeedback(
         client, cmd_id, ::bosdyn::api::docking::DockingCommandFeedbackResponse::STATUS_AT_PREP_POSE,
-        ::bosdyn::api::docking::DockingCommandFeedbackResponse::STATUS_IN_PROGRESS, interval, early_end);
+        ::bosdyn::api::docking::DockingCommandFeedbackResponse::STATUS_IN_PROGRESS, interval,
+        early_end);
     return {::bosdyn::common::Status(DockingHelperErrorCode::RetriesExceeded), details};
 }
 
-Result<BlockingDockDetails> BlockingDock(Robot* robot, unsigned int dock_id,
-                                         int num_attempts,
+Result<BlockingDockDetails> BlockingDock(Robot* robot, unsigned int dock_id, int num_attempts,
                                          ::bosdyn::common::Duration interval,
                                          ::bosdyn::common::Duration end_duration,
                                          std::function<bool(void)> early_end,

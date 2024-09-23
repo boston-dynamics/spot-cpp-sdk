@@ -32,19 +32,19 @@ std::shared_future<ImageListSourcesResultType> ImageClient::ListImageSourcesAsyn
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
 
     ::bosdyn::api::ListImageSourcesRequest request;
-    MessagePumpCallBase* one_time =
-        InitiateAsyncCall<::bosdyn::api::ListImageSourcesRequest, ::bosdyn::api::ListImageSourcesResponse,
-                          ::bosdyn::api::ListImageSourcesResponse>(
-            request,
-            std::bind(&::bosdyn::api::ImageService::Stub::AsyncListImageSources, m_stub.get(), _1, _2, _3),
-            std::bind(&ImageClient::OnListSourcesComplete, this, _1, _2, _3, _4, _5),
-            std::move(response), parameters);
+    MessagePumpCallBase* one_time = InitiateAsyncCall<::bosdyn::api::ListImageSourcesRequest,
+                                                      ::bosdyn::api::ListImageSourcesResponse,
+                                                      ::bosdyn::api::ListImageSourcesResponse>(
+        request,
+        std::bind(&::bosdyn::api::ImageService::StubInterface::AsyncListImageSources, m_stub.get(),
+                  _1, _2, _3),
+        std::bind(&ImageClient::OnListSourcesComplete, this, _1, _2, _3, _4, _5),
+        std::move(response), parameters);
 
     return future;
 }
 
-ImageListSourcesResultType ImageClient::ListImageSources(
-    const RPCParameters& parameters) {
+ImageListSourcesResultType ImageClient::ListImageSources(const RPCParameters& parameters) {
     return ListImageSourcesAsync(parameters).get();
 }
 
@@ -53,8 +53,9 @@ void ImageClient::OnListSourcesComplete(MessagePumpCallBase* call,
                                         ::bosdyn::api::ListImageSourcesResponse&& response,
                                         const grpc::Status& status,
                                         std::promise<ImageListSourcesResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::ListImageSourcesResponse>(
-        status, response, SDKErrorCode::Success);
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::ListImageSourcesResponse>(
+            status, response, SDKErrorCode::Success);
     if (!ret_status) {
         promise.set_value({ret_status, std::move(response)});
         return;
@@ -64,8 +65,7 @@ void ImageClient::OnListSourcesComplete(MessagePumpCallBase* call,
 }
 
 std::shared_future<GetImageResultType> ImageClient::GetImageAsync(
-    const std::vector<std::string>& image_sources,
-    const RPCParameters& parameters) {
+    const std::vector<std::string>& image_sources, const RPCParameters& parameters) {
     std::promise<GetImageResultType> error_response;
     std::shared_future<GetImageResultType> error_future = error_response.get_future();
 
@@ -80,9 +80,8 @@ std::shared_future<GetImageResultType> ImageClient::GetImageAsync(
     return GetImageAsync(request, parameters);
 }
 
-GetImageResultType ImageClient::GetImage(
-    const std::vector<std::string>& image_sources,
-    const RPCParameters& parameters) {
+GetImageResultType ImageClient::GetImage(const std::vector<std::string>& image_sources,
+                                         const RPCParameters& parameters) {
     return GetImageAsync(image_sources, parameters).get();
 }
 
@@ -92,25 +91,31 @@ std::shared_future<GetImageResultType> ImageClient::GetImageAsync(
     std::shared_future<GetImageResultType> future = response.get_future();
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
 
-    MessagePumpCallBase* one_time = InitiateAsyncCall<::bosdyn::api::GetImageRequest, ::bosdyn::api::GetImageResponse,
-                                                      ::bosdyn::api::GetImageResponse>(
-        request, std::bind(&::bosdyn::api::ImageService::Stub::AsyncGetImage, m_stub.get(), _1, _2, _3),
-        std::bind(&ImageClient::OnGetImageComplete, this, _1, _2, _3, _4, _5), std::move(response),
-        parameters);
+    MessagePumpCallBase* one_time =
+        InitiateAsyncCall<::bosdyn::api::GetImageRequest, ::bosdyn::api::GetImageResponse,
+                          ::bosdyn::api::GetImageResponse>(
+            request,
+            std::bind(&::bosdyn::api::ImageService::StubInterface::AsyncGetImage, m_stub.get(), _1,
+                      _2, _3),
+            std::bind(&ImageClient::OnGetImageComplete, this, _1, _2, _3, _4, _5),
+            std::move(response), parameters);
 
     return future;
 }
 
-GetImageResultType ImageClient::GetImage(
-    ::bosdyn::api::GetImageRequest& request, const RPCParameters& parameters) {
+GetImageResultType ImageClient::GetImage(::bosdyn::api::GetImageRequest& request,
+                                         const RPCParameters& parameters) {
     return GetImageAsync(request, parameters).get();
 }
 
-void ImageClient::OnGetImageComplete(MessagePumpCallBase* call, const ::bosdyn::api::GetImageRequest& request,
-                                     ::bosdyn::api::GetImageResponse&& response, const grpc::Status& status,
+void ImageClient::OnGetImageComplete(MessagePumpCallBase* call,
+                                     const ::bosdyn::api::GetImageRequest& request,
+                                     ::bosdyn::api::GetImageResponse&& response,
+                                     const grpc::Status& status,
                                      std::promise<GetImageResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::GetImageResponse>(
-        status, response, SDKErrorCode::Success);
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::GetImageResponse>(status, response,
+                                                                          SDKErrorCode::Success);
     if (!ret_status) {
         promise.set_value({ret_status, std::move(response)});
         return;
@@ -120,7 +125,8 @@ void ImageClient::OnGetImageComplete(MessagePumpCallBase* call, const ::bosdyn::
     for (const auto& image_response : response.image_responses()) {
         std::error_code code = image_response.status();
         if (code != SuccessCondition::Success) {
-            promise.set_value({::bosdyn::common::Status(code, "ImageResponse ::bosdyn::common::Status unsuccessful"),
+            promise.set_value({::bosdyn::common::Status(
+                                   code, "ImageResponse ::bosdyn::common::Status unsuccessful"),
                                std::move(response)});
             return;
         }

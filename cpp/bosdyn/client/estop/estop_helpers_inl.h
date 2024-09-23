@@ -33,9 +33,9 @@ namespace client {
     return request;
 }
 
-::bosdyn::api::EstopCheckInRequest MakeCheckInRequest(const ::bosdyn::api::EstopStopLevel& stop_level,
-                                                      ::bosdyn::client::EstopEndpoint* estop_endpoint,
-                                                    int challenge, int response) {
+::bosdyn::api::EstopCheckInRequest MakeCheckInRequest(
+    const ::bosdyn::api::EstopStopLevel& stop_level,
+    ::bosdyn::client::EstopEndpoint* estop_endpoint, int challenge, int response) {
     ::bosdyn::api::EstopCheckInRequest request;
     request.set_stop_level(stop_level);
     request.mutable_endpoint()->CopyFrom(estop_endpoint->ToProto());

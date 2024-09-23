@@ -13,8 +13,8 @@
 
 #include <future>
 
-#include "bosdyn/common/status.h"
 #include "bosdyn/client/estop/estop_client.h"
+#include "bosdyn/common/status.h"
 
 namespace bosdyn {
 
@@ -79,7 +79,7 @@ class EstopEndpoint {
     // Check in at a specified level. Note, this function is meant for internal use by the different
     // level-based E-Stop calls, but can be useful for higher-level wrappers.
     ::bosdyn::common::Status CheckInAtLevel(const ::bosdyn::api::EstopStopLevel& stop_level,
-                                  const RPCParameters& parameters = RPCParameters());
+                                            const RPCParameters& parameters = RPCParameters());
 
     // Issue a CUT stop level command to the robot, cutting motor power immediately.
     ::bosdyn::common::Status Stop();

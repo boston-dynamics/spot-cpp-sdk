@@ -25,8 +25,9 @@ class CommonRequestProcessor : public RequestProcessor {
     explicit CommonRequestProcessor(const std::string& client_name);
     ~CommonRequestProcessor() = default;
 
-    ::bosdyn::common::Status Process(grpc::ClientContext* context, ::bosdyn::api::RequestHeader* request_header,
-                   ::google::protobuf::Message* full_request) override;
+    ::bosdyn::common::Status Process(grpc::ClientContext* context,
+                                     ::bosdyn::api::RequestHeader* request_header,
+                                     ::google::protobuf::Message* full_request) override;
 
  private:
     std::string m_client_name;

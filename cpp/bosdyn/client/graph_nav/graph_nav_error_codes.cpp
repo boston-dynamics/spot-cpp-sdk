@@ -21,4 +21,3 @@ DEFINE_PROTO_ENUM_ERRORCODE_IMPL_GRAPHNAV(DownloadWaypointSnapshotResponse_Statu
 DEFINE_PROTO_ENUM_ERRORCODE_IMPL_GRAPHNAV(DownloadEdgeSnapshotResponse_Status, valcode == 1)
 DEFINE_PROTO_ENUM_ERRORCODE_IMPL_GRAPHNAV(UploadWaypointSnapshotResponse_Status, valcode == 1)
 DEFINE_PROTO_ENUM_ERRORCODE_IMPL_GRAPHNAV(UploadGraphResponse_Status, valcode == 1)
-

@@ -218,7 +218,7 @@ class AudioClient : public ServiceClient {
         std::promise<GetAudioCaptureGainResultType> promise);
 
 
-    std::unique_ptr<::bosdyn::api::spot_cam::AudioService::Stub> m_stub;
+    std::unique_ptr<::bosdyn::api::spot_cam::AudioService::StubInterface> m_stub;
 
     // Default service name for the spot cam audio service.
     static const char* s_default_service_name;

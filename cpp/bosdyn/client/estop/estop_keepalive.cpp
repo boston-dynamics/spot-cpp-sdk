@@ -17,7 +17,8 @@ namespace bosdyn {
 
 namespace client {
 
-EstopKeepAlive::EstopKeepAlive(EstopEndpoint* estop_endpoint, ::bosdyn::common::Duration rpc_timeout,
+EstopKeepAlive::EstopKeepAlive(EstopEndpoint* estop_endpoint,
+                               ::bosdyn::common::Duration rpc_timeout,
                                ::bosdyn::common::Duration rpc_interval)
     : m_estop_endpoint(estop_endpoint), m_rpc_interval(rpc_interval) {
     if (rpc_timeout == std::chrono::seconds(0)) {
@@ -102,7 +103,8 @@ void EstopKeepAlive::PeriodicCheckIn() {
             // ::bosdyn::common::Status shows a GRPC related error.
             std::string error_msg;
             if (checkin_status.code() == RPCErrorCode::TimedOutError) {
-                error_msg = "RPC took longer than " + std::to_string(m_rpc_parameters.timeout.count()) + "[ms].";
+                error_msg = "RPC took longer than " +
+                            std::to_string(m_rpc_parameters.timeout.count()) + "[ms].";
             } else {
                 error_msg =
                     "Transport exception during check-in: " + std::to_string(checkin_status) +
@@ -120,8 +122,8 @@ void EstopKeepAlive::PeriodicCheckIn() {
             this->SendError(checkin_status.message(), EstopKeepAliveStatus::KEEPALIVE_DISABLED);
         } else {
             if (!checkin_status) {
-                // Some other response error has occurred, but not one worthy of disabling the E-Stop
-                // keep-alive.
+                // Some other response error has occurred, but not one worthy of disabling the
+                // E-Stop keep-alive.
                 this->SendError(checkin_status.message());
             } else {
                 // No notable errors!

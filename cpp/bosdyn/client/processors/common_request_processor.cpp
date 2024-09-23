@@ -11,9 +11,9 @@
 
 #include <string>
 
+#include "bosdyn/client/error_codes/sdk_error_code.h"
 #include "bosdyn/common/compiler_definitions.h"
 #include "bosdyn/common/time.h"
-#include "bosdyn/client/error_codes/sdk_error_code.h"
 
 namespace bosdyn {
 
@@ -27,7 +27,7 @@ CommonRequestProcessor::CommonRequestProcessor(const std::string& client_name)
     ::google::protobuf::Message* full_request BOSDYN_UNUSED) {
     request_header->set_client_name(m_client_name);
     ::bosdyn::common::SetTimestamp(::bosdyn::common::NowNsec(),
-                                 request_header->mutable_request_timestamp());
+                                   request_header->mutable_request_timestamp());
     return ::bosdyn::common::Status(SDKErrorCode::Success);
 }
 

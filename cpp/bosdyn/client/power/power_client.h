@@ -137,7 +137,7 @@ class PowerClient : public ServiceClient {
 
  private:
     // The stub for the power client to communicate it's rpc with (and pass to the robot).
-    std::unique_ptr<::bosdyn::api::PowerService::Stub> m_stub;
+    std::unique_ptr<::bosdyn::api::PowerService::StubInterface> m_stub;
 
     // Default service name for the power service.
     static const char* s_default_service_name;

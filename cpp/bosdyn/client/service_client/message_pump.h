@@ -16,15 +16,16 @@
 #include <functional>
 #include <future>
 #include <mutex>
+#include <queue>
 #include <set>
 #include <thread>
 
 #include <bosdyn/api/header.pb.h>
 
-#include "bosdyn/client/service_client/result.h"
-#include "bosdyn/common/time.h"
-#include "bosdyn/common/assert_precondition.h"
 #include "bosdyn/client/error_codes/rpc_error_code.h"
+#include "bosdyn/client/service_client/result.h"
+#include "bosdyn/common/assert_precondition.h"
+#include "bosdyn/common/time.h"
 
 // MessagePump and related classes form the basis of the asynchronous gRPC API client
 // implementation.
@@ -61,20 +62,20 @@ namespace client {
 enum CallStatus { NotStarted, Called, Cancelled, Completed };
 
 template <typename CallbackFunctionType, typename PromiseResultType>
-void CancelHelper(
-    CallbackFunctionType& callback, std::promise<Result<PromiseResultType>> promise,
-    CallStatus* call_status) {
+void CancelHelper(CallbackFunctionType& callback, std::promise<Result<PromiseResultType>> promise,
+                  CallStatus* call_status) {
     switch (*call_status) {
         case CallStatus::NotStarted:
-            promise.set_value(
-                {::bosdyn::common::Status(RPCErrorCode::ClientCancelledOperationError,
-                        "Canceled RPC is not started yet"), {}});
+            promise.set_value({::bosdyn::common::Status(RPCErrorCode::ClientCancelledOperationError,
+                                                        "Canceled RPC is not started yet"),
+                               {}});
             *call_status = CallStatus::Cancelled;
             callback = nullptr;
             return;
         case CallStatus::Called:
             promise.set_value({::bosdyn::common::Status(RPCErrorCode::ClientCancelledOperationError,
-                                      "RPC is canceled"), {}});
+                                                        "RPC is canceled"),
+                               {}});
             *call_status = CallStatus::Cancelled;
             callback = nullptr;
             return;
@@ -115,7 +116,8 @@ class MessagePumpCallBase {
     // context should only be used and modified prior to Call being executed.
     grpc::ClientContext* context() {
         std::lock_guard<std::mutex> lock(m_call_mutex);
-        BOSDYN_ASSERT_PRECONDITION(m_call_status == CallStatus::NotStarted, "Message pump cannot be started more than once.");
+        BOSDYN_ASSERT_PRECONDITION(m_call_status == CallStatus::NotStarted,
+                                   "Message pump cannot be started more than once.");
         return &m_context;
     }
 
@@ -134,12 +136,11 @@ class MessagePumpCallBase {
 template <typename Request, typename Response, typename PromiseResultType>
 class RequestStreamCall : public MessagePumpCallBase {
  public:
-    typedef std::function<void(RequestStreamCall*, const std::vector<Request>&&,
-                               Response&&, const grpc::Status&,
-                               std::promise<Result<PromiseResultType>>)>
+    typedef std::function<void(RequestStreamCall*, const std::vector<Request>&&, Response&&,
+                               const grpc::Status&, std::promise<Result<PromiseResultType>>)>
         RequestStreamCallbackFunction;
 
-    typedef grpc::ClientAsyncWriter<Request> AsyncWriter;
+    typedef grpc::ClientAsyncWriterInterface<Request> AsyncWriter;
     typedef std::function<std::unique_ptr<AsyncWriter>(
         grpc::ClientContext* context, Response* response, grpc::CompletionQueue* cq, void*)>
         RequestStreamRpcCallFunction;
@@ -159,14 +160,16 @@ class RequestStreamCall : public MessagePumpCallBase {
      *
      * @return True if successful, false otherwise.
      */
-    void Start(std::vector<Request>&& requests, const ::bosdyn::api::RequestHeader& header, const RequestStreamRpcCallFunction& rpc_call,
+    void Start(std::vector<Request>&& requests, const ::bosdyn::api::RequestHeader& header,
+               const RequestStreamRpcCallFunction& rpc_call,
                const RequestStreamCallbackFunction& callback,
                std::promise<Result<PromiseResultType>> promise, const std::string& type_name) {
         std::lock_guard<std::mutex> lock(m_call_mutex);
         // This method should not be called with an empty list of requests.
         BOSDYN_ASSERT_PRECONDITION(!requests.empty(), "Request cannot be empty.");
         // Start should ONLY be called if the status not started.
-        BOSDYN_ASSERT_PRECONDITION(m_call_status == CallStatus::NotStarted, "Message pump cannot be started multiple times.");
+        BOSDYN_ASSERT_PRECONDITION(m_call_status == CallStatus::NotStarted,
+                                   "Message pump cannot be started multiple times.");
         m_requests = std::move(requests);
         m_callback = callback;
         m_promise = std::move(promise);
@@ -186,9 +189,10 @@ class RequestStreamCall : public MessagePumpCallBase {
     friend class MessagePump;
 
     explicit RequestStreamCall(grpc::CompletionQueue* cq
-    ) :
-    m_next_request_to_write(0), m_next_step(NextStep::WriteRequest)
-    {
+                               )
+        :  
+          m_next_request_to_write(0),
+          m_next_step(NextStep::WriteRequest) {
         m_cq = cq;
         m_call_status = CallStatus::NotStarted;
         BOSDYN_ASSERT_PRECONDITION(m_cq != nullptr, "No completion queue.");
@@ -263,7 +267,7 @@ class RequestStreamCall : public MessagePumpCallBase {
     }
 
     std::vector<Request> m_requests;
-    std::unique_ptr<grpc::ClientAsyncWriter<Request>> m_request_writer;
+    std::unique_ptr<grpc::ClientAsyncWriterInterface<Request>> m_request_writer;
     unsigned int m_next_request_to_write;
     Response m_response;
     NextStep m_next_step;
@@ -277,7 +281,7 @@ class ResponseStreamCall : public MessagePumpCallBase {
     typedef std::function<void(ResponseStreamCall*, const Request&, std::vector<Response>&&,
                                const grpc::Status&, std::promise<Result<PromiseResultType>>)>
         ResponseStreamCallbackFunction;
-    typedef grpc::ClientAsyncReader<Response> AsyncReader;
+    typedef grpc::ClientAsyncReaderInterface<Response> AsyncReader;
     typedef std::function<std::unique_ptr<AsyncReader>(grpc::ClientContext*, const Request&,
                                                        grpc::CompletionQueue*, void*)>
         ResponseStreamRpcCallFunction;
@@ -299,7 +303,8 @@ class ResponseStreamCall : public MessagePumpCallBase {
                std::promise<Result<PromiseResultType>> promise) {
         std::lock_guard<std::mutex> lock(m_call_mutex);
         // Start should ONLY be called if the status not started.
-        BOSDYN_ASSERT_PRECONDITION(m_call_status == CallStatus::NotStarted, "Message pump cannot be started multiple times.");
+        BOSDYN_ASSERT_PRECONDITION(m_call_status == CallStatus::NotStarted,
+                                   "Message pump cannot be started multiple times.");
         m_request = request;
         m_callback = callback;
         m_promise = std::move(promise);
@@ -319,9 +324,9 @@ class ResponseStreamCall : public MessagePumpCallBase {
     friend class MessagePump;
 
     explicit ResponseStreamCall(grpc::CompletionQueue* cq
-    ) :
-    m_next_step(NextStep::StartRead)
-    {
+                                )
+        :  
+          m_next_step(NextStep::StartRead) {
         m_cq = cq;
         m_call_status = CallStatus::NotStarted;
         BOSDYN_ASSERT_PRECONDITION(m_cq != nullptr, "No completion queue.");
@@ -397,7 +402,7 @@ class ResponseStreamCall : public MessagePumpCallBase {
     }
 
     Request m_request;
-    std::unique_ptr<grpc::ClientAsyncReader<Response>> m_response_reader;
+    std::unique_ptr<grpc::ClientAsyncReaderInterface<Response>> m_response_reader;
     // m_last_response is defined as a private var because it needs to persist over multiple
     // OnCompletionQueueEvent calls.
     Response m_last_response;
@@ -414,7 +419,7 @@ class RequestResponseStreamCall : public MessagePumpCallBase {
                                std::vector<Response>&&, const grpc::Status&,
                                std::promise<Result<PromiseResultType>>)>
         RequestResponseStreamCallbackFunction;
-    typedef grpc::ClientAsyncReaderWriter<Request, Response> AsyncReaderWriter;
+    typedef grpc::ClientAsyncReaderWriterInterface<Request, Response> AsyncReaderWriter;
     typedef std::function<std::unique_ptr<AsyncReaderWriter>(grpc::ClientContext*,
                                                              grpc::CompletionQueue*, void*)>
         RequestResponseStreamRpcCallFunction;
@@ -435,16 +440,16 @@ class RequestResponseStreamCall : public MessagePumpCallBase {
      *
      * @return True if successful, false otherwise.
      */
-    void Start(std::vector<Request>&& requests, const ::bosdyn::api::RequestHeader& header, const RequestResponseStreamRpcCallFunction& rpc_call,
+    void Start(std::vector<Request>&& requests, const ::bosdyn::api::RequestHeader& header,
+               const RequestResponseStreamRpcCallFunction& rpc_call,
                const RequestResponseStreamCallbackFunction& callback,
                std::promise<Result<PromiseResultType>> promise, const std::string& type_name) {
         std::lock_guard<std::mutex> lock(m_call_mutex);
         // This method should not be called with an empty list of requests.
         BOSDYN_ASSERT_PRECONDITION(!requests.empty(), "Request cannot be empty.");
         // Start should ONLY be called if the status not started.
-        BOSDYN_ASSERT_PRECONDITION(
-            m_call_status == CallStatus::NotStarted,
-            "Message pump cannot be started multiple times.");
+        BOSDYN_ASSERT_PRECONDITION(m_call_status == CallStatus::NotStarted,
+                                   "Message pump cannot be started multiple times.");
         m_requests = std::move(requests);
         m_callback = callback;
         m_promise = std::move(promise);
@@ -464,10 +469,12 @@ class RequestResponseStreamCall : public MessagePumpCallBase {
  private:
     friend class MessagePump;
 
-    explicit RequestResponseStreamCall(grpc::CompletionQueue* cq
-    ) :
-    m_next_request_to_write(0), m_next_step(NextStep::WriteRequest)
-    {
+    explicit RequestResponseStreamCall(
+        grpc::CompletionQueue* cq
+        )
+        :  
+          m_next_request_to_write(0),
+          m_next_step(NextStep::WriteRequest) {
         m_cq = cq;
         m_call_status = CallStatus::NotStarted;
         BOSDYN_ASSERT_PRECONDITION(m_cq != nullptr, "No completion queue.");
@@ -562,7 +569,7 @@ class RequestResponseStreamCall : public MessagePumpCallBase {
     }
 
     std::vector<Request> m_requests;
-    std::unique_ptr<grpc::ClientAsyncReaderWriter<Request, Response>> m_reader_writer;
+    std::unique_ptr<grpc::ClientAsyncReaderWriterInterface<Request, Response>> m_reader_writer;
     unsigned int m_next_request_to_write;
     // m_last_response is defined as a private var because it needs to persist over multiple
     // OnCompletionQueueEvent calls.
@@ -572,6 +579,7 @@ class RequestResponseStreamCall : public MessagePumpCallBase {
     RequestResponseStreamCallbackFunction m_callback;
     std::promise<Result<PromiseResultType>> m_promise;
 };
+
 
 /**
  * UnaryCall wraps a single request->response gRPC call.
@@ -593,7 +601,7 @@ class UnaryCall : public MessagePumpCallBase {
     typedef std::function<void(UnaryCall*, const Request&, Response&&, const grpc::Status&,
                                std::promise<Result<PromiseResultType>>)>
         CallbackFunction;
-    typedef grpc::ClientAsyncResponseReader<Response> AsyncReader;
+    typedef grpc::ClientAsyncResponseReaderInterface<Response> AsyncReader;
     typedef std::function<std::unique_ptr<AsyncReader>(grpc::ClientContext*, const Request&,
                                                        grpc::CompletionQueue*)>
         RpcCallFunction;
@@ -614,7 +622,8 @@ class UnaryCall : public MessagePumpCallBase {
                const CallbackFunction& callback, std::promise<Result<PromiseResultType>> promise) {
         std::lock_guard<std::mutex> lock(m_call_mutex);
         // Start should ONLY be called if the status not started.
-        BOSDYN_ASSERT_PRECONDITION(m_call_status == CallStatus::NotStarted, "Message pump cannot be started multiple times.");
+        BOSDYN_ASSERT_PRECONDITION(m_call_status == CallStatus::NotStarted,
+                                   "Message pump cannot be started multiple times.");
         m_request = request;
         m_callback = callback;
         m_promise = std::move(promise);
@@ -636,9 +645,8 @@ class UnaryCall : public MessagePumpCallBase {
  private:
     friend class MessagePump;
 
-
     explicit UnaryCall(grpc::CompletionQueue* cq
-    )
+                       )
     {
         m_cq = cq;
         m_call_status = CallStatus::NotStarted;
@@ -748,37 +756,35 @@ class MessagePump {
     std::unique_ptr<UnaryCall<Request, Response, PromiseResultType>> CreateUnaryCall() {
         if (m_shutdown_requested) return nullptr;
         return std::unique_ptr<UnaryCall<Request, Response, PromiseResultType>>(
-            new UnaryCall<Request, Response, PromiseResultType>(
-                &m_completion_queue
-            ));
+            new UnaryCall<Request, Response, PromiseResultType>(&m_completion_queue
+                                                                ));
     }
 
     template <typename Request, typename Response, typename Promise>
     std::unique_ptr<RequestStreamCall<Request, Response, Promise>> CreateRequestStreamCall() {
         if (m_shutdown_requested) return nullptr;
         return std::unique_ptr<RequestStreamCall<Request, Response, Promise>>(
-            new RequestStreamCall<Request, Response, Promise>(
-                &m_completion_queue
-            ));
+            new RequestStreamCall<Request, Response, Promise>(&m_completion_queue
+                                                              ));
     }
 
     template <typename Request, typename Response, typename Promise>
     std::unique_ptr<ResponseStreamCall<Request, Response, Promise>> CreateResponseStreamCall() {
         if (m_shutdown_requested) return nullptr;
         return std::unique_ptr<ResponseStreamCall<Request, Response, Promise>>(
-            new ResponseStreamCall<Request, Response, Promise>(
-                &m_completion_queue
-            ));
+            new ResponseStreamCall<Request, Response, Promise>(&m_completion_queue
+                                                               ));
     }
 
     template <typename Request, typename Response, typename Promise>
-    std::unique_ptr<RequestResponseStreamCall<Request, Response, Promise>> CreateRequestResponseStreamCall() {
+    std::unique_ptr<RequestResponseStreamCall<Request, Response, Promise>>
+    CreateRequestResponseStreamCall() {
         if (m_shutdown_requested) return nullptr;
         return std::unique_ptr<RequestResponseStreamCall<Request, Response, Promise>>(
-            new RequestResponseStreamCall<Request, Response, Promise>(
-                &m_completion_queue
-            ));
+            new RequestResponseStreamCall<Request, Response, Promise>(&m_completion_queue
+                                                                      ));
     }
+
 
     // Add a call to be tracked.
     MessagePumpCallBase* AddCall(std::unique_ptr<MessagePumpCallBase> call) {

@@ -34,7 +34,8 @@ std::string formatString(const char* format, va_list args) noexcept {
     return reason;
 }
 
-std::string panicString(const char* function, int line, const char* file, const char* cond, const char* reason) {
+std::string panicString(const char* function, int line, const char* file, const char* cond,
+                        const char* reason) {
     std::stringstream stream;
     stream << "Pre-Condition Assert Failed:" << std::endl
            << "in " << function << std::endl
@@ -47,10 +48,10 @@ std::string panicString(const char* function, int line, const char* file, const 
     return stream.str();
 }
 
-} // namespace
+}  // namespace
 
-void panic(char const* function, char const* file, int line, const char* cond,
-                  const char* format, ...) {
+void panic(char const* function, char const* file, int line, const char* cond, const char* format,
+           ...) {
     va_list args;
     va_start(args, format);
     std::string reason(formatString(format, args));

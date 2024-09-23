@@ -15,7 +15,6 @@ namespace bosdyn {
 
 namespace client {
 
-
 template <typename ResponseType>
 struct [[nodiscard]] Result {
     ::bosdyn::common::Status status;
@@ -39,7 +38,7 @@ struct [[nodiscard]] Result {
     //     auto value = result.move();
     //     ... use value here ...
     // }
-    // 
+    //
     // The Result should not be used after calling this function, as the response
     // may have been moved away.
     ResponseType&& move() { return std::move(response); }

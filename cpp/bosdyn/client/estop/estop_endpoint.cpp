@@ -11,8 +11,8 @@
 #include <google/protobuf/duration.pb.h>
 #include <google/protobuf/timestamp.pb.h>
 #include <google/protobuf/util/time_util.h>
-#include "bosdyn/common/time.h"
 #include "bosdyn/client/estop/estop_helpers_inl.h"
+#include "bosdyn/common/time.h"
 
 namespace bosdyn {
 
@@ -20,8 +20,7 @@ namespace client {
 
 EstopEndpoint::EstopEndpoint(EstopClient* estop_client, const std::string& name,
                              ::bosdyn::common::Duration estop_timeout, const std::string& role,
-                             bool first_checkin,
-                             ::bosdyn::common::Duration estop_cut_power_timeout)
+                             bool first_checkin, ::bosdyn::common::Duration estop_cut_power_timeout)
     : m_endpoint_name(name),
       m_estop_client(estop_client),
       m_estop_timeout(estop_timeout),
@@ -55,8 +54,7 @@ void EstopEndpoint::SetChallenge(int challenge) {
     new_endpoint.set_name(m_endpoint_name);
     new_endpoint.set_unique_id(m_unique_id);
     new_endpoint.mutable_timeout()->CopyFrom(
-        google::protobuf::util::TimeUtil::NanosecondsToDuration(
-            m_estop_timeout.count()));
+        google::protobuf::util::TimeUtil::NanosecondsToDuration(m_estop_timeout.count()));
     if (m_estop_cut_power_timeout > std::chrono::seconds(0)) {
         new_endpoint.mutable_cut_power_timeout()->CopyFrom(
             google::protobuf::util::TimeUtil::NanosecondsToDuration(
@@ -121,19 +119,16 @@ void EstopEndpoint::FromProto(const ::bosdyn::api::EstopEndpoint& proto) {
     const auto& estop_status = estop_status_result.response;
 
     if (estop_config.active_config().unique_id().empty()) {
-        return ::bosdyn::common::Status(
-            SDKErrorCode::GenericSDKError,
-            "TakeOverSimpleSetup failed, missing unique_id");
+        return ::bosdyn::common::Status(SDKErrorCode::GenericSDKError,
+                                        "TakeOverSimpleSetup failed, missing unique_id");
     }
     if (estop_status.status().endpoints_size() != 1) {
-        return ::bosdyn::common::Status(
-            SDKErrorCode::GenericSDKError,
-            "TakeOverSimpleSetup failed, expected 1 endpoint");
+        return ::bosdyn::common::Status(SDKErrorCode::GenericSDKError,
+                                        "TakeOverSimpleSetup failed, expected 1 endpoint");
     }
     if (estop_status.status().endpoints(0).endpoint().name() != name) {
-        return ::bosdyn::common::Status(
-            SDKErrorCode::GenericSDKError,
-            "TakeOverSimpleSetup failed, wrong endpoint name");
+        return ::bosdyn::common::Status(SDKErrorCode::GenericSDKError,
+                                        "TakeOverSimpleSetup failed, wrong endpoint name");
     }
 
     m_config_id = estop_config.active_config().unique_id();
@@ -157,22 +152,24 @@ void EstopEndpoint::FromProto(const ::bosdyn::api::EstopEndpoint& proto) {
 }
 
 ::bosdyn::common::Status EstopEndpoint::Deregister() {
-    ::bosdyn::api::DeregisterEstopEndpointRequest request = MakeDeregisterRequest(m_config_id, this);
+    ::bosdyn::api::DeregisterEstopEndpointRequest request =
+        MakeDeregisterRequest(m_config_id, this);
     return m_estop_client->DeregisterEstopEndpoint(request).status;
 }
 
 std::shared_future<DeregisterEstopEndpointResultType> EstopEndpoint::DeregisterAsync() {
-    ::bosdyn::api::DeregisterEstopEndpointRequest request = MakeDeregisterRequest(m_config_id, this);
+    ::bosdyn::api::DeregisterEstopEndpointRequest request =
+        MakeDeregisterRequest(m_config_id, this);
     return m_estop_client->DeregisterEstopEndpointAsync(request);
 }
 
-::bosdyn::common::Status EstopEndpoint::CheckInAtLevel(const ::bosdyn::api::EstopStopLevel& stop_level,
-                                             const RPCParameters& parameters) {
+::bosdyn::common::Status EstopEndpoint::CheckInAtLevel(
+    const ::bosdyn::api::EstopStopLevel& stop_level, const RPCParameters& parameters) {
     ::bosdyn::api::EstopCheckInRequest request =
         ::bosdyn::client::MakeCheckInRequest(stop_level, this, m_challenge, this->GetResponse());
     auto checkin_results = m_estop_client->EstopCheckIn(request, parameters);
-    // If first_checkin == true, then we want to suppress any estop response errors (specifically the
-    // incorrect challenge response) and automatically set the challenge
+    // If first_checkin == true, then we want to suppress any estop response errors (specifically
+    // the incorrect challenge response) and automatically set the challenge
     bool is_first_checkin = this->GetFirstCheckIn();
     if (is_first_checkin) {
         // Ignore any status errors and forcefully update the challenge.

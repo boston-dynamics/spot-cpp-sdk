@@ -9,12 +9,12 @@
 
 #pragma once
 
-#include "bosdyn/common/time.h"
 #include "bosdyn/client/docking/docking_client.h"
 #include "bosdyn/client/docking/docking_error_codes.h"
-#include "bosdyn/common/status.h"
 #include "bosdyn/client/robot/robot.h"
 #include "bosdyn/client/time_sync/time_sync_helpers.h"
+#include "bosdyn/common/status.h"
+#include "bosdyn/common/time.h"
 
 namespace bosdyn {
 
@@ -52,8 +52,7 @@ Result<BlockingDockDetails> BlockingDock(DockingClient* client,
 // BlockingDock that takes a Robot.
 // Behaves like the other version, but can also fail with the additional codes:
 //   SDKErrorCode
-Result<BlockingDockDetails> BlockingDock(Robot* robot, unsigned int dock_id,
-                                         int num_attempts,
+Result<BlockingDockDetails> BlockingDock(Robot* robot, unsigned int dock_id, int num_attempts,
                                          ::bosdyn::common::Duration interval,
                                          ::bosdyn::common::Duration end_duration,
                                          std::function<bool(void)> early_end = nullptr,

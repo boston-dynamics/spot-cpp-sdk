@@ -9,9 +9,9 @@
 
 #pragma once
 
+#include <bosdyn/api/header.pb.h>
 #include <list>
 #include <memory>
-#include <bosdyn/api/header.pb.h>
 #include "bosdyn/common/status.h"
 
 namespace grpc {
@@ -46,8 +46,9 @@ class ResponseProcessorChain {
 
     void PrependProcessor(const std::shared_ptr<ResponseProcessor>& processor);
 
-    ::bosdyn::common::Status Process(const grpc::Status& status, const ::bosdyn::api::ResponseHeader& response_header,
-                   const ::google::protobuf::Message& full_response);
+    ::bosdyn::common::Status Process(const grpc::Status& status,
+                                     const ::bosdyn::api::ResponseHeader& response_header,
+                                     const ::google::protobuf::Message& full_response);
 
  private:
     std::list<std::shared_ptr<ResponseProcessor>> m_processors;

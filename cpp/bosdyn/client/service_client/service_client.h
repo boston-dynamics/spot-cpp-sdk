@@ -15,18 +15,17 @@
 #include <memory>
 #include <vector>
 
-#include "bosdyn/client/service_client/message_pump.h"
-#include "bosdyn/client/processors/request_processor_chain.h"
-#include "bosdyn/client/processors/response_processor_chain.h"
-#include "bosdyn/client/service_client/result.h"
-#include "bosdyn/client/service_client/rpc_parameters.h"
 #include "bosdyn/client/data_chunk/data_chunking.h"
 #include "bosdyn/client/error_codes/rpc_error_code.h"
 #include "bosdyn/client/error_codes/sdk_error_code.h"
-#include "bosdyn/client/lease/lease_wallet.h"
-#include "bosdyn/common/assert_precondition.h"
 #include "bosdyn/client/lease/lease_processors.h"
-#include "bosdyn/client/data_chunk/data_chunking.h"
+#include "bosdyn/client/lease/lease_wallet.h"
+#include "bosdyn/client/processors/request_processor_chain.h"
+#include "bosdyn/client/processors/response_processor_chain.h"
+#include "bosdyn/client/service_client/message_pump.h"
+#include "bosdyn/client/service_client/result.h"
+#include "bosdyn/client/service_client/rpc_parameters.h"
+#include "bosdyn/common/assert_precondition.h"
 
 namespace bosdyn {
 
@@ -83,7 +82,8 @@ class ServiceClient {
         m_RPC_parameters = CombineRPCParameters(parameters);
     }
 
-    void SetHeaderLoggingControl(LogRequestMode logging_control, ::bosdyn::api::RequestHeader* header) {
+    void SetHeaderLoggingControl(LogRequestMode logging_control,
+                                 ::bosdyn::api::RequestHeader* header) {
         header->set_disable_rpc_logging(logging_control == LogRequestMode::kDisabled);
     }
     template <class T>
@@ -95,7 +95,6 @@ class ServiceClient {
     }
 
  private:
-
     /**
      * Combine the passed RPCParameters with the ones stored in this class.
      *
@@ -134,12 +133,11 @@ class ServiceClient {
     template <typename Request, typename Response, typename PromiseResultType>
     MessagePumpCallBase* InitiateAsyncCall(
         Request& request,
-        const typename ::bosdyn::client::UnaryCall<Request, Response, PromiseResultType>::RpcCallFunction&
-            rpc_call,
-        const typename ::bosdyn::client::UnaryCall<Request, Response, PromiseResultType>::CallbackFunction&
-            callback,
-        std::promise<Result<PromiseResultType>> result_promise,
-        const RPCParameters& parameters) {
+        const typename ::bosdyn::client::UnaryCall<Request, Response,
+                                                   PromiseResultType>::RpcCallFunction& rpc_call,
+        const typename ::bosdyn::client::UnaryCall<Request, Response,
+                                                   PromiseResultType>::CallbackFunction& callback,
+        std::promise<Result<PromiseResultType>> result_promise, const RPCParameters& parameters) {
         BOSDYN_ASSERT_PRECONDITION(m_message_pump != nullptr,
                                    "Message pump cannot be null for request type %s",
                                    Request::GetDescriptor()->full_name().c_str());
@@ -149,16 +147,16 @@ class ServiceClient {
         auto one_time = m_message_pump->CreateUnaryCall<Request, Response, PromiseResultType>();
         if (!one_time) {
             result_promise.set_value(
-                {::bosdyn::common::Status(RPCErrorCode::ClientCancelledOperationError, "MessagePump has shut down"),
+                {::bosdyn::common::Status(RPCErrorCode::ClientCancelledOperationError,
+                                          "MessagePump has shut down"),
                  {}});
             return nullptr;
         }
 
         RPCParameters parameters_to_use = CombineRPCParameters(parameters);
         SetLoggingControl(parameters_to_use.logging_control, &request);
-        one_time->context()->set_deadline(
-            std::chrono::system_clock::now() +
-            CONVERT_DURATION_FOR_GRPC(parameters_to_use.timeout));
+        one_time->context()->set_deadline(std::chrono::system_clock::now() +
+                                          CONVERT_DURATION_FOR_GRPC(parameters_to_use.timeout));
 
         auto status = m_request_processor_chain.Process(one_time->context(),
                                                         request.mutable_header(), &request);
@@ -174,7 +172,6 @@ class ServiceClient {
                    callback, std::move(result_promise));
         return ret;
     }
-
 
     /**
      * Initiate the async RequestStreamCall and return the future to the promise.
@@ -201,18 +198,18 @@ class ServiceClient {
             Request, Response, PromiseResultType>::RequestStreamRpcCallFunction& rpc_call,
         const typename ::bosdyn::client::RequestStreamCall<
             Request, Response, PromiseResultType>::RequestStreamCallbackFunction& callback,
-        std::promise<Result<PromiseResultType>> promise,
-        const RPCParameters& parameters) {
+        std::promise<Result<PromiseResultType>> promise, const RPCParameters& parameters) {
         BOSDYN_ASSERT_PRECONDITION(m_message_pump != nullptr, "Message pump cannot be null.");
         RPCParameters parameters_to_use = CombineRPCParameters(parameters);
 
         // The one_time pointer is deleted by MessagePump::Update after the callback function
         // returns.
-        auto one_time = SetupRequestStreamCall<Request,Response,PromiseResultType>(parameters_to_use.timeout);
+        auto one_time =
+            SetupRequestStreamCall<Request, Response, PromiseResultType>(parameters_to_use.timeout);
         if (!one_time) {
-            promise.set_value(
-                {::bosdyn::common::Status(RPCErrorCode::ClientCancelledOperationError, "MessagePump has shut down"),
-                 {}});
+            promise.set_value({::bosdyn::common::Status(RPCErrorCode::ClientCancelledOperationError,
+                                                        "MessagePump has shut down"),
+                               {}});
             return nullptr;
         }
 
@@ -233,7 +230,8 @@ class ServiceClient {
         // Initialize RPC call.
         auto ret = one_time.get();
         m_message_pump->AddCall(std::move(one_time));
-        ret->Start(std::move(requests), header, rpc_call, callback, std::move(promise), Request::descriptor()->full_name());
+        ret->Start(std::move(requests), header, rpc_call, callback, std::move(promise),
+                   Request::descriptor()->full_name());
         return ret;
     }
 
@@ -260,28 +258,31 @@ class ServiceClient {
     MessagePumpCallBase* InitiateRequestStreamAsyncCallWithChunking(
         Request&& request,
         const typename ::bosdyn::client::RequestStreamCall<
-            ::bosdyn::api::DataChunk, Response, PromiseResultType>::RequestStreamRpcCallFunction& rpc_call,
+            ::bosdyn::api::DataChunk, Response, PromiseResultType>::RequestStreamRpcCallFunction&
+            rpc_call,
         const typename ::bosdyn::client::RequestStreamCall<
-            ::bosdyn::api::DataChunk, Response, PromiseResultType>::RequestStreamCallbackFunction& callback,
-        std::promise<Result<PromiseResultType>> promise,
-        const RPCParameters& parameters) {
+            ::bosdyn::api::DataChunk, Response, PromiseResultType>::RequestStreamCallbackFunction&
+            callback,
+        std::promise<Result<PromiseResultType>> promise, const RPCParameters& parameters) {
         BOSDYN_ASSERT_PRECONDITION(m_message_pump != nullptr, "Message pump cannot be null.");
         RPCParameters parameters_to_use = CombineRPCParameters(parameters);
 
         // The one_time pointer is deleted by MessagePump::Update after the callback function
         // returns.
-        auto one_time = SetupRequestStreamCall<::bosdyn::api::DataChunk,Response,PromiseResultType>(parameters_to_use.timeout);
+        auto one_time =
+            SetupRequestStreamCall<::bosdyn::api::DataChunk, Response, PromiseResultType>(
+                parameters_to_use.timeout);
         if (!one_time) {
-            promise.set_value(
-                {::bosdyn::common::Status(RPCErrorCode::ClientCancelledOperationError, "MessagePump has shut down"),
-                 {}});
+            promise.set_value({::bosdyn::common::Status(RPCErrorCode::ClientCancelledOperationError,
+                                                        "MessagePump has shut down"),
+                               {}});
             return nullptr;
         }
 
         // Set logging and process request.
         SetLoggingControl(parameters_to_use.logging_control, &request);
         auto request_status = m_request_processor_chain.Process(one_time->context(),
-                                                        request.mutable_header(), &request);
+                                                                request.mutable_header(), &request);
         if (!request_status) {
             promise.set_value({std::move(request_status), {}});
             return nullptr;
@@ -298,7 +299,88 @@ class ServiceClient {
         // Initialize RPC call.
         auto ret = one_time.get();
         m_message_pump->AddCall(std::move(one_time));
-        ret->Start(std::move(chunks), request.header(), rpc_call, callback, std::move(promise), Request::descriptor()->full_name());
+        ret->Start(std::move(chunks), request.header(), rpc_call, callback, std::move(promise),
+                   Request::descriptor()->full_name());
+        return ret;
+    }
+
+    /**
+     * Initiate the async RequestStreamCall and return the future to the promise.
+     *
+     * This method should be used when streaming a wrapper message around api::DataChunk where each
+     * message has a header that must be verified.
+     *
+     * This method is called by all the async methods with streaming requests defined in the
+     * ServiceClient-derived classes. It executes all the request processors on the requests, and
+     * then it initializes the RPC call through the MessagePump.
+     *
+     * @param request Deserialized request. This method serializes the data into a vector of
+     *                DataChunks, then moves the contents of the vector into the
+     *                RequestStreamCall instance.
+     * @param rpc_call RPC function associated with this streaming call.
+     * @param callback Callback function defined in the client to call when the RPC completes.
+     * @param result_promise Promise the callback function needs to set with the status and the
+     *                       response.
+     *
+     * @returns Instance of RequestStreamCall created, or nullptr if errors occur.
+     */
+    template <typename Request, typename Response, typename PromiseResultType, typename WrapperType>
+    MessagePumpCallBase* InitiateRequestStreamAsyncCallWithWrappedChunking(
+        Request&& request,
+        const typename ::bosdyn::client::RequestStreamCall<
+            WrapperType, Response, PromiseResultType>::RequestStreamRpcCallFunction& rpc_call,
+        const typename ::bosdyn::client::RequestStreamCall<
+            WrapperType, Response, PromiseResultType>::RequestStreamCallbackFunction& callback,
+        std::promise<Result<PromiseResultType>> promise, const RPCParameters& parameters) {
+        BOSDYN_ASSERT_PRECONDITION(m_message_pump != nullptr, "Message pump cannot be null.");
+        RPCParameters parameters_to_use = CombineRPCParameters(parameters);
+
+        // The one_time pointer is deleted by MessagePump::Update after the callback function
+        // returns.
+        auto one_time = SetupRequestStreamCall<WrapperType, Response, PromiseResultType>(
+            parameters_to_use.timeout);
+        if (!one_time) {
+            promise.set_value({::bosdyn::common::Status(RPCErrorCode::ClientCancelledOperationError,
+                                                        "MessagePump has shut down"),
+                               {}});
+            return nullptr;
+        }
+
+        // Set logging and process request.
+        SetLoggingControl(parameters_to_use.logging_control, &request);
+        auto request_status = m_request_processor_chain.Process(one_time->context(),
+                                                                request.mutable_header(), &request);
+        if (!request_status) {
+            promise.set_value({std::move(request_status), {}});
+            return nullptr;
+        }
+
+        // Convert request to data chunks.
+        std::vector<::bosdyn::api::DataChunk> chunks;
+        ::bosdyn::common::Status chunk_status = MessageToDataChunks<Request>(request, &chunks);
+        if (!chunk_status) {
+            promise.set_value({std::move(chunk_status), {}});
+            return nullptr;
+        }
+
+        std::vector<WrapperType> wrapper_chunks;
+        for (bosdyn::api::DataChunk& chunk : chunks) {
+            WrapperType wrapper_request;
+            bosdyn::api::DataChunk* request_chunk = wrapper_request.mutable_chunk();
+            *request_chunk = std::move(chunk);
+            auto wrapper_request_status = m_request_processor_chain.Process(
+                one_time->context(), wrapper_request.mutable_header(), &wrapper_request);
+            if (!wrapper_request_status) {
+                promise.set_value({std::move(wrapper_request_status), {}});
+                return nullptr;
+            }
+            wrapper_chunks.emplace_back(std::move(wrapper_request));
+        }
+        // Initialize RPC call.
+        auto ret = one_time.get();
+        m_message_pump->AddCall(std::move(one_time));
+        ret->Start(std::move(wrapper_chunks), request.header(), rpc_call, callback,
+                   std::move(promise), Request::descriptor()->full_name());
         return ret;
     }
 
@@ -340,9 +422,9 @@ class ServiceClient {
      * breaking that message into DataChunk protobuf messages, and then it initializes the RPC
      * call through the MessagePump.
      *
-     * @param requests Request message to be chunked and then streamed through RPC. This method moves the
-     *                 content of the request into a vector of DataChunk messages, which is passed into the
-     *                 RequestStreamCall instance.
+     * @param requests Request message to be chunked and then streamed through RPC. This method
+     * moves the content of the request into a vector of DataChunk messages, which is passed into
+     * the RequestStreamCall instance.
      * @param rpc_call RPC function associated with this streaming call.
      * @param callback Callback function defined in the client to call when the RPC completes.
      * @param result_promise Promise the callback function needs to set with the status and the
@@ -354,32 +436,33 @@ class ServiceClient {
     MessagePumpCallBase* ProcessAndInitiateRequestStreamAsyncCall(
         Request&& request_to_stream,
         const typename ::bosdyn::client::RequestStreamCall<
-            ::bosdyn::api::DataChunk, Response, PromiseResultType>::RequestStreamRpcCallFunction& rpc_call,
+            ::bosdyn::api::DataChunk, Response, PromiseResultType>::RequestStreamRpcCallFunction&
+            rpc_call,
         const typename ::bosdyn::client::RequestStreamCall<
-            ::bosdyn::api::DataChunk, Response, PromiseResultType>::RequestStreamCallbackFunction& callback,
-        std::promise<Result<PromiseResultType>> promise,
-        const RPCParameters& parameters) {
+            ::bosdyn::api::DataChunk, Response, PromiseResultType>::RequestStreamCallbackFunction&
+            callback,
+        std::promise<Result<PromiseResultType>> promise, const RPCParameters& parameters) {
         BOSDYN_ASSERT_PRECONDITION(m_message_pump != nullptr, "Message pump cannot be null.");
 
         // The one_time pointer is deleted by MessagePump::Update after the callback function
         // returns.
         auto one_time =
-            m_message_pump->CreateRequestStreamCall<::bosdyn::api::DataChunk, Response, PromiseResultType>();
+            m_message_pump
+                ->CreateRequestStreamCall<::bosdyn::api::DataChunk, Response, PromiseResultType>();
         if (!one_time) {
-            promise.set_value(
-                {::bosdyn::common::Status(RPCErrorCode::ClientCancelledOperationError, "MessagePump has shut down"),
-                 {}});
+            promise.set_value({::bosdyn::common::Status(RPCErrorCode::ClientCancelledOperationError,
+                                                        "MessagePump has shut down"),
+                               {}});
             return nullptr;
         }
 
         RPCParameters parameters_to_use = CombineRPCParameters(parameters);
-        one_time->context()->set_deadline(
-            std::chrono::system_clock::now() +
-            CONVERT_DURATION_FOR_GRPC(parameters_to_use.timeout));
+        one_time->context()->set_deadline(std::chrono::system_clock::now() +
+                                          CONVERT_DURATION_FOR_GRPC(parameters_to_use.timeout));
 
         SetLoggingControl(parameters_to_use.logging_control, &request_to_stream);
-        auto processor_status = m_request_processor_chain.Process(one_time->context(),
-                                                        request_to_stream.mutable_header(), &request_to_stream);
+        auto processor_status = m_request_processor_chain.Process(
+            one_time->context(), request_to_stream.mutable_header(), &request_to_stream);
         if (!processor_status) {
             promise.set_value({std::move(processor_status), {}});
             return nullptr;
@@ -423,8 +506,7 @@ class ServiceClient {
             Request, Response, PromiseResultType>::ResponseStreamRpcCallFunction& rpc_call,
         const typename ::bosdyn::client::ResponseStreamCall<
             Request, Response, PromiseResultType>::ResponseStreamCallbackFunction& callback,
-        std::promise<Result<PromiseResultType>> promise,
-        const RPCParameters& parameters) {
+        std::promise<Result<PromiseResultType>> promise, const RPCParameters& parameters) {
         BOSDYN_ASSERT_PRECONDITION(m_message_pump != nullptr, "Message pump cannot be null.");
 
         // The one_time pointer is deleted by MessagePump::Update after the callback function
@@ -432,17 +514,16 @@ class ServiceClient {
         auto one_time =
             m_message_pump->CreateResponseStreamCall<Request, Response, PromiseResultType>();
         if (!one_time) {
-            promise.set_value(
-                {::bosdyn::common::Status(RPCErrorCode::ClientCancelledOperationError, "MessagePump has shut down"),
-                 {}});
+            promise.set_value({::bosdyn::common::Status(RPCErrorCode::ClientCancelledOperationError,
+                                                        "MessagePump has shut down"),
+                               {}});
             return nullptr;
         }
 
         RPCParameters parameters_to_use = CombineRPCParameters(parameters);
         SetLoggingControl(parameters_to_use.logging_control, &request);
-        one_time->context()->set_deadline(
-            std::chrono::system_clock::now() +
-            CONVERT_DURATION_FOR_GRPC(parameters_to_use.timeout));
+        one_time->context()->set_deadline(std::chrono::system_clock::now() +
+                                          CONVERT_DURATION_FOR_GRPC(parameters_to_use.timeout));
 
         auto status = m_request_processor_chain.Process(one_time->context(),
                                                         request.mutable_header(), &request);
@@ -482,8 +563,7 @@ class ServiceClient {
             Request, Response, PromiseResultType>::RequestResponseStreamRpcCallFunction& rpc_call,
         const typename ::bosdyn::client::RequestResponseStreamCall<
             Request, Response, PromiseResultType>::RequestResponseStreamCallbackFunction& callback,
-        std::promise<Result<PromiseResultType>> promise,
-        const RPCParameters& parameters) {
+        std::promise<Result<PromiseResultType>> promise, const RPCParameters& parameters) {
         BOSDYN_ASSERT_PRECONDITION(m_message_pump != nullptr, "Message pump cannot be null.");
         RPCParameters parameters_to_use = CombineRPCParameters(parameters);
 
@@ -584,8 +664,8 @@ class ServiceClient {
     /**
      * Creates a RequestResponseStreamCall pointer
      *
-     * This method is a helper function when initiating a request response stream async call. It creates
-     * the RequestResponseStreamCall pointer and sets the RPC timeout.
+     * This method is a helper function when initiating a request response stream async call. It
+     * creates the RequestResponseStreamCall pointer and sets the RPC timeout.
      *
      * @param result_promise Promise the callback function needs to set with the status and the
      *                       response.
@@ -608,9 +688,11 @@ class ServiceClient {
         return one_time;
     }
 
+
     template <typename Response>
-    ::bosdyn::common::Status RunOnlyResponseProcessors(const grpc::Status& status, const Response& response,
-                             const std::error_code& response_status) {
+    ::bosdyn::common::Status RunOnlyResponseProcessors(const grpc::Status& status,
+                                                       const Response& response,
+                                                       const std::error_code& response_status) {
         ::bosdyn::common::Status ret_status = ConvertGRPCStatus(status);
         if (!ret_status) {
             return ret_status;
@@ -620,11 +702,11 @@ class ServiceClient {
     }
 
     template <typename Response>
-    ::bosdyn::common::Status ProcessResponseWithLeaseAndGetFinalStatus(const grpc::Status& status,
-                                                     const Response& response,
-                                                     const std::error_code& response_status,
-                                                     LeaseWallet* lease_wallet) {
-        ::bosdyn::common::Status ret_status = RunOnlyResponseProcessors<Response>(status, response, response_status);
+    ::bosdyn::common::Status ProcessResponseWithLeaseAndGetFinalStatus(
+        const grpc::Status& status, const Response& response,
+        const std::error_code& response_status, LeaseWallet* lease_wallet) {
+        ::bosdyn::common::Status ret_status =
+            RunOnlyResponseProcessors<Response>(status, response, response_status);
         // In the case where the processors return a bad status, just return that in the promise.
         if (!ret_status) {
             return ret_status;
@@ -643,11 +725,11 @@ class ServiceClient {
     }
 
     template <typename Response>
-    ::bosdyn::common::Status ProcessResponseWithMultiLeaseAndGetFinalStatus(const grpc::Status& status,
-                                                          const Response& response,
-                                                          const std::error_code& response_status,
-                                                          LeaseWallet* lease_wallet) {
-        ::bosdyn::common::Status ret_status = RunOnlyResponseProcessors<Response>(status, response, response_status);
+    ::bosdyn::common::Status ProcessResponseWithMultiLeaseAndGetFinalStatus(
+        const grpc::Status& status, const Response& response,
+        const std::error_code& response_status, LeaseWallet* lease_wallet) {
+        ::bosdyn::common::Status ret_status =
+            RunOnlyResponseProcessors<Response>(status, response, response_status);
         // In the case where the processors return a bad status, just return that in the promise.
         if (!ret_status) {
             return ret_status;
@@ -667,8 +749,9 @@ class ServiceClient {
     }
 
     template <typename Response>
-    ::bosdyn::common::Status ProcessResponseAndGetFinalStatus(const grpc::Status& status, const Response& response,
-                                            const std::error_code& response_status) {
+    ::bosdyn::common::Status ProcessResponseAndGetFinalStatus(
+        const grpc::Status& status, const Response& response,
+        const std::error_code& response_status) {
         ::bosdyn::common::Status ret_status = ConvertGRPCStatus(status);
         if (!ret_status) {
             return ret_status;
@@ -684,9 +767,9 @@ class ServiceClient {
         return ret_status;
     }
 
-    template<typename Response>
-    ::bosdyn::common::Status ProcessResponseVectorAndGetFinalStatus(const grpc::Status& status,
-                                                  const std::vector<Response>& responses) {
+    template <typename Response>
+    ::bosdyn::common::Status ProcessResponseVectorAndGetFinalStatus(
+        const grpc::Status& status, const std::vector<Response>& responses) {
         ::bosdyn::common::Status ret_status = ConvertGRPCStatus(status);
         if (!ret_status) {
             return ret_status;
@@ -699,6 +782,26 @@ class ServiceClient {
             }
 
             ret_status = ::bosdyn::common::Status(response.status());
+            if (!ret_status) {
+                return ret_status;
+            }
+        }
+
+        // In this case, GRPC did not detect any issues, so we return the current success value of
+        // the status.
+        return ret_status;
+    }
+
+    template <typename Response>
+    ::bosdyn::common::Status ProcessResponseVector(const grpc::Status& status,
+                                                   const std::vector<Response>& responses) {
+        ::bosdyn::common::Status ret_status = ConvertGRPCStatus(status);
+        if (!ret_status) {
+            return ret_status;
+        }
+
+        for (const Response& response : responses) {
+            ret_status = m_response_processor_chain.Process(status, response.header(), response);
             if (!ret_status) {
                 return ret_status;
             }

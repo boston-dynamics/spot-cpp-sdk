@@ -21,11 +21,11 @@ namespace bosdyn {
 namespace client {
 
 typedef Result<::bosdyn::api::log_status::GetLogStatusResponse> GetLogStatusResponseType;
-typedef Result<::bosdyn::api::log_status::GetActiveLogStatusesResponse> GetActiveLogStatusesResponseType;
+typedef Result<::bosdyn::api::log_status::GetActiveLogStatusesResponse>
+    GetActiveLogStatusesResponseType;
 typedef Result<::bosdyn::api::log_status::StartExperimentLogResponse>
     StartExperimentLogResponseType;
-typedef Result<::bosdyn::api::log_status::StartRetroLogResponse>
-        StartRetroLogResponseType;
+typedef Result<::bosdyn::api::log_status::StartRetroLogResponse> StartRetroLogResponseType;
 typedef Result<::bosdyn::api::log_status::UpdateExperimentLogResponse>
     UpdateExperimentLogResponseType;
 typedef Result<::bosdyn::api::log_status::TerminateLogResponse> TerminateLogResponseType;
@@ -40,17 +40,16 @@ class LogStatusClient : public ServiceClient {
         ::bosdyn::api::log_status::GetLogStatusRequest& request,
         const RPCParameters& parameters = RPCParameters());
 
-    GetLogStatusResponseType GetLogStatus(
-        ::bosdyn::api::log_status::GetLogStatusRequest& request,
-        const RPCParameters& parameters = RPCParameters());
+    GetLogStatusResponseType GetLogStatus(::bosdyn::api::log_status::GetLogStatusRequest& request,
+                                          const RPCParameters& parameters = RPCParameters());
 
     std::shared_future<GetActiveLogStatusesResponseType> GetActiveLogStatusesAsync(
-            ::bosdyn::api::log_status::GetActiveLogStatusesRequest& request,
-            const RPCParameters& parameters = RPCParameters());
+        ::bosdyn::api::log_status::GetActiveLogStatusesRequest& request,
+        const RPCParameters& parameters = RPCParameters());
 
     GetActiveLogStatusesResponseType GetActiveLogStatuses(
-            ::bosdyn::api::log_status::GetActiveLogStatusesRequest& request,
-            const RPCParameters& parameters = RPCParameters());
+        ::bosdyn::api::log_status::GetActiveLogStatusesRequest& request,
+        const RPCParameters& parameters = RPCParameters());
 
     std::shared_future<StartExperimentLogResponseType> StartExperimentLogAsync(
         ::bosdyn::api::log_status::StartExperimentLogRequest& request,
@@ -61,12 +60,12 @@ class LogStatusClient : public ServiceClient {
         const RPCParameters& parameters = RPCParameters());
 
     std::shared_future<StartRetroLogResponseType> StartRetroLogAsync(
-            ::bosdyn::api::log_status::StartRetroLogRequest& request,
-            const RPCParameters& parameters = RPCParameters());
+        ::bosdyn::api::log_status::StartRetroLogRequest& request,
+        const RPCParameters& parameters = RPCParameters());
 
     StartRetroLogResponseType StartRetroLog(
-            ::bosdyn::api::log_status::StartRetroLogRequest& request,
-            const RPCParameters& parameters = RPCParameters());
+        ::bosdyn::api::log_status::StartRetroLogRequest& request,
+        const RPCParameters& parameters = RPCParameters());
 
     std::shared_future<UpdateExperimentLogResponseType> UpdateExperimentLogAsync(
         ::bosdyn::api::log_status::UpdateExperimentLogRequest& request,
@@ -105,11 +104,11 @@ class LogStatusClient : public ServiceClient {
                                 const grpc::Status& status,
                                 std::promise<GetLogStatusResponseType> promise);
 
-    void OnGetActiveLogStatusesComplete(MessagePumpCallBase* call,
-                                const ::bosdyn::api::log_status::GetActiveLogStatusesRequest& request,
-                                ::bosdyn::api::log_status::GetActiveLogStatusesResponse&& response,
-                                const grpc::Status& status,
-                                std::promise<GetActiveLogStatusesResponseType> promise);
+    void OnGetActiveLogStatusesComplete(
+        MessagePumpCallBase* call,
+        const ::bosdyn::api::log_status::GetActiveLogStatusesRequest& request,
+        ::bosdyn::api::log_status::GetActiveLogStatusesResponse&& response,
+        const grpc::Status& status, std::promise<GetActiveLogStatusesResponseType> promise);
 
     void OnStartExperimentLogComplete(
         MessagePumpCallBase* call,
@@ -117,11 +116,11 @@ class LogStatusClient : public ServiceClient {
         ::bosdyn::api::log_status::StartExperimentLogResponse&& response,
         const grpc::Status& status, std::promise<StartExperimentLogResponseType> promise);
 
-    void OnStartRetroLogComplete(
-            MessagePumpCallBase* call,
-            const ::bosdyn::api::log_status::StartRetroLogRequest& request,
-            ::bosdyn::api::log_status::StartRetroLogResponse&& response,
-            const grpc::Status& status, std::promise<StartRetroLogResponseType> promise);
+    void OnStartRetroLogComplete(MessagePumpCallBase* call,
+                                 const ::bosdyn::api::log_status::StartRetroLogRequest& request,
+                                 ::bosdyn::api::log_status::StartRetroLogResponse&& response,
+                                 const grpc::Status& status,
+                                 std::promise<StartRetroLogResponseType> promise);
 
     void OnUpdateExperimentLogComplete(
         MessagePumpCallBase* call,
@@ -135,7 +134,7 @@ class LogStatusClient : public ServiceClient {
                                 const grpc::Status& status,
                                 std::promise<TerminateLogResponseType> promise);
 
-    std::unique_ptr<::bosdyn::api::log_status::LogStatusService::Stub> m_stub;
+    std::unique_ptr<::bosdyn::api::log_status::LogStatusService::StubInterface> m_stub;
 
     // Default service name for the LogsBundling service.
     static const char* s_default_service_name;

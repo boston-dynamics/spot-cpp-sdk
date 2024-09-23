@@ -21,8 +21,9 @@ class AppTokenRequestProcessor : public RequestProcessor {
     ~AppTokenRequestProcessor() = default;
 
  private:
-    ::bosdyn::common::Status Process(grpc::ClientContext* context, ::bosdyn::api::RequestHeader* request_header,
-                   ::google::protobuf::Message* full_request);
+    ::bosdyn::common::Status Process(grpc::ClientContext* context,
+                                     ::bosdyn::api::RequestHeader* request_header,
+                                     ::google::protobuf::Message* full_request);
 
     std::string m_app_token;
 };

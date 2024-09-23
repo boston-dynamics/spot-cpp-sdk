@@ -8,9 +8,9 @@
 
 
 #include "bosdyn/client/docking/docking_client.h"
-#include "bosdyn/common/success_condition.h"
 #include "bosdyn/client/lease/lease_processors.h"
 #include "bosdyn/client/lease/lease_resources.h"
+#include "bosdyn/common/success_condition.h"
 
 using namespace std::placeholders;
 
@@ -34,16 +34,15 @@ std::shared_future<GetDockingConfigResultType> DockingClient::GetDockingConfigAs
                           ::bosdyn::api::docking::GetDockingConfigResponse,
                           ::bosdyn::api::docking::GetDockingConfigResponse>(
             request,
-            std::bind(&::bosdyn::api::docking::DockingService::Stub::AsyncGetDockingConfig, m_stub.get(), _1,
-                      _2, _3),
+            std::bind(&::bosdyn::api::docking::DockingService::StubInterface::AsyncGetDockingConfig,
+                      m_stub.get(), _1, _2, _3),
             std::bind(&DockingClient::OnGetDockingConfigComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
     return future;
 }
 
-GetDockingConfigResultType DockingClient::GetDockingConfig(
-    const RPCParameters& parameters) {
+GetDockingConfigResultType DockingClient::GetDockingConfig(const RPCParameters& parameters) {
     return GetDockingConfigAsync(parameters).get();
 }
 
@@ -51,8 +50,9 @@ void DockingClient::OnGetDockingConfigComplete(
     MessagePumpCallBase* call, const ::bosdyn::api::docking::GetDockingConfigRequest& request,
     ::bosdyn::api::docking::GetDockingConfigResponse&& response, const grpc::Status& status,
     std::promise<GetDockingConfigResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::docking::GetDockingConfigResponse>(
-        status, response, SDKErrorCode::Success);
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::docking::GetDockingConfigResponse>(
+            status, response, SDKErrorCode::Success);
 
     promise.set_value({ret_status, std::move(response)});
 }
@@ -69,16 +69,15 @@ std::shared_future<GetDockingStateResultType> DockingClient::GetDockingStateAsyn
                           ::bosdyn::api::docking::GetDockingStateResponse,
                           ::bosdyn::api::docking::GetDockingStateResponse>(
             request,
-            std::bind(&::bosdyn::api::docking::DockingService::Stub::AsyncGetDockingState, m_stub.get(), _1,
-                      _2, _3),
+            std::bind(&::bosdyn::api::docking::DockingService::StubInterface::AsyncGetDockingState,
+                      m_stub.get(), _1, _2, _3),
             std::bind(&DockingClient::OnGetDockingStateComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
     return future;
 }
 
-GetDockingStateResultType DockingClient::GetDockingState(
-    const RPCParameters& parameters) {
+GetDockingStateResultType DockingClient::GetDockingState(const RPCParameters& parameters) {
     return GetDockingStateAsync(parameters).get();
 }
 
@@ -86,34 +85,36 @@ void DockingClient::OnGetDockingStateComplete(
     MessagePumpCallBase* call, const ::bosdyn::api::docking::GetDockingStateRequest& request,
     ::bosdyn::api::docking::GetDockingStateResponse&& response, const grpc::Status& status,
     std::promise<GetDockingStateResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::docking::GetDockingStateResponse>(
-        status, response, SDKErrorCode::Success);
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::docking::GetDockingStateResponse>(
+            status, response, SDKErrorCode::Success);
 
     promise.set_value({ret_status, std::move(response)});
 }
 
 std::shared_future<DockingCommandResultType> DockingClient::DockingCommandAsync(
-    ::bosdyn::api::docking::DockingCommandRequest& request,
-    const RPCParameters& parameters) {
+    ::bosdyn::api::docking::DockingCommandRequest& request, const RPCParameters& parameters) {
     std::promise<DockingCommandResultType> response;
     std::shared_future<DockingCommandResultType> future = response.get_future();
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
     // Run a lease processor function to attempt to automatically apply a lease to the request if
     // a lease is not already set.
-    auto lease_status = ::bosdyn::client::ProcessRequestWithLease(
-        &request, m_lease_wallet.get(), ::bosdyn::client::kBodyResource);
+    auto lease_status = ::bosdyn::client::ProcessRequestWithLease(&request, m_lease_wallet.get(),
+                                                                  ::bosdyn::client::kBodyResource);
     if (!lease_status) {
-        // Failed to set a lease with the lease wallet. Return early since the request will fail without a lease.
+        // Failed to set a lease with the lease wallet. Return early since the request will fail
+        // without a lease.
         response.set_value({lease_status, {}});
         return future;
     }
 
     MessagePumpCallBase* one_time =
-        InitiateAsyncCall<::bosdyn::api::docking::DockingCommandRequest, ::bosdyn::api::docking::DockingCommandResponse,
+        InitiateAsyncCall<::bosdyn::api::docking::DockingCommandRequest,
+                          ::bosdyn::api::docking::DockingCommandResponse,
                           ::bosdyn::api::docking::DockingCommandResponse>(
             request,
-            std::bind(&::bosdyn::api::docking::DockingService::Stub::AsyncDockingCommand, m_stub.get(), _1,
-                      _2, _3),
+            std::bind(&::bosdyn::api::docking::DockingService::StubInterface::AsyncDockingCommand,
+                      m_stub.get(), _1, _2, _3),
             std::bind(&DockingClient::OnDockingCommandComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
@@ -121,8 +122,7 @@ std::shared_future<DockingCommandResultType> DockingClient::DockingCommandAsync(
 }
 
 DockingCommandResultType DockingClient::DockingCommand(
-    ::bosdyn::api::docking::DockingCommandRequest& request,
-    const RPCParameters& parameters) {
+    ::bosdyn::api::docking::DockingCommandRequest& request, const RPCParameters& parameters) {
     return DockingCommandAsync(request, parameters).get();
 }
 
@@ -156,8 +156,9 @@ std::shared_future<DockingCommandFeedbackResultType> DockingClient::DockingComma
                           ::bosdyn::api::docking::DockingCommandFeedbackResponse,
                           ::bosdyn::api::docking::DockingCommandFeedbackResponse>(
             request,
-            std::bind(&::bosdyn::api::docking::DockingService::Stub::AsyncDockingCommandFeedback,
-                      m_stub.get(), _1, _2, _3),
+            std::bind(
+                &::bosdyn::api::docking::DockingService::StubInterface::AsyncDockingCommandFeedback,
+                m_stub.get(), _1, _2, _3),
             std::bind(&DockingClient::OnDockingCommandFeedbackComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
@@ -203,8 +204,8 @@ Result<::bosdyn::api::docking::DockingCommandRequest> DockingClient::DockingComm
         req.set_clock_identifier(*endpoint->GetClockIdentifier().response);
         req.mutable_end_time()->CopyFrom(endpoint->RobotTimestampFromLocal(local_end_time));
     } else {
-        result.status = ::bosdyn::common::Status(SDKErrorCode::GenericSDKError,
-                               "Timesync endpoint is unset for the Docking Client.");
+        result.status = ::bosdyn::common::Status(
+            SDKErrorCode::GenericSDKError, "Timesync endpoint is unset for the Docking Client.");
         return result;
     }
 
@@ -221,10 +222,9 @@ void DockingClient::SetComms(const std::shared_ptr<grpc::ChannelInterface>& chan
     m_stub.reset(new ::bosdyn::api::docking::DockingService::Stub(channel));
 }
 
-void DockingClient::UpdateServiceFrom(
-    RequestProcessorChain& request_processor_chain,
-    ResponseProcessorChain& response_processor_chain,
-    const std::shared_ptr<LeaseWallet>& lease_wallet) {
+void DockingClient::UpdateServiceFrom(RequestProcessorChain& request_processor_chain,
+                                      ResponseProcessorChain& response_processor_chain,
+                                      const std::shared_ptr<LeaseWallet>& lease_wallet) {
     // Set the lease wallet.
     m_lease_wallet = lease_wallet;
 

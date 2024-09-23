@@ -25,8 +25,9 @@ class ResponseProcessor {
  public:
     virtual ~ResponseProcessor() = default;
 
-    virtual ::bosdyn::common::Status Process(const grpc::Status& status, const ::bosdyn::api::ResponseHeader& response_header,
-                           const ::google::protobuf::Message& full_response) = 0;
+    virtual ::bosdyn::common::Status Process(const grpc::Status& status,
+                                             const ::bosdyn::api::ResponseHeader& response_header,
+                                             const ::google::protobuf::Message& full_response) = 0;
 };
 
 }  // namespace client

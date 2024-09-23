@@ -170,7 +170,7 @@ class CompositorClient : public ServiceClient {
         ::bosdyn::api::spot_cam::GetIrMeterOverlayResponse&& response, const grpc::Status& status,
         std::promise<GetIrMeterOverlayResultType> promise);
 
-    std::unique_ptr<::bosdyn::api::spot_cam::CompositorService::Stub> m_stub;
+    std::unique_ptr<::bosdyn::api::spot_cam::CompositorService::StubInterface> m_stub;
 
     // Default service name for the spot cam compositor service.
     static const char* s_default_service_name;

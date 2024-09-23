@@ -40,9 +40,8 @@ class PayloadRegistrationClient : public ServiceClient {
         const RPCParameters& parameters = RPCParameters());
 
     // Synchronous method to register a payload.
-    RegisterPayloadResultType RegisterPayload(
-        ::bosdyn::api::RegisterPayloadRequest& request,
-        const RPCParameters& parameters = RPCParameters());
+    RegisterPayloadResultType RegisterPayload(::bosdyn::api::RegisterPayloadRequest& request,
+                                              const RPCParameters& parameters = RPCParameters());
 
     // Asynchronous method to update a payload version.
     std::shared_future<UpdatePayloadVersionResultType> UpdatePayloadVersionAsync(
@@ -76,19 +75,23 @@ class PayloadRegistrationClient : public ServiceClient {
 
     // Asynchronous method to attach the identified payload.
     std::shared_future<UpdatePayloadAttachedResultType> AttachPayloadAsync(
-        const std::string& guid, const std::string& secret, const RPCParameters& parameters = RPCParameters());
+        const std::string& guid, const std::string& secret,
+        const RPCParameters& parameters = RPCParameters());
 
     // Synchronous method to attach the identified payload.
     UpdatePayloadAttachedResultType AttachPayload(
-        const std::string& guid, const std::string& secret, const RPCParameters& parameters = RPCParameters());
+        const std::string& guid, const std::string& secret,
+        const RPCParameters& parameters = RPCParameters());
 
     // Asynchronous method to detach the identified payload.
     std::shared_future<UpdatePayloadAttachedResultType> DetachPayloadAsync(
-        const std::string& guid, const std::string& secret, const RPCParameters& parameters = RPCParameters());
+        const std::string& guid, const std::string& secret,
+        const RPCParameters& parameters = RPCParameters());
 
     // Synchronous method to detach the identified payload.
     UpdatePayloadAttachedResultType DetachPayload(
-        const std::string& guid, const std::string& secret, const RPCParameters& parameters = RPCParameters());
+        const std::string& guid, const std::string& secret,
+        const RPCParameters& parameters = RPCParameters());
 
     // Start of helper methods.
     // Update payload version helpers.
@@ -127,39 +130,44 @@ class PayloadRegistrationClient : public ServiceClient {
     // directory with.
     static std::string GetDefaultServiceAuthority() { return s_default_service_authority; }
 
-    // Get the default service type for the PayloadRegistration service that will be registered in the directory.
+    // Get the default service type for the PayloadRegistration service that will be registered in
+    // the directory.
     static std::string GetServiceType() { return s_service_type; }
 
  private:
     // Callback function registered for the asynchronous calls to register a payload.
-    void OnRegisterPayloadComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::RegisterPayloadRequest& request,
-        ::bosdyn::api::RegisterPayloadResponse&& response, const grpc::Status& status,
-        std::promise<RegisterPayloadResultType> promise);
+    void OnRegisterPayloadComplete(MessagePumpCallBase* call,
+                                   const ::bosdyn::api::RegisterPayloadRequest& request,
+                                   ::bosdyn::api::RegisterPayloadResponse&& response,
+                                   const grpc::Status& status,
+                                   std::promise<RegisterPayloadResultType> promise);
 
     // Callback function registered for the asynchronous calls to update a payload version.
-    void OnUpdatePayloadVersionComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::UpdatePayloadVersionRequest& request,
-        ::bosdyn::api::UpdatePayloadVersionResponse&& response, const grpc::Status& status,
-        std::promise<UpdatePayloadVersionResultType> promise);
+    void OnUpdatePayloadVersionComplete(MessagePumpCallBase* call,
+                                        const ::bosdyn::api::UpdatePayloadVersionRequest& request,
+                                        ::bosdyn::api::UpdatePayloadVersionResponse&& response,
+                                        const grpc::Status& status,
+                                        std::promise<UpdatePayloadVersionResultType> promise);
 
     // Callback function registered for the asynchronous calls to get a payload auth token.
-    void OnGetPayloadAuthTokenComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::GetPayloadAuthTokenRequest& request,
-        ::bosdyn::api::GetPayloadAuthTokenResponse&& response, const grpc::Status& status,
-        std::promise<GetPayloadAuthTokenResultType> promise);
+    void OnGetPayloadAuthTokenComplete(MessagePumpCallBase* call,
+                                       const ::bosdyn::api::GetPayloadAuthTokenRequest& request,
+                                       ::bosdyn::api::GetPayloadAuthTokenResponse&& response,
+                                       const grpc::Status& status,
+                                       std::promise<GetPayloadAuthTokenResultType> promise);
 
     // Callback function registered for the asynchronous calls to attach/detach a payload.
-    void OnUpdatePayloadAttachedComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::UpdatePayloadAttachedRequest& request,
-        ::bosdyn::api::UpdatePayloadAttachedResponse&& response, const grpc::Status& status,
-        std::promise<UpdatePayloadAttachedResultType> promise);
+    void OnUpdatePayloadAttachedComplete(MessagePumpCallBase* call,
+                                         const ::bosdyn::api::UpdatePayloadAttachedRequest& request,
+                                         ::bosdyn::api::UpdatePayloadAttachedResponse&& response,
+                                         const grpc::Status& status,
+                                         std::promise<UpdatePayloadAttachedResultType> promise);
 
     ::bosdyn::api::UpdatePayloadAttachedRequest MakeAttachDetachRequest(const std::string& guid,
-                                                              const std::string& secret,
-                                                              const bool& attach);
+                                                                        const std::string& secret,
+                                                                        const bool& attach);
 
-    std::unique_ptr<::bosdyn::api::PayloadRegistrationService::Stub> m_stub;
+    std::unique_ptr<::bosdyn::api::PayloadRegistrationService::StubInterface> m_stub;
 
     // Default service name for the PayloadRegistration service.
     static const char* s_default_service_name;

@@ -16,23 +16,21 @@ namespace bosdyn {
 
 namespace client {
 
-void ResponseProcessorChain::AppendProcessor(
-    const std::shared_ptr<ResponseProcessor>& processor) {
+void ResponseProcessorChain::AppendProcessor(const std::shared_ptr<ResponseProcessor>& processor) {
     // Cannot have a null response processor.
     BOSDYN_ASSERT_PRECONDITION(processor, "Cannot append a null response processor.");
     m_processors.push_back(processor);
 }
 
-void ResponseProcessorChain::PrependProcessor(
-    const std::shared_ptr<ResponseProcessor>& processor) {
+void ResponseProcessorChain::PrependProcessor(const std::shared_ptr<ResponseProcessor>& processor) {
     // Cannot have a null response processor.
     BOSDYN_ASSERT_PRECONDITION(processor, "Cannot prepend a null response processor.");
     m_processors.push_front(processor);
 }
 
 ::bosdyn::common::Status ResponseProcessorChain::Process(
-     const grpc::Status& status, const ::bosdyn::api::ResponseHeader& response_header,
-     const ::google::protobuf::Message& full_response) {
+    const grpc::Status& status, const ::bosdyn::api::ResponseHeader& response_header,
+    const ::google::protobuf::Message& full_response) {
     ::bosdyn::common::Status ret_status = ::bosdyn::common::Status(SDKErrorCode::Success);
     for (const auto& processor : m_processors) {
         ret_status = processor->Process(status, response_header, full_response);

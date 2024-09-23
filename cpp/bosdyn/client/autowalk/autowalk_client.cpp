@@ -36,7 +36,7 @@ std::shared_future<CompileAutowalkResultType> AutowalkClient::CompileAutowalkAsy
         ::bosdyn::api::autowalk::CompileAutowalkRequest,
         ::bosdyn::api::autowalk::CompileAutowalkResponse>(
         std::move(request),
-        std::bind(&::bosdyn::api::autowalk::AutowalkService::Stub::AsyncCompileAutowalk,
+        std::bind(&::bosdyn::api::autowalk::AutowalkService::StubInterface::AsyncCompileAutowalk,
                   m_stub.get(), _1, _2, _3),
         std::bind(&AutowalkClient::OnCompileAutowalkComplete, this, _1, _2, _3, _4, _5),
         std::move(response), parameters);
@@ -94,8 +94,8 @@ std::shared_future<LoadAutowalkResultType> AutowalkClient::LoadAutowalkAsync(
         ::bosdyn::api::autowalk::LoadAutowalkRequest,
         ::bosdyn::api::autowalk::LoadAutowalkResponse>(
         std::move(request),
-        std::bind(&::bosdyn::api::autowalk::AutowalkService::Stub::AsyncLoadAutowalk, m_stub.get(),
-                  _1, _2, _3),
+        std::bind(&::bosdyn::api::autowalk::AutowalkService::StubInterface::AsyncLoadAutowalk,
+                  m_stub.get(), _1, _2, _3),
         std::bind(&AutowalkClient::OnLoadAutowalkComplete, this, _1, _2, _3, _4, _5),
         std::move(response), parameters);
 
@@ -120,9 +120,9 @@ void AutowalkClient::OnLoadAutowalkComplete(MessagePumpCallBase* call,
     }
 
     auto response = response_result.move();
-    auto ret_status =
-        ProcessResponseWithMultiLeaseAndGetFinalStatus<::bosdyn::api::autowalk::LoadAutowalkResponse>(
-            status, response, response.status(),m_lease_wallet.get());
+    auto ret_status = ProcessResponseWithMultiLeaseAndGetFinalStatus<
+        ::bosdyn::api::autowalk::LoadAutowalkResponse>(status, response, response.status(),
+                                                       m_lease_wallet.get());
     promise.set_value({ret_status, std::move(response)});
 }
 

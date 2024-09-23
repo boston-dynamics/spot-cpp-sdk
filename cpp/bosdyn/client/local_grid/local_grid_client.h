@@ -17,9 +17,9 @@
 #include <string>
 #include <vector>
 
+#include "bosdyn/client/local_grid/local_grid_error_codes.h"
 #include "bosdyn/client/service_client/service_client.h"
 #include "bosdyn/common/status.h"
-#include "bosdyn/client/local_grid/local_grid_error_codes.h"
 
 namespace bosdyn {
 
@@ -40,8 +40,7 @@ class LocalGridClient : public ServiceClient {
         const RPCParameters& parameters = RPCParameters());
 
     // Synchronous method to request the list of available local grid types.
-    LocalGridTypesResultType GetLocalGridTypes(
-        const RPCParameters& parameters = RPCParameters());
+    LocalGridTypesResultType GetLocalGridTypes(const RPCParameters& parameters = RPCParameters());
 
     // Asynchronous method to request a set of local grids by type name.
     std::shared_future<LocalGridsResultType> GetLocalGridsAsync(
@@ -49,9 +48,8 @@ class LocalGridClient : public ServiceClient {
         const RPCParameters& parameters = RPCParameters());
 
     // Synchronous method to request a set of local grids by type name.
-    LocalGridsResultType GetLocalGrids(
-        const std::vector<std::string>& local_grid_names,
-        const RPCParameters& parameters = RPCParameters());
+    LocalGridsResultType GetLocalGrids(const std::vector<std::string>& local_grid_names,
+                                       const RPCParameters& parameters = RPCParameters());
 
     // Start of ServiceClient overrides.
     QualityOfService GetQualityOfService() const override;
@@ -62,21 +60,24 @@ class LocalGridClient : public ServiceClient {
     // with.
     static std::string GetDefaultServiceName() { return s_default_service_name; }
 
-    // Get the default service type for the LocalGrid service that will be registered in the directory.
+    // Get the default service type for the LocalGrid service that will be registered in the
+    // directory.
     static std::string GetServiceType() { return s_service_type; }
 
  private:
-    void OnGetLocalGridTypesComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::GetLocalGridTypesRequest& request,
-        ::bosdyn::api::GetLocalGridTypesResponse&& response, const grpc::Status& status,
-        std::promise<LocalGridTypesResultType> promise);
+    void OnGetLocalGridTypesComplete(MessagePumpCallBase* call,
+                                     const ::bosdyn::api::GetLocalGridTypesRequest& request,
+                                     ::bosdyn::api::GetLocalGridTypesResponse&& response,
+                                     const grpc::Status& status,
+                                     std::promise<LocalGridTypesResultType> promise);
 
-    void OnGetLocalGridsComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::GetLocalGridsRequest& request,
-        ::bosdyn::api::GetLocalGridsResponse&& response, const grpc::Status& status,
-        std::promise<LocalGridsResultType> promise);
+    void OnGetLocalGridsComplete(MessagePumpCallBase* call,
+                                 const ::bosdyn::api::GetLocalGridsRequest& request,
+                                 ::bosdyn::api::GetLocalGridsResponse&& response,
+                                 const grpc::Status& status,
+                                 std::promise<LocalGridsResultType> promise);
 
-    std::unique_ptr<::bosdyn::api::LocalGridService::Stub> m_stub;
+    std::unique_ptr<::bosdyn::api::LocalGridService::StubInterface> m_stub;
 
     // Default service name for the LocalGrid service.
     static const char* s_default_service_name;

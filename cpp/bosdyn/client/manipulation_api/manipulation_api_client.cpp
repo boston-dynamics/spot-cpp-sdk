@@ -40,8 +40,8 @@ std::shared_future<ManipulationApiResultType> ManipulationApiClient::Manipulatio
                                                       ::bosdyn::api::ManipulationApiResponse,
                                                       ::bosdyn::api::ManipulationApiResponse>(
         request,
-        std::bind(&::bosdyn::api::ManipulationApiService::Stub::AsyncManipulationApi, m_stub.get(),
-                  _1, _2, _3),
+        std::bind(&::bosdyn::api::ManipulationApiService::StubInterface::AsyncManipulationApi,
+                  m_stub.get(), _1, _2, _3),
         std::bind(&ManipulationApiClient::OnManipulationApiComplete, this, _1, _2, _3, _4, _5),
         std::move(response), parameters);
 
@@ -75,8 +75,9 @@ ManipulationApiClient::ManipulationApiFeedbackAsync(
                           ::bosdyn::api::ManipulationApiFeedbackResponse,
                           ::bosdyn::api::ManipulationApiFeedbackResponse>(
             request,
-            std::bind(&::bosdyn::api::ManipulationApiService::Stub::AsyncManipulationApiFeedback,
-                      m_stub.get(), _1, _2, _3),
+            std::bind(
+                &::bosdyn::api::ManipulationApiService::StubInterface::AsyncManipulationApiFeedback,
+                m_stub.get(), _1, _2, _3),
             std::bind(&ManipulationApiClient::OnManipulationApiFeedbackComplete, this, _1, _2, _3,
                       _4, _5),
             std::move(response), parameters);
@@ -112,8 +113,8 @@ std::shared_future<OverrideGraspResultType> ManipulationApiClient::OverrideGrasp
                                                       ::bosdyn::api::ApiGraspOverrideResponse,
                                                       ::bosdyn::api::ApiGraspOverrideResponse>(
         request,
-        std::bind(&::bosdyn::api::ManipulationApiService::Stub::AsyncOverrideGrasp, m_stub.get(),
-                  _1, _2, _3),
+        std::bind(&::bosdyn::api::ManipulationApiService::StubInterface::AsyncOverrideGrasp,
+                  m_stub.get(), _1, _2, _3),
         std::bind(&ManipulationApiClient::OnOverrideGraspComplete, this, _1, _2, _3, _4, _5),
         std::move(response), parameters);
 

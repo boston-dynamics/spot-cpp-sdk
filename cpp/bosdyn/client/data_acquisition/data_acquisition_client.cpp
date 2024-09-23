@@ -36,8 +36,8 @@ std::shared_future<DataAcquisitionAcquireDataResultType> DataAcquisitionClient::
         InitiateAsyncCall<::bosdyn::api::AcquireDataRequest, ::bosdyn::api::AcquireDataResponse,
                           ::bosdyn::api::AcquireDataResponse>(
             request,
-            std::bind(&::bosdyn::api::DataAcquisitionService::Stub::AsyncAcquireData, m_stub.get(), _1, _2,
-                      _3),
+            std::bind(&::bosdyn::api::DataAcquisitionService::StubInterface::AsyncAcquireData,
+                      m_stub.get(), _1, _2, _3),
             std::bind(&DataAcquisitionClient::OnAcquireDataComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
@@ -53,8 +53,9 @@ void DataAcquisitionClient::OnAcquireDataComplete(
     MessagePumpCallBase* call, const ::bosdyn::api::AcquireDataRequest& request,
     ::bosdyn::api::AcquireDataResponse&& response, const grpc::Status& status,
     std::promise<DataAcquisitionAcquireDataResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::AcquireDataResponse>(
-        status, response, response.status());
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::AcquireDataResponse>(status, response,
+                                                                             response.status());
 
     promise.set_value({ret_status, std::move(response)});
 }
@@ -66,12 +67,14 @@ std::shared_future<DataAcquisitionGetStatusResultType> DataAcquisitionClient::Ge
     std::shared_future<DataAcquisitionGetStatusResultType> future = response.get_future();
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
 
-    MessagePumpCallBase* one_time = InitiateAsyncCall<::bosdyn::api::GetStatusRequest, ::bosdyn::api::GetStatusResponse,
-                                                      ::bosdyn::api::GetStatusResponse>(
-        request,
-        std::bind(&::bosdyn::api::DataAcquisitionService::Stub::AsyncGetStatus, m_stub.get(), _1, _2, _3),
-        std::bind(&DataAcquisitionClient::OnGetStatusComplete, this, _1, _2, _3, _4, _5),
-        std::move(response), parameters);
+    MessagePumpCallBase* one_time =
+        InitiateAsyncCall<::bosdyn::api::GetStatusRequest, ::bosdyn::api::GetStatusResponse,
+                          ::bosdyn::api::GetStatusResponse>(
+            request,
+            std::bind(&::bosdyn::api::DataAcquisitionService::StubInterface::AsyncGetStatus,
+                      m_stub.get(), _1, _2, _3),
+            std::bind(&DataAcquisitionClient::OnGetStatusComplete, this, _1, _2, _3, _4, _5),
+            std::move(response), parameters);
 
     return future;
 }
@@ -85,28 +88,29 @@ void DataAcquisitionClient::OnGetStatusComplete(
     MessagePumpCallBase* call, const ::bosdyn::api::GetStatusRequest& request,
     ::bosdyn::api::GetStatusResponse&& response, const grpc::Status& status,
     std::promise<DataAcquisitionGetStatusResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::GetStatusResponse>(
-        status, response, SDKErrorCode::Success);
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::GetStatusResponse>(status, response,
+                                                                           SDKErrorCode::Success);
 
     promise.set_value({ret_status, std::move(response)});
 }
 
 // RPC to get service info from the data acquisition service.
-std::shared_future<DataAcquisitionServiceInfoResultType>
-DataAcquisitionClient::GetServiceInfoAsync(const RPCParameters& parameters) {
+std::shared_future<DataAcquisitionServiceInfoResultType> DataAcquisitionClient::GetServiceInfoAsync(
+    const RPCParameters& parameters) {
     std::promise<DataAcquisitionServiceInfoResultType> response;
     std::shared_future<DataAcquisitionServiceInfoResultType> future = response.get_future();
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
 
     ::bosdyn::api::GetServiceInfoRequest request;
-    MessagePumpCallBase* one_time =
-        InitiateAsyncCall<::bosdyn::api::GetServiceInfoRequest, ::bosdyn::api::GetServiceInfoResponse,
-                          ::bosdyn::api::GetServiceInfoResponse>(
-            request,
-            std::bind(&::bosdyn::api::DataAcquisitionService::Stub::AsyncGetServiceInfo, m_stub.get(), _1, _2,
-                      _3),
-            std::bind(&DataAcquisitionClient::OnGetServiceInfoComplete, this, _1, _2, _3, _4, _5),
-            std::move(response), parameters);
+    MessagePumpCallBase* one_time = InitiateAsyncCall<::bosdyn::api::GetServiceInfoRequest,
+                                                      ::bosdyn::api::GetServiceInfoResponse,
+                                                      ::bosdyn::api::GetServiceInfoResponse>(
+        request,
+        std::bind(&::bosdyn::api::DataAcquisitionService::StubInterface::AsyncGetServiceInfo,
+                  m_stub.get(), _1, _2, _3),
+        std::bind(&DataAcquisitionClient::OnGetServiceInfoComplete, this, _1, _2, _3, _4, _5),
+        std::move(response), parameters);
 
     return future;
 }
@@ -120,8 +124,9 @@ void DataAcquisitionClient::OnGetServiceInfoComplete(
     MessagePumpCallBase* call, const ::bosdyn::api::GetServiceInfoRequest& request,
     ::bosdyn::api::GetServiceInfoResponse&& response, const grpc::Status& status,
     std::promise<DataAcquisitionServiceInfoResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::GetServiceInfoResponse>(
-        status, response, SDKErrorCode::Success);
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::GetServiceInfoResponse>(
+            status, response, SDKErrorCode::Success);
 
     promise.set_value({ret_status, std::move(response)});
 }
@@ -134,15 +139,14 @@ DataAcquisitionClient::CancelAcquisitionAsync(::bosdyn::api::CancelAcquisitionRe
     std::shared_future<DataAcquisitionCancelAcquisitionResultType> future = response.get_future();
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
 
-    MessagePumpCallBase* one_time =
-        InitiateAsyncCall<::bosdyn::api::CancelAcquisitionRequest, ::bosdyn::api::CancelAcquisitionResponse,
-                          ::bosdyn::api::CancelAcquisitionResponse>(
-            request,
-            std::bind(&::bosdyn::api::DataAcquisitionService::Stub::AsyncCancelAcquisition, m_stub.get(), _1,
-                      _2, _3),
-            std::bind(&DataAcquisitionClient::OnCancelAcquisitionComplete, this, _1, _2, _3, _4,
-                      _5),
-            std::move(response), parameters);
+    MessagePumpCallBase* one_time = InitiateAsyncCall<::bosdyn::api::CancelAcquisitionRequest,
+                                                      ::bosdyn::api::CancelAcquisitionResponse,
+                                                      ::bosdyn::api::CancelAcquisitionResponse>(
+        request,
+        std::bind(&::bosdyn::api::DataAcquisitionService::StubInterface::AsyncCancelAcquisition,
+                  m_stub.get(), _1, _2, _3),
+        std::bind(&DataAcquisitionClient::OnCancelAcquisitionComplete, this, _1, _2, _3, _4, _5),
+        std::move(response), parameters);
 
     return future;
 }
@@ -156,8 +160,9 @@ void DataAcquisitionClient::OnCancelAcquisitionComplete(
     MessagePumpCallBase* call, const ::bosdyn::api::CancelAcquisitionRequest& request,
     ::bosdyn::api::CancelAcquisitionResponse&& response, const grpc::Status& status,
     std::promise<DataAcquisitionCancelAcquisitionResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::CancelAcquisitionResponse>(
-        status, response, response.status());
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::CancelAcquisitionResponse>(
+            status, response, response.status());
 
     promise.set_value({ret_status, std::move(response)});
 }
@@ -173,8 +178,8 @@ std::shared_future<DataAcquisitionLiveDataResultType> DataAcquisitionClient::Get
         InitiateAsyncCall<::bosdyn::api::LiveDataRequest, ::bosdyn::api::LiveDataResponse,
                           ::bosdyn::api::LiveDataResponse>(
             request,
-            std::bind(&::bosdyn::api::DataAcquisitionService::Stub::AsyncGetLiveData, m_stub.get(), _1, _2,
-                      _3),
+            std::bind(&::bosdyn::api::DataAcquisitionService::StubInterface::AsyncGetLiveData,
+                      m_stub.get(), _1, _2, _3),
             std::bind(&DataAcquisitionClient::OnLiveDataComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
@@ -190,8 +195,9 @@ void DataAcquisitionClient::OnLiveDataComplete(
     MessagePumpCallBase* call, const ::bosdyn::api::LiveDataRequest& request,
     ::bosdyn::api::LiveDataResponse&& response, const grpc::Status& status,
     std::promise<DataAcquisitionLiveDataResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::LiveDataResponse>(
-        status, response, SDKErrorCode::Success);
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::LiveDataResponse>(status, response,
+                                                                          SDKErrorCode::Success);
 
     promise.set_value({ret_status, std::move(response)});
 }

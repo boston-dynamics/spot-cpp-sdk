@@ -18,8 +18,8 @@ namespace math {
     return a * (1.0 - t) + b * t;
 }
 
-::bosdyn::api::Quaternion Slerp(const ::bosdyn::api::Quaternion& a, const ::bosdyn::api::Quaternion& b,
-                              double t) {
+::bosdyn::api::Quaternion Slerp(const ::bosdyn::api::Quaternion& a,
+                                const ::bosdyn::api::Quaternion& b, double t) {
     const auto& v0 = a;
     auto v1 = b;
     double dot = DotProduct(v0, v1);
@@ -56,7 +56,7 @@ namespace math {
 }
 
 ::bosdyn::api::SE3Pose Interp(const ::bosdyn::api::SE3Pose& a, const ::bosdyn::api::SE3Pose& b,
-                            double t) {
+                              double t) {
     ::bosdyn::api::SE3Pose interp_pose;
     interp_pose.mutable_position()->CopyFrom(Lerp(a.position(), b.position(), t));
     interp_pose.mutable_rotation()->CopyFrom(Slerp(a.rotation(), b.rotation(), t));
@@ -116,7 +116,7 @@ PoseLookupResult Lookup(const PoseBuffer& buffer, int64_t timestamp, ::bosdyn::a
 }
 
 bool MaybeAddPose(int64_t timestamp, const ::bosdyn::api::SE3Pose& pose, PoseBuffer* buffer,
-                    size_t max_poses) {
+                  size_t max_poses) {
     // Only accept monotonically increasing timestamps.
     if (!buffer->empty() && buffer->back().timestamp >= timestamp) {
         return false;

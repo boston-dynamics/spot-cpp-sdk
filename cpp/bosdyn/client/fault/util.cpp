@@ -15,10 +15,11 @@ namespace client {
 namespace fault {
 namespace util {
 
-::bosdyn::api::ServiceFault MakeServiceFault(const std::string& fault_name, const std::string& service_name,
-                                   const std::string& error_message,
-                                   ::bosdyn::api::ServiceFault::Severity severity,
-                                   const std::vector<std::string>& attributes) {
+::bosdyn::api::ServiceFault MakeServiceFault(const std::string& fault_name,
+                                             const std::string& service_name,
+                                             const std::string& error_message,
+                                             ::bosdyn::api::ServiceFault::Severity severity,
+                                             const std::vector<std::string>& attributes) {
     ::bosdyn::api::ServiceFault service_fault;
     service_fault.mutable_fault_id()->set_fault_name(fault_name);
     service_fault.mutable_fault_id()->set_service_name(service_name);
@@ -31,10 +32,11 @@ namespace util {
 }
 
 // Create a service fault object for a payload fault.
-::bosdyn::api::ServiceFault MakePayloadFault(const std::string& fault_name, const std::string& payload_guid,
-                                   const std::string& error_message,
-                                   ::bosdyn::api::ServiceFault::Severity severity,
-                                   const std::vector<std::string>& attributes) {
+::bosdyn::api::ServiceFault MakePayloadFault(const std::string& fault_name,
+                                             const std::string& payload_guid,
+                                             const std::string& error_message,
+                                             ::bosdyn::api::ServiceFault::Severity severity,
+                                             const std::vector<std::string>& attributes) {
     ::bosdyn::api::ServiceFault service_fault;
     service_fault.mutable_fault_id()->set_fault_name(fault_name);
     service_fault.mutable_fault_id()->set_payload_guid(payload_guid);

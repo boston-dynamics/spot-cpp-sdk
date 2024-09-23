@@ -96,10 +96,12 @@ class PowerClient : public ServiceClient {
     void SetComms(const std::shared_ptr<grpc::ChannelInterface>& channel) override;
     // End of ServiceClient overrides.
 
-    // Get the default service name the spotcam power service will be registered in the directory with.
+    // Get the default service name the spotcam power service will be registered in the directory
+    // with.
     static std::string GetDefaultServiceName() { return s_default_service_name; }
 
-    // Get the default service type for the spot cam power service that will be registered in the directory.
+    // Get the default service type for the spot cam power service that will be registered in the
+    // directory.
     static std::string GetServiceType() { return s_service_type; }
 
  private:
@@ -117,9 +119,10 @@ class PowerClient : public ServiceClient {
     void OnCyclePowerComplete(MessagePumpCallBase* call,
                               const ::bosdyn::api::spot_cam::CyclePowerRequest& request,
                               ::bosdyn::api::spot_cam::CyclePowerResponse&& response,
-                              const grpc::Status& status, std::promise<CyclePowerResultType> promise);
+                              const grpc::Status& status,
+                              std::promise<CyclePowerResultType> promise);
 
-    std::unique_ptr<::bosdyn::api::spot_cam::PowerService::Stub> m_stub;
+    std::unique_ptr<::bosdyn::api::spot_cam::PowerService::StubInterface> m_stub;
 
     // Default service name for the spotcam power service.
     static const char* s_default_service_name;

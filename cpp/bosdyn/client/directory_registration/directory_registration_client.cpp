@@ -22,21 +22,20 @@ const char* DirectoryRegistrationClient::s_default_service_authority = "api.spot
 const char* DirectoryRegistrationClient::s_service_type = "bosdyn.api.DirectoryRegistrationService";
 
 std::shared_future<RegisterServiceResultType> DirectoryRegistrationClient::RegisterServiceAsync(
-    ::bosdyn::api::RegisterServiceRequest& request,
-    const RPCParameters& parameters) {
+    ::bosdyn::api::RegisterServiceRequest& request, const RPCParameters& parameters) {
     std::promise<RegisterServiceResultType> response;
     std::shared_future<RegisterServiceResultType> future = response.get_future();
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
 
-    MessagePumpCallBase* one_time =
-        InitiateAsyncCall<::bosdyn::api::RegisterServiceRequest, ::bosdyn::api::RegisterServiceResponse,
-                          ::bosdyn::api::RegisterServiceResponse>(
-            request,
-            std::bind(&::bosdyn::api::DirectoryRegistrationService::Stub::AsyncRegisterService, m_stub.get(),
-                      _1, _2, _3),
-            std::bind(&DirectoryRegistrationClient::OnRegisterServiceComplete, this, _1, _2, _3, _4,
-                      _5),
-            std::move(response), parameters);
+    MessagePumpCallBase* one_time = InitiateAsyncCall<::bosdyn::api::RegisterServiceRequest,
+                                                      ::bosdyn::api::RegisterServiceResponse,
+                                                      ::bosdyn::api::RegisterServiceResponse>(
+        request,
+        std::bind(&::bosdyn::api::DirectoryRegistrationService::StubInterface::AsyncRegisterService,
+                  m_stub.get(), _1, _2, _3),
+        std::bind(&DirectoryRegistrationClient::OnRegisterServiceComplete, this, _1, _2, _3, _4,
+                  _5),
+        std::move(response), parameters);
 
     return future;
 }
@@ -45,15 +44,15 @@ void DirectoryRegistrationClient::OnRegisterServiceComplete(
     MessagePumpCallBase* call, const ::bosdyn::api::RegisterServiceRequest& request,
     ::bosdyn::api::RegisterServiceResponse&& response, const grpc::Status& status,
     std::promise<RegisterServiceResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::RegisterServiceResponse>(
-        status, response, response.status());
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::RegisterServiceResponse>(status, response,
+                                                                                 response.status());
 
     promise.set_value({ret_status, std::move(response)});
 }
 
 RegisterServiceResultType DirectoryRegistrationClient::RegisterService(
-    ::bosdyn::api::RegisterServiceRequest& request,
-    const RPCParameters& parameters) {
+    ::bosdyn::api::RegisterServiceRequest& request, const RPCParameters& parameters) {
     return RegisterServiceAsync(request, parameters).get();
 }
 
@@ -65,15 +64,16 @@ std::shared_future<UnregisterServiceResultType> DirectoryRegistrationClient::Unr
 
     ::bosdyn::api::UnregisterServiceRequest request;
     request.set_service_name(service_name);
-    MessagePumpCallBase* one_time =
-        InitiateAsyncCall<::bosdyn::api::UnregisterServiceRequest, ::bosdyn::api::UnregisterServiceResponse,
-                          ::bosdyn::api::UnregisterServiceResponse>(
-            request,
-            std::bind(&::bosdyn::api::DirectoryRegistrationService::Stub::AsyncUnregisterService,
-                      m_stub.get(), _1, _2, _3),
-            std::bind(&DirectoryRegistrationClient::OnUnregisterServiceComplete, this, _1, _2, _3,
-                      _4, _5),
-            std::move(response), parameters);
+    MessagePumpCallBase* one_time = InitiateAsyncCall<::bosdyn::api::UnregisterServiceRequest,
+                                                      ::bosdyn::api::UnregisterServiceResponse,
+                                                      ::bosdyn::api::UnregisterServiceResponse>(
+        request,
+        std::bind(
+            &::bosdyn::api::DirectoryRegistrationService::StubInterface::AsyncUnregisterService,
+            m_stub.get(), _1, _2, _3),
+        std::bind(&DirectoryRegistrationClient::OnUnregisterServiceComplete, this, _1, _2, _3, _4,
+                  _5),
+        std::move(response), parameters);
 
     return future;
 }
@@ -82,8 +82,9 @@ void DirectoryRegistrationClient::OnUnregisterServiceComplete(
     MessagePumpCallBase* call, const ::bosdyn::api::UnregisterServiceRequest& request,
     ::bosdyn::api::UnregisterServiceResponse&& response, const grpc::Status& status,
     std::promise<UnregisterServiceResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::UnregisterServiceResponse>(
-        status, response, response.status());
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::UnregisterServiceResponse>(
+            status, response, response.status());
 
     promise.set_value({ret_status, std::move(response)});
 }
@@ -103,8 +104,9 @@ std::shared_future<UpdateServiceResultType> DirectoryRegistrationClient::UpdateS
         InitiateAsyncCall<::bosdyn::api::UpdateServiceRequest, ::bosdyn::api::UpdateServiceResponse,
                           ::bosdyn::api::UpdateServiceResponse>(
             request,
-            std::bind(&::bosdyn::api::DirectoryRegistrationService::Stub::AsyncUpdateService, m_stub.get(),
-                      _1, _2, _3),
+            std::bind(
+                &::bosdyn::api::DirectoryRegistrationService::StubInterface::AsyncUpdateService,
+                m_stub.get(), _1, _2, _3),
             std::bind(&DirectoryRegistrationClient::OnUpdateServiceComplete, this, _1, _2, _3, _4,
                       _5),
             std::move(response), parameters);
@@ -116,8 +118,9 @@ void DirectoryRegistrationClient::OnUpdateServiceComplete(
     MessagePumpCallBase* call, const ::bosdyn::api::UpdateServiceRequest& request,
     ::bosdyn::api::UpdateServiceResponse&& response, const grpc::Status& status,
     std::promise<UpdateServiceResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::UpdateServiceResponse>(
-        status, response, response.status());
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::UpdateServiceResponse>(status, response,
+                                                                               response.status());
 
     promise.set_value({ret_status, std::move(response)});
 }

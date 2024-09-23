@@ -34,8 +34,8 @@ GripperCameraParamClient::SetGripperCameraParamsAsync(
                                                       ::bosdyn::api::GripperCameraParamResponse,
                                                       ::bosdyn::api::GripperCameraParamResponse>(
         request,
-        std::bind(&::bosdyn::api::GripperCameraParamService::Stub::AsyncSetParams, m_stub.get(), _1,
-                  _2, _3),
+        std::bind(&::bosdyn::api::GripperCameraParamService::StubInterface::AsyncSetParams,
+                  m_stub.get(), _1, _2, _3),
         std::bind(&GripperCameraParamClient::OnSetGripperCameraParamsComplete, this, _1, _2, _3, _4,
                   _5),
         std::move(response), parameters);
@@ -71,8 +71,8 @@ GripperCameraParamClient::GetGripperCameraParamsAsync(const RPCParameters& param
                                                       ::bosdyn::api::GripperCameraGetParamResponse,
                                                       ::bosdyn::api::GripperCameraGetParamResponse>(
         request,
-        std::bind(&::bosdyn::api::GripperCameraParamService::Stub::AsyncGetParams, m_stub.get(), _1,
-                  _2, _3),
+        std::bind(&::bosdyn::api::GripperCameraParamService::StubInterface::AsyncGetParams,
+                  m_stub.get(), _1, _2, _3),
         std::bind(&GripperCameraParamClient::OnGetGripperCameraParamsComplete, this, _1, _2, _3, _4,
                   _5),
         std::move(response), parameters);

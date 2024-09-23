@@ -253,7 +253,7 @@ class DataBufferClient : public ServiceClient {
                                         const grpc::Status& status,
                                         std::promise<RegisterSignalSchemaResultType> promise);
 
-    std::unique_ptr<::bosdyn::api::DataBufferService::Stub> m_stub;
+    std::unique_ptr<::bosdyn::api::DataBufferService::StubInterface> m_stub;
 
     // Default service name for the DataBuffer service.
     static const char* s_default_service_name;

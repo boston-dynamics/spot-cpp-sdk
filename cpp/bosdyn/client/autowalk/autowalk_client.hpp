@@ -13,9 +13,9 @@
 #include <bosdyn/api/autowalk/autowalk_service.grpc.pb.h>
 #include <bosdyn/api/autowalk/autowalk_service.pb.h>
 
+#include "bosdyn/client/autowalk/autowalk_error_codes.h"
 #include "bosdyn/client/lease/lease_resources.h"
 #include "bosdyn/client/service_client/service_client.h"
-#include "bosdyn/client/autowalk/autowalk_error_codes.h"
 
 namespace bosdyn {
 
@@ -83,7 +83,7 @@ class AutowalkClient : public ServiceClient {
                                 const grpc::Status& status,
                                 std::promise<LoadAutowalkResultType> promise);
 
-    std::unique_ptr<::bosdyn::api::autowalk::AutowalkService::Stub> m_stub;
+    std::unique_ptr<::bosdyn::api::autowalk::AutowalkService::StubInterface> m_stub;
 
     // Default service name for the mission service.
     static const char* s_default_service_name;

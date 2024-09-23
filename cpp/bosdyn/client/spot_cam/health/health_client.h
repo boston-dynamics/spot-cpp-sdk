@@ -90,7 +90,7 @@ class HealthClient : public ServiceClient {
         std::vector<::bosdyn::api::spot_cam::GetSystemLogResponse>&& responses,
         const grpc::Status& status, std::promise<GetSystemLogResultType> promise);
 
-    std::unique_ptr<::bosdyn::api::spot_cam::HealthService::Stub> m_stub;
+    std::unique_ptr<::bosdyn::api::spot_cam::HealthService::StubInterface> m_stub;
 
     // Default service name for the spot cam health service.
     static const char* s_default_service_name;

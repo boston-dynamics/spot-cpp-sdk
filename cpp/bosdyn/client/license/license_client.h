@@ -38,10 +38,12 @@ class LicenseClient : public ServiceClient {
     GetLicenseInfoResultType GetLicenseInfo(const RPCParameters& parameters = RPCParameters());
 
     std::shared_future<GetFeatureEnabledResultType> GetFeatureEnabledAsync(
-        ::bosdyn::api::GetFeatureEnabledRequest& request, const RPCParameters& parameters = RPCParameters());
+        ::bosdyn::api::GetFeatureEnabledRequest& request,
+        const RPCParameters& parameters = RPCParameters());
 
     GetFeatureEnabledResultType GetFeatureEnabled(
-        ::bosdyn::api::GetFeatureEnabledRequest& request, const RPCParameters& parameters = RPCParameters());
+        ::bosdyn::api::GetFeatureEnabledRequest& request,
+        const RPCParameters& parameters = RPCParameters());
 
     // Start of ServiceClient overrides.
     QualityOfService GetQualityOfService() const override;
@@ -68,7 +70,7 @@ class LicenseClient : public ServiceClient {
                                      const grpc::Status& status,
                                      std::promise<GetFeatureEnabledResultType> promise);
 
-    std::unique_ptr<::bosdyn::api::LicenseService::Stub> m_stub;
+    std::unique_ptr<::bosdyn::api::LicenseService::StubInterface> m_stub;
 
     // Default service name for the license service.
     static const char* s_default_service_name;

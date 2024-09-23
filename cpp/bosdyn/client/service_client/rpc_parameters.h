@@ -10,9 +10,9 @@
 #pragma once
 #include "bosdyn/common/time.h"
 
-namespace bosdyn{
+namespace bosdyn {
 
-namespace client{
+namespace client {
 
 // For client requests, parameters of this type can request that logging of GRPC request
 // and response messages are disabled.
@@ -23,8 +23,8 @@ enum class LogRequestMode {
 };
 
 
-// Specifying the timeout defined below means the RPC timeout is not set and the default timeout value
-// specified in the service client will be used.
+// Specifying the timeout defined below means the RPC timeout is not set and the default timeout
+// value specified in the service client will be used.
 const ::bosdyn::common::Duration kRPCTimeoutNotSpecified = std::chrono::milliseconds(-1);
 
 // Default timeout used for all RPCs in the service clients. The Robot or each client can change

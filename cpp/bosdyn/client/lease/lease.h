@@ -50,8 +50,9 @@ enum class LeaseHierarchyRequirements {
  * and a LeaseUseResult field.
  */
 struct LeaseUseResultsAndError {
-    ::bosdyn::api::LeaseUseResult* lease_use_result = nullptr; // Can NOT be null. This is asserted.
-    std::string* error_message = nullptr; // Allowed to be null.
+    ::bosdyn::api::LeaseUseResult* lease_use_result =
+        nullptr;                           // Can NOT be null. This is asserted.
+    std::string* error_message = nullptr;  // Allowed to be null.
 
     LeaseUseResultsAndError() = default;
     LeaseUseResultsAndError(::bosdyn::api::LeaseUseResult* lease_use, std::string* error);
@@ -234,7 +235,6 @@ class Lease {
     // ::bosdyn::common::Status of the current lease stored in m_lease_proto
     LeaseStatus m_lease_status = LeaseStatus::NOT_MANAGED;
 };
-
 
 }  // namespace client
 

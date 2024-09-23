@@ -10,15 +10,15 @@
 #pragma once
 
 #include <cassert>
-#include <sstream>
 #include <exception>
 #include <functional>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 
 #ifdef BOSDYN_DISABLE_ASSERTS
 // Disables all bosdyn assert checks.
-#define BOSDYN_ASSERT_PRECONDITION(cond, ...) ((void)0)
+#    define BOSDYN_ASSERT_PRECONDITION(cond, ...) ((void)0)
 #else
 
 /**
@@ -32,18 +32,19 @@
  * used as a printf-style format string, and the following arguments will be used as arguments to
  * that format string.
  */
-#define BOSDYN_ASSERT_PRECONDITION(cond, ...)                                                          \
-    (!(cond) ? bosdyn::common::panic(__FUNCTION__, __FILE__, __LINE__, #cond, ##__VA_ARGS__) \
-             : (void)0)
+#    define BOSDYN_ASSERT_PRECONDITION(cond, ...)                                                \
+        (!(cond) ? bosdyn::common::panic(__FUNCTION__, __FILE__, __LINE__, #cond, ##__VA_ARGS__) \
+                 : (void)0)
 #endif
-
 
 namespace bosdyn {
 
 namespace common {
 
-// Logs a formatted error message with additional debug information, then will terminate the program.
-[[noreturn]] void panic(char const* function, char const* file, int line, const char* cond, const char* format, ...);
+// Logs a formatted error message with additional debug information, then will terminate the
+// program.
+[[noreturn]] void panic(char const* function, char const* file, int line, const char* cond,
+                        const char* format, ...);
 
 }  // namespace common
 

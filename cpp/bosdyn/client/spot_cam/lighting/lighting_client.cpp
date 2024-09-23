@@ -33,16 +33,16 @@ std::shared_future<GetLEDBrightnessResultType> LightingClient::GetLEDBrightnessA
                           ::bosdyn::api::spot_cam::GetLEDBrightnessResponse,
                           ::bosdyn::api::spot_cam::GetLEDBrightnessResponse>(
             request,
-            std::bind(&::bosdyn::api::spot_cam::LightingService::Stub::AsyncGetLEDBrightness, m_stub.get(),
-                      _1, _2, _3),
+            std::bind(
+                &::bosdyn::api::spot_cam::LightingService::StubInterface::AsyncGetLEDBrightness,
+                m_stub.get(), _1, _2, _3),
             std::bind(&LightingClient::OnGetLEDBrightnessComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
     return future;
 }
 
-GetLEDBrightnessResultType LightingClient::GetLEDBrightness(
-    const RPCParameters& parameters) {
+GetLEDBrightnessResultType LightingClient::GetLEDBrightness(const RPCParameters& parameters) {
     return GetLEDBrightnessAsync(parameters).get();
 }
 
@@ -50,15 +50,15 @@ void LightingClient::OnGetLEDBrightnessComplete(
     MessagePumpCallBase* call, const ::bosdyn::api::spot_cam::GetLEDBrightnessRequest& request,
     ::bosdyn::api::spot_cam::GetLEDBrightnessResponse&& response, const grpc::Status& status,
     std::promise<GetLEDBrightnessResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::spot_cam::GetLEDBrightnessResponse>(
-        status, response, SDKErrorCode::Success);
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::spot_cam::GetLEDBrightnessResponse>(
+            status, response, SDKErrorCode::Success);
 
     promise.set_value({ret_status, std::move(response)});
 }
 
 std::shared_future<SetLEDBrightnessResultType> LightingClient::SetLEDBrightnessAsync(
-    const std::map<int32_t, float>& brightnesses,
-    const RPCParameters& parameters) {
+    const std::map<int32_t, float>& brightnesses, const RPCParameters& parameters) {
     ::bosdyn::api::spot_cam::SetLEDBrightnessRequest request;
     auto map = request.mutable_brightnesses();
     map->insert(brightnesses.begin(), brightnesses.end());
@@ -67,14 +67,12 @@ std::shared_future<SetLEDBrightnessResultType> LightingClient::SetLEDBrightnessA
 }
 
 SetLEDBrightnessResultType LightingClient::SetLEDBrightness(
-    const std::map<int32_t, float>& brightnesses,
-    const RPCParameters& parameters) {
+    const std::map<int32_t, float>& brightnesses, const RPCParameters& parameters) {
     return SetLEDBrightnessAsync(brightnesses, parameters).get();
 }
 
 std::shared_future<SetLEDBrightnessResultType> LightingClient::SetLEDBrightnessAsync(
-    ::bosdyn::api::spot_cam::SetLEDBrightnessRequest& request,
-    const RPCParameters& parameters) {
+    ::bosdyn::api::spot_cam::SetLEDBrightnessRequest& request, const RPCParameters& parameters) {
     std::promise<SetLEDBrightnessResultType> response;
     std::shared_future<SetLEDBrightnessResultType> future = response.get_future();
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
@@ -84,8 +82,9 @@ std::shared_future<SetLEDBrightnessResultType> LightingClient::SetLEDBrightnessA
                           ::bosdyn::api::spot_cam::SetLEDBrightnessResponse,
                           ::bosdyn::api::spot_cam::SetLEDBrightnessResponse>(
             request,
-            std::bind(&::bosdyn::api::spot_cam::LightingService::Stub::AsyncSetLEDBrightness, m_stub.get(),
-                      _1, _2, _3),
+            std::bind(
+                &::bosdyn::api::spot_cam::LightingService::StubInterface::AsyncSetLEDBrightness,
+                m_stub.get(), _1, _2, _3),
             std::bind(&LightingClient::OnSetLEDBrightnessComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
@@ -93,8 +92,7 @@ std::shared_future<SetLEDBrightnessResultType> LightingClient::SetLEDBrightnessA
 }
 
 SetLEDBrightnessResultType LightingClient::SetLEDBrightness(
-    ::bosdyn::api::spot_cam::SetLEDBrightnessRequest& request,
-    const RPCParameters& parameters) {
+    ::bosdyn::api::spot_cam::SetLEDBrightnessRequest& request, const RPCParameters& parameters) {
     return SetLEDBrightnessAsync(request, parameters).get();
 }
 
@@ -102,8 +100,9 @@ void LightingClient::OnSetLEDBrightnessComplete(
     MessagePumpCallBase* call, const ::bosdyn::api::spot_cam::SetLEDBrightnessRequest& request,
     ::bosdyn::api::spot_cam::SetLEDBrightnessResponse&& response, const grpc::Status& status,
     std::promise<SetLEDBrightnessResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::spot_cam::SetLEDBrightnessResponse>(
-        status, response, SDKErrorCode::Success);
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::spot_cam::SetLEDBrightnessResponse>(
+            status, response, SDKErrorCode::Success);
 
     promise.set_value({ret_status, std::move(response)});
 }

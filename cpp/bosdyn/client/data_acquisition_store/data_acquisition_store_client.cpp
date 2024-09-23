@@ -38,8 +38,9 @@ DataAcquisitionStoreClient::ListCaptureActionsAsync(
                                                       ::bosdyn::api::ListCaptureActionsResponse,
                                                       ::bosdyn::api::ListCaptureActionsResponse>(
         request,
-        std::bind(&::bosdyn::api::DataAcquisitionStoreService::Stub::AsyncListCaptureActions,
-                  m_stub.get(), _1, _2, _3),
+        std::bind(
+            &::bosdyn::api::DataAcquisitionStoreService::StubInterface::AsyncListCaptureActions,
+            m_stub.get(), _1, _2, _3),
         std::bind(&DataAcquisitionStoreClient::OnListCaptureActionsComplete, this, _1, _2, _3, _4,
                   _5),
         std::move(response), parameters);
@@ -75,7 +76,7 @@ DataAcquisitionStoreClient::ListStoredDataAsync(::bosdyn::api::ListStoredDataReq
                                                       ::bosdyn::api::ListStoredDataResponse,
                                                       ::bosdyn::api::ListStoredDataResponse>(
         request,
-        std::bind(&::bosdyn::api::DataAcquisitionStoreService::Stub::AsyncListStoredData,
+        std::bind(&::bosdyn::api::DataAcquisitionStoreService::StubInterface::AsyncListStoredData,
                   m_stub.get(), _1, _2, _3),
         std::bind(&DataAcquisitionStoreClient::OnListStoredDataComplete, this, _1, _2, _3, _4, _5),
         std::move(response), parameters);
@@ -111,7 +112,7 @@ DataAcquisitionStoreClient::StoreDataAsync(::bosdyn::api::StoreDataRequest& requ
         InitiateAsyncCall<::bosdyn::api::StoreDataRequest, ::bosdyn::api::StoreDataResponse,
                           ::bosdyn::api::StoreDataResponse>(
             request,
-            std::bind(&::bosdyn::api::DataAcquisitionStoreService::Stub::AsyncStoreData,
+            std::bind(&::bosdyn::api::DataAcquisitionStoreService::StubInterface::AsyncStoreData,
                       m_stub.get(), _1, _2, _3),
             std::bind(&DataAcquisitionStoreClient::OnStoreDataComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
@@ -148,7 +149,7 @@ DataAcquisitionStoreClient::ListStoredImagesAsync(::bosdyn::api::ListStoredImage
                                                       ::bosdyn::api::ListStoredImagesResponse,
                                                       ::bosdyn::api::ListStoredImagesResponse>(
         request,
-        std::bind(&::bosdyn::api::DataAcquisitionStoreService::Stub::AsyncListStoredImages,
+        std::bind(&::bosdyn::api::DataAcquisitionStoreService::StubInterface::AsyncListStoredImages,
                   m_stub.get(), _1, _2, _3),
         std::bind(&DataAcquisitionStoreClient::OnListStoredImagesComplete, this, _1, _2, _3, _4,
                   _5),
@@ -185,7 +186,7 @@ DataAcquisitionStoreClient::StoreImageAsync(::bosdyn::api::StoreImageRequest& re
         InitiateAsyncCall<::bosdyn::api::StoreImageRequest, ::bosdyn::api::StoreImageResponse,
                           ::bosdyn::api::StoreImageResponse>(
             request,
-            std::bind(&::bosdyn::api::DataAcquisitionStoreService::Stub::AsyncStoreImage,
+            std::bind(&::bosdyn::api::DataAcquisitionStoreService::StubInterface::AsyncStoreImage,
                       m_stub.get(), _1, _2, _3),
             std::bind(&DataAcquisitionStoreClient::OnStoreImageComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
@@ -222,8 +223,9 @@ DataAcquisitionStoreClient::ListStoredMetadataAsync(
                                                       ::bosdyn::api::ListStoredMetadataResponse,
                                                       ::bosdyn::api::ListStoredMetadataResponse>(
         request,
-        std::bind(&::bosdyn::api::DataAcquisitionStoreService::Stub::AsyncListStoredMetadata,
-                  m_stub.get(), _1, _2, _3),
+        std::bind(
+            &::bosdyn::api::DataAcquisitionStoreService::StubInterface::AsyncListStoredMetadata,
+            m_stub.get(), _1, _2, _3),
         std::bind(&DataAcquisitionStoreClient::OnListStoredMetadataComplete, this, _1, _2, _3, _4,
                   _5),
         std::move(response), parameters);
@@ -259,8 +261,9 @@ DataAcquisitionStoreClient::StoreMetadataAsync(::bosdyn::api::StoreMetadataReque
         InitiateAsyncCall<::bosdyn::api::StoreMetadataRequest, ::bosdyn::api::StoreMetadataResponse,
                           ::bosdyn::api::StoreMetadataResponse>(
             request,
-            std::bind(&::bosdyn::api::DataAcquisitionStoreService::Stub::AsyncStoreMetadata,
-                      m_stub.get(), _1, _2, _3),
+            std::bind(
+                &::bosdyn::api::DataAcquisitionStoreService::StubInterface::AsyncStoreMetadata,
+                m_stub.get(), _1, _2, _3),
             std::bind(&DataAcquisitionStoreClient::OnStoreMetadataComplete, this, _1, _2, _3, _4,
                       _5),
             std::move(response), parameters);
@@ -297,8 +300,9 @@ DataAcquisitionStoreClient::ListStoredAlertDataAsync(
                                                       ::bosdyn::api::ListStoredAlertDataResponse,
                                                       ::bosdyn::api::ListStoredAlertDataResponse>(
         request,
-        std::bind(&::bosdyn::api::DataAcquisitionStoreService::Stub::AsyncListStoredAlertData,
-                  m_stub.get(), _1, _2, _3),
+        std::bind(
+            &::bosdyn::api::DataAcquisitionStoreService::StubInterface::AsyncListStoredAlertData,
+            m_stub.get(), _1, _2, _3),
         std::bind(&DataAcquisitionStoreClient::OnListStoredAlertDataComplete, this, _1, _2, _3, _4,
                   _5),
         std::move(response), parameters);
@@ -334,7 +338,7 @@ DataAcquisitionStoreClient::StoreAlertDataAsync(::bosdyn::api::StoreAlertDataReq
                                                       ::bosdyn::api::StoreAlertDataResponse,
                                                       ::bosdyn::api::StoreAlertDataResponse>(
         request,
-        std::bind(&::bosdyn::api::DataAcquisitionStoreService::Stub::AsyncStoreAlertData,
+        std::bind(&::bosdyn::api::DataAcquisitionStoreService::StubInterface::AsyncStoreAlertData,
                   m_stub.get(), _1, _2, _3),
         std::bind(&DataAcquisitionStoreClient::OnStoreAlertDataComplete, this, _1, _2, _3, _4, _5),
         std::move(response), parameters);
@@ -366,16 +370,16 @@ DataAcquisitionStoreClient::QueryStoredCapturesAsync(
         response.get_future();
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
 
-    MessagePumpCallBase* one_time =
-        InitiateResponseStreamAsyncCall<::bosdyn::api::QueryStoredCapturesRequest,
-                                        ::bosdyn::api::DataChunk,
-                                        ::bosdyn::api::QueryStoredCapturesResponse>(
-            request,
-            std::bind(&::bosdyn::api::DataAcquisitionStoreService::Stub::AsyncQueryStoredCaptures,
-                      m_stub.get(), _1, _2, _3, _4),
-            std::bind(&DataAcquisitionStoreClient::OnQueryStoredCapturesComplete, this, _1, _2, _3,
-                      _4, _5),
-            std::move(response), parameters);
+    MessagePumpCallBase* one_time = InitiateResponseStreamAsyncCall<
+        ::bosdyn::api::QueryStoredCapturesRequest, ::bosdyn::api::DataChunk,
+        ::bosdyn::api::QueryStoredCapturesResponse>(
+        request,
+        std::bind(
+            &::bosdyn::api::DataAcquisitionStoreService::StubInterface::AsyncQueryStoredCaptures,
+            m_stub.get(), _1, _2, _3, _4),
+        std::bind(&DataAcquisitionStoreClient::OnQueryStoredCapturesComplete, this, _1, _2, _3, _4,
+                  _5),
+        std::move(response), parameters);
 
     return future;
 }
@@ -419,8 +423,9 @@ DataAcquisitionStoreClient::QueryMaxCaptureIdAsync(const RPCParameters& paramete
                                                       ::bosdyn::api::QueryMaxCaptureIdResponse,
                                                       ::bosdyn::api::QueryMaxCaptureIdResponse>(
         request,
-        std::bind(&::bosdyn::api::DataAcquisitionStoreService::Stub::AsyncQueryMaxCaptureId,
-                  m_stub.get(), _1, _2, _3),
+        std::bind(
+            &::bosdyn::api::DataAcquisitionStoreService::StubInterface::AsyncQueryMaxCaptureId,
+            m_stub.get(), _1, _2, _3),
         std::bind(&DataAcquisitionStoreClient::OnQueryMaxCaptureIdComplete, this, _1, _2, _3, _4,
                   _5),
         std::move(response), parameters);

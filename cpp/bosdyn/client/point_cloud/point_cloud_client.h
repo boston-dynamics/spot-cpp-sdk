@@ -16,8 +16,8 @@
 #include <string>
 #include <vector>
 
-#include "bosdyn/client/service_client/service_client.h"
 #include "bosdyn/client/point_cloud/point_cloud_error_codes.h"
+#include "bosdyn/client/service_client/service_client.h"
 
 namespace bosdyn {
 
@@ -46,9 +46,8 @@ class PointCloudClient : public ServiceClient {
         const RPCParameters& parameters = RPCParameters());
 
     // Synchronous method to get a GetPointCloudResponse for a list of point cloud sources.
-    GetPointCloudResultType GetPointCloud(
-        const std::vector<std::string>& point_cloud_sources,
-        const RPCParameters& parameters = RPCParameters());
+    GetPointCloudResultType GetPointCloud(const std::vector<std::string>& point_cloud_sources,
+                                          const RPCParameters& parameters = RPCParameters());
 
     // Asynchronous method to get a GetPointCloudResponse for the given GetPointCloudRequest.
     // request is not const because the method updates the header.
@@ -58,9 +57,8 @@ class PointCloudClient : public ServiceClient {
 
     // Synchronous method to get a GetPointCloudResponse for the given GetPointCloudRequest.
     // request is not const because the method updates the header.
-    GetPointCloudResultType GetPointCloud(
-        ::bosdyn::api::GetPointCloudRequest& request,
-        const RPCParameters& parameters = RPCParameters());
+    GetPointCloudResultType GetPointCloud(::bosdyn::api::GetPointCloudRequest& request,
+                                          const RPCParameters& parameters = RPCParameters());
 
     // Start of ServiceClient overrides.
     QualityOfService GetQualityOfService() const override;
@@ -71,27 +69,29 @@ class PointCloudClient : public ServiceClient {
     // with.
     static std::string GetDefaultServiceName() { return s_default_service_name; }
 
-    // Get the default service type for the PointCloud service that will be registered in the directory.
+    // Get the default service type for the PointCloud service that will be registered in the
+    // directory.
     static std::string GetServiceType() { return s_service_type; }
 
  private:
     // Callback function registered for the asynchronous ListSources calls.
-    void OnListSourcesComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::ListPointCloudSourcesRequest& request,
-        ::bosdyn::api::ListPointCloudSourcesResponse&& response, const grpc::Status& status,
-        std::promise<ListPointCloudSourcesResultType> promise);
+    void OnListSourcesComplete(MessagePumpCallBase* call,
+                               const ::bosdyn::api::ListPointCloudSourcesRequest& request,
+                               ::bosdyn::api::ListPointCloudSourcesResponse&& response,
+                               const grpc::Status& status,
+                               std::promise<ListPointCloudSourcesResultType> promise);
     // Callback function registered for the asynchronous GetPointCloud calls.
-    void OnGetPointCloudComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::GetPointCloudRequest& request,
-        ::bosdyn::api::GetPointCloudResponse&& response, const grpc::Status& status,
-        std::promise<GetPointCloudResultType> promise);
+    void OnGetPointCloudComplete(MessagePumpCallBase* call,
+                                 const ::bosdyn::api::GetPointCloudRequest& request,
+                                 ::bosdyn::api::GetPointCloudResponse&& response,
+                                 const grpc::Status& status,
+                                 std::promise<GetPointCloudResultType> promise);
 
-    void BuildPointCloudRequest(
-        const std::string& point_cloud_source_name,
-        ::bosdyn::api::PointCloudRequest* request);
+    void BuildPointCloudRequest(const std::string& point_cloud_source_name,
+                                ::bosdyn::api::PointCloudRequest* request);
 
     // Comms details.
-    std::unique_ptr<::bosdyn::api::PointCloudService::Stub> m_stub;
+    std::unique_ptr<::bosdyn::api::PointCloudService::StubInterface> m_stub;
 
     // Default service name for the PointCloud service.
     static const char* s_default_service_name;

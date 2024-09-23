@@ -46,17 +46,17 @@
                                      equivalent_condition)
 
 #define DEFINE_PROTO_ENUM_ERRORCODE_IMPL_AUTO_RETURN(enumclass, equivalent_condition)      \
-    DEFINE_PROTO_ENUM_ERRORCODE_IMPL(enumclass, ::bosdyn::api::auto_return,                  \
+    DEFINE_PROTO_ENUM_ERRORCODE_IMPL(enumclass, ::bosdyn::api::auto_return,                \
                                      namespace bosdyn{namespace api{namespace auto_return{ \
                                          ,                                                 \
                                      }}},                                                  \
                                      equivalent_condition)
 
 #define DEFINE_PROTO_ENUM_ERRORCODE_IMPL_AUTOWALK(enumclass, equivalent_condition)      \
-    DEFINE_PROTO_ENUM_ERRORCODE_IMPL(enumclass, ::bosdyn::api::autowalk,                  \
+    DEFINE_PROTO_ENUM_ERRORCODE_IMPL(enumclass, ::bosdyn::api::autowalk,                \
                                      namespace bosdyn{namespace api{namespace autowalk{ \
-                                         ,                                                 \
-                                     }}},                                                  \
+                                         ,                                              \
+                                     }}},                                               \
                                      equivalent_condition)
 
 #define DEFINE_PROTO_ENUM_ERRORCODE_IMPL_KEEPALIVE(enumclass, equivalent_condition)      \
@@ -70,54 +70,62 @@
     DEFINE_PROTO_ENUM_ERRORCODE_IMPL(enumclass, ::bosdyn::api::log_status,                \
                                      namespace bosdyn{namespace api{namespace log_status{ \
                                          ,                                                \
-                                     }}},                                                  \
+                                     }}},                                                 \
                                      equivalent_condition)
 
 #define DEFINE_PROTO_ENUM_ERRORCODE_IMPL_SPOT(enumclass, equivalent_condition)      \
-    DEFINE_PROTO_ENUM_ERRORCODE_IMPL(enumclass, ::bosdyn::api::spot,                  \
+    DEFINE_PROTO_ENUM_ERRORCODE_IMPL(enumclass, ::bosdyn::api::spot,                \
                                      namespace bosdyn{namespace api{namespace spot{ \
                                          ,                                          \
                                      }}},                                           \
                                      equivalent_condition)
 
 #define DEFINE_PROTO_ENUM_ERRORCODE_IMPL_MISSION(enumclass, equivalent_condition)      \
-    DEFINE_PROTO_ENUM_ERRORCODE_IMPL(enumclass, ::bosdyn::api::mission,                  \
+    DEFINE_PROTO_ENUM_ERRORCODE_IMPL(enumclass, ::bosdyn::api::mission,                \
                                      namespace bosdyn{namespace api{namespace mission{ \
                                          ,                                             \
                                      }}},                                              \
                                      equivalent_condition)
 
 #define DEFINE_PROTO_ENUM_ERRORCODE_IMPL_GRAPHNAV(enumclass, equivalent_condition)       \
-    DEFINE_PROTO_ENUM_ERRORCODE_IMPL(enumclass, ::bosdyn::api::graph_nav,                  \
+    DEFINE_PROTO_ENUM_ERRORCODE_IMPL(enumclass, ::bosdyn::api::graph_nav,                \
                                      namespace bosdyn{namespace api{namespace graph_nav{ \
                                          ,                                               \
                                      }}},                                                \
                                      equivalent_condition)
 
 #define DEFINE_PROTO_ENUM_ERRORCODE_IMPL_METRICS(enumclass, equivalent_condition)              \
-    DEFINE_PROTO_ENUM_ERRORCODE_IMPL(enumclass, ::bosdyn::api::metrics_logging,                  \
+    DEFINE_PROTO_ENUM_ERRORCODE_IMPL(enumclass, ::bosdyn::api::metrics_logging,                \
                                      namespace bosdyn{namespace api{namespace metrics_logging{ \
                                          ,                                                     \
                                      }}},                                                      \
                                      equivalent_condition)
 
 #define DEFINE_PROTO_ENUM_ERRORCODE_IMPL_INTERNAL(enumclass, equivalent_condition)      \
-    DEFINE_PROTO_ENUM_ERRORCODE_IMPL(enumclass, ::bosdyn::api::internal,                  \
+    DEFINE_PROTO_ENUM_ERRORCODE_IMPL(enumclass, ::bosdyn::api::internal,                \
                                      namespace bosdyn{namespace api{namespace internal{ \
                                          ,                                              \
                                      }}},                                               \
                                      equivalent_condition)
 
-#define DEFINE_PROTO_ENUM_ERRORCODE_IMPL_LOCALNAV(enumclass, equivalent_condition)                         \
-    DEFINE_PROTO_ENUM_ERRORCODE_IMPL(enumclass, ::bosdyn::api::internal::localnav,                           \
-                                     namespace bosdyn{namespace api{namespace internal{namespace localnav{ \
-                                         ,                                                                 \
-                                     }}}},                                                                 \
-                                     equivalent_condition)
+#define DEFINE_PROTO_ENUM_ERRORCODE_IMPL_LOCALNAV(enumclass, equivalent_condition) \
+    DEFINE_PROTO_ENUM_ERRORCODE_IMPL(                                              \
+        enumclass, ::bosdyn::api::internal::localnav,                              \
+        namespace bosdyn{namespace api{namespace internal{namespace localnav{      \
+            ,                                                                      \
+        }}}},                                                                      \
+        equivalent_condition)
 
 #define DEFINE_PROTO_ENUM_ERRORCODE_IMPL_DOCKING(enumclass, equivalent_condition)      \
-    DEFINE_PROTO_ENUM_ERRORCODE_IMPL(enumclass, ::bosdyn::api::docking,                  \
+    DEFINE_PROTO_ENUM_ERRORCODE_IMPL(enumclass, ::bosdyn::api::docking,                \
                                      namespace bosdyn{namespace api{namespace docking{ \
                                          ,                                             \
                                      }}},                                              \
+                                     equivalent_condition)
+
+#define DEFINE_PROTO_ENUM_ERRORCODE_IMPL_LONG_RANGE_MAP(enumclass, equivalent_condition) \
+    DEFINE_PROTO_ENUM_ERRORCODE_IMPL(enumclass, ::bosdyn::api::internal,                 \
+                                     namespace bosdyn{namespace api{namespace internal{  \
+                                         ,                                               \
+                                     }}},                                                \
                                      equivalent_condition)

@@ -15,9 +15,9 @@
 #include <bosdyn/api/auto_return/auto_return_service.pb.h>
 
 #include "bosdyn/client/auto_return/auto_return_error_codes.h"
+#include "bosdyn/client/lease/lease_client.h"
 #include "bosdyn/client/service_client/service_client.h"
 #include "bosdyn/common/status.h"
-#include "bosdyn/client/lease/lease_client.h"
 
 namespace bosdyn {
 
@@ -41,9 +41,8 @@ class AutoReturnClient : public ServiceClient {
         const RPCParameters& parameters = RPCParameters());
 
     // Synchronous method to configure auto return.
-    ConfigureResultType Configure(
-        ::bosdyn::api::auto_return::ConfigureRequest& request,
-        const RPCParameters& parameters = RPCParameters());
+    ConfigureResultType Configure(::bosdyn::api::auto_return::ConfigureRequest& request,
+                                  const RPCParameters& parameters = RPCParameters());
 
     std::shared_future<GetConfigurationResultType> GetConfigurationAsync(
         ::bosdyn::api::auto_return::GetConfigurationRequest& request,
@@ -59,9 +58,8 @@ class AutoReturnClient : public ServiceClient {
         const RPCParameters& parameters = RPCParameters());
 
     // Synchronous method to start auto return.
-    StartResultType Start(
-        ::bosdyn::api::auto_return::StartRequest& request,
-        const RPCParameters& parameters = RPCParameters());
+    StartResultType Start(::bosdyn::api::auto_return::StartRequest& request,
+                          const RPCParameters& parameters = RPCParameters());
 
     /**
      * Initialize auto return
@@ -75,12 +73,15 @@ class AutoReturnClient : public ServiceClient {
      * Returns bosdyn::ConfigureResultType status if configuration failed,
      * SDKErrorCode::Success otherwise.
      */
-    ::bosdyn::common::Status Init(const Lease& new_lease, const ::bosdyn::api::auto_return::Params& params,
-                const std::string& client_name, std::shared_ptr<LeaseWallet> lease_wallet);
+    ::bosdyn::common::Status Init(const Lease& new_lease,
+                                  const ::bosdyn::api::auto_return::Params& params,
+                                  const std::string& client_name,
+                                  std::shared_ptr<LeaseWallet> lease_wallet);
 
     // Recover after auto return has taken control.
     // Call this upon returning from comms loss and taking back control of the robot.
-    ::bosdyn::common::Status Recover(std::shared_ptr<LeaseClient> lease_client, const std::string& client_name);
+    ::bosdyn::common::Status Recover(std::shared_ptr<LeaseClient> lease_client,
+                                     const std::string& client_name);
 
     // Start of ServiceClient overrides.
     QualityOfService GetQualityOfService() const override;
@@ -88,42 +89,43 @@ class AutoReturnClient : public ServiceClient {
 
     // Override the update from method to set the lease wallet for the robot command client
     // to be the same as the lease wallet of the robot object.
-    void UpdateServiceFrom(
-        RequestProcessorChain& request_processor_chain,
-        ResponseProcessorChain& response_processor_chain,
-        const std::shared_ptr<LeaseWallet>& lease_wallet) override;
+    void UpdateServiceFrom(RequestProcessorChain& request_processor_chain,
+                           ResponseProcessorChain& response_processor_chain,
+                           const std::shared_ptr<LeaseWallet>& lease_wallet) override;
     // End of ServiceClient overrides.
 
     // Get the default service name the Auto Return service will be registered in the directory
     // with.
     static std::string GetDefaultServiceName() { return s_default_service_name; }
 
-    // Get the default service type for the AutoReturn service that will be registered in the directory.
+    // Get the default service type for the AutoReturn service that will be registered in the
+    // directory.
     static std::string GetServiceType() { return s_service_type; }
 
  private:
     // Callback that will return the ConfigureResponse message after Configure rpc
     // returns to the client.
-    void OnConfigureComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::auto_return::ConfigureRequest& request,
-        ::bosdyn::api::auto_return::ConfigureResponse&& response, const grpc::Status& status,
-        std::promise<ConfigureResultType> promise);
+    void OnConfigureComplete(MessagePumpCallBase* call,
+                             const ::bosdyn::api::auto_return::ConfigureRequest& request,
+                             ::bosdyn::api::auto_return::ConfigureResponse&& response,
+                             const grpc::Status& status, std::promise<ConfigureResultType> promise);
 
     // Callback that will return the GetConfigurationResponse message after GetConfiguration rpc
     // returns to the client.
     void OnGetConfigurationComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::auto_return::GetConfigurationRequest& request,
+        MessagePumpCallBase* call,
+        const ::bosdyn::api::auto_return::GetConfigurationRequest& request,
         ::bosdyn::api::auto_return::GetConfigurationResponse&& response, const grpc::Status& status,
         std::promise<GetConfigurationResultType> promise);
 
     // Callback that will return the StartResponse message after Start rpc returns
     // to the client.
-    void OnStartComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::auto_return::StartRequest& request,
-        ::bosdyn::api::auto_return::StartResponse&& response, const grpc::Status& status,
-        std::promise<StartResultType> promise);
+    void OnStartComplete(MessagePumpCallBase* call,
+                         const ::bosdyn::api::auto_return::StartRequest& request,
+                         ::bosdyn::api::auto_return::StartResponse&& response,
+                         const grpc::Status& status, std::promise<StartResultType> promise);
 
-    std::unique_ptr<::bosdyn::api::auto_return::AutoReturnService::Stub> m_stub;
+    std::unique_ptr<::bosdyn::api::auto_return::AutoReturnService::StubInterface> m_stub;
 
     // Lease wallet for commands.
     std::shared_ptr<LeaseWallet> m_lease_wallet;

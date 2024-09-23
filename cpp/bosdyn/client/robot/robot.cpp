@@ -43,10 +43,10 @@ Robot::Robot(const std::string& client_name, const bool bypass_proxy,
       m_bootstrap_endpoints_by_name(
 
           {
-          {DirectoryClient::GetDefaultServiceName(),
-            {"127.0.0.1", 65033, DirectoryClient::GetServiceType()}},
+           {DirectoryClient::GetDefaultServiceName(),
+            {"127.0.0.1", 31063, DirectoryClient::GetServiceType()}},
            {DirectoryRegistrationClient::GetDefaultServiceName(),
-            {"127.0.0.1", 65033, DirectoryRegistrationClient::GetServiceType()}}}),
+            {"127.0.0.1", 31063, DirectoryRegistrationClient::GetServiceType()}}}),
       m_secure_channel_port(443) {
     m_RPC_parameters.timeout = timeout;
     TokenCache* raw_token_cache = new TokenCache();
@@ -247,9 +247,12 @@ Result<std::shared_ptr<grpc::ChannelInterface>> Robot::EnsureInsecureChannel(
         return {::bosdyn::common::Status(SDKErrorCode::Success), (*channel_iter).second};
     }
 
+    std::string endpoint_ip = endpoint.host_ip;
+
+
     // Insecure Channel doesn't exist, so create it.
     std::shared_ptr<grpc::ChannelInterface> channel =
-        Channel::CreateInsecureChannel(endpoint.host_ip, endpoint.port);
+        Channel::CreateInsecureChannel(endpoint_ip, endpoint.port);
 
     m_channels[endpoint_str] = channel;
     return {::bosdyn::common::Status(SDKErrorCode::Success), channel};

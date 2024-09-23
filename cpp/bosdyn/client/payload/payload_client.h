@@ -35,8 +35,7 @@ class PayloadClient : public ServiceClient {
         const RPCParameters& parameters = RPCParameters());
 
     // Synchronous method to list payloads.
-    ListPayloadsResultType ListPayloads(
-        const RPCParameters& parameters = RPCParameters());
+    ListPayloadsResultType ListPayloads(const RPCParameters& parameters = RPCParameters());
 
     // Start of ServiceClient overrides.
     QualityOfService GetQualityOfService() const override;
@@ -46,16 +45,18 @@ class PayloadClient : public ServiceClient {
     // Get the default service name the Payload service will be registered in the directory with.
     static std::string GetDefaultServiceName() { return s_default_service_name; }
 
-    // Get the default service type for the Payload service that will be registered in the directory.
+    // Get the default service type for the Payload service that will be registered in the
+    // directory.
     static std::string GetServiceType() { return s_service_type; }
 
  private:
-    void OnListPayloadsComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::ListPayloadsRequest& request,
-        ::bosdyn::api::ListPayloadsResponse&& response, const grpc::Status& status,
-        std::promise<ListPayloadsResultType> promise);
+    void OnListPayloadsComplete(MessagePumpCallBase* call,
+                                const ::bosdyn::api::ListPayloadsRequest& request,
+                                ::bosdyn::api::ListPayloadsResponse&& response,
+                                const grpc::Status& status,
+                                std::promise<ListPayloadsResultType> promise);
 
-    std::unique_ptr<::bosdyn::api::PayloadService::Stub> m_stub;
+    std::unique_ptr<::bosdyn::api::PayloadService::StubInterface> m_stub;
 
     // Default service name for the Payload service.
     static const char* s_default_service_name;
