@@ -191,7 +191,7 @@ class PtzClient : public ServiceClient {
                                     const grpc::Status& status,
                                     std::promise<SetPtzFocusStateResultType> promise);
 
-    std::unique_ptr<::bosdyn::api::spot_cam::PtzService::Stub> m_stub;
+    std::unique_ptr<::bosdyn::api::spot_cam::PtzService::StubInterface> m_stub;
 
     // Default service name for the spotcam ptz service.
     static const char* s_default_service_name;

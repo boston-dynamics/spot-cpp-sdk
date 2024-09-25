@@ -228,7 +228,7 @@ class DataAcquisitionStoreClient : public ServiceClient {
         ::bosdyn::api::QueryMaxCaptureIdResponse&& response, const grpc::Status& status,
         std::promise<DataAcquisitionStoreQueryMaxCaptureIdResultType> promise);
 
-    std::unique_ptr<::bosdyn::api::DataAcquisitionStoreService::Stub> m_stub;
+    std::unique_ptr<::bosdyn::api::DataAcquisitionStoreService::StubInterface> m_stub;
 
     // Default service name for the Data Acquisition service.
     static const char* s_default_service_name;

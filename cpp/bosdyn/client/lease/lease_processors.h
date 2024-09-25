@@ -11,11 +11,11 @@
 
 #include "bosdyn/client/error_codes/lease_wallet_error_code.h"
 #include "bosdyn/client/error_codes/sdk_error_code.h"
-#include "bosdyn/common/status.h"
 #include "bosdyn/client/lease/lease.h"
 #include "bosdyn/client/lease/lease_error_codes.h"
 #include "bosdyn/client/lease/lease_wallet.h"
 #include "bosdyn/common/assert_precondition.h"
+#include "bosdyn/common/status.h"
 
 namespace bosdyn {
 
@@ -104,12 +104,14 @@ template <class RpcResponseMultiLeaseResults>
     BOSDYN_ASSERT_PRECONDITION(lease_wallet != nullptr,
                                "No lease wallet provided for the response.");
 
-    ::bosdyn::api::LeaseUseResult::Status lease_use_status = ::bosdyn::api::LeaseUseResult::STATUS_OK;
+    ::bosdyn::api::LeaseUseResult::Status lease_use_status =
+        ::bosdyn::api::LeaseUseResult::STATUS_OK;
     for (const auto& lease_use_res : full_response.lease_use_results()) {
         // Update the lease wallet with the lease use result proto for each resource.
         // NOTE: The OnLeaseUseResult can only fail if somehow we lose the lease from the wallet
-        // between the request being sent and receiving the response. Ignoring the error (and nodiscard
-        // warnings) in this case because we want the regular LeaseUseResult error returned.
+        // between the request being sent and receiving the response. Ignoring the error (and
+        // nodiscard warnings) in this case because we want the regular LeaseUseResult error
+        // returned.
         lease_wallet->OnLeaseUseResult(lease_use_res).IgnoreError();
         if (lease_use_res.status() != ::bosdyn::api::LeaseUseResult::STATUS_OK) {
             lease_use_status = lease_use_res.status();

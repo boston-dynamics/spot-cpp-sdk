@@ -61,8 +61,8 @@ std::shared_future<PlaySoundResultType> AudioClient::PlaySoundAsync(
                                                       ::bosdyn::api::spot_cam::PlaySoundResponse,
                                                       ::bosdyn::api::spot_cam::PlaySoundResponse>(
         request,
-        std::bind(&::bosdyn::api::spot_cam::AudioService::Stub::AsyncPlaySound, m_stub.get(), _1,
-                  _2, _3),
+        std::bind(&::bosdyn::api::spot_cam::AudioService::StubInterface::AsyncPlaySound,
+                  m_stub.get(), _1, _2, _3),
         std::bind(&AudioClient::OnPlaySoundComplete, this, _1, _2, _3, _4, _5), std::move(response),
         parameters);
 
@@ -110,8 +110,8 @@ std::shared_future<DeleteSoundResultType> AudioClient::DeleteSoundAsync(
                                                       ::bosdyn::api::spot_cam::DeleteSoundResponse,
                                                       ::bosdyn::api::spot_cam::DeleteSoundResponse>(
         request,
-        std::bind(&::bosdyn::api::spot_cam::AudioService::Stub::AsyncDeleteSound, m_stub.get(), _1,
-                  _2, _3),
+        std::bind(&::bosdyn::api::spot_cam::AudioService::StubInterface::AsyncDeleteSound,
+                  m_stub.get(), _1, _2, _3),
         std::bind(&AudioClient::OnDeleteSoundComplete, this, _1, _2, _3, _4, _5),
         std::move(response), parameters);
 
@@ -147,8 +147,8 @@ std::shared_future<ListSoundsResultType> AudioClient::ListSoundsAsync(
                                                       ::bosdyn::api::spot_cam::ListSoundsResponse,
                                                       ::bosdyn::api::spot_cam::ListSoundsResponse>(
         request,
-        std::bind(&::bosdyn::api::spot_cam::AudioService::Stub::AsyncListSounds, m_stub.get(), _1,
-                  _2, _3),
+        std::bind(&::bosdyn::api::spot_cam::AudioService::StubInterface::AsyncListSounds,
+                  m_stub.get(), _1, _2, _3),
         std::bind(&AudioClient::OnListSoundsComplete, this, _1, _2, _3, _4, _5),
         std::move(response), parameters);
 
@@ -193,8 +193,8 @@ std::shared_future<SetVolumeResultType> AudioClient::SetVolumeAsync(
                                                       ::bosdyn::api::spot_cam::SetVolumeResponse,
                                                       ::bosdyn::api::spot_cam::SetVolumeResponse>(
         request,
-        std::bind(&::bosdyn::api::spot_cam::AudioService::Stub::AsyncSetVolume, m_stub.get(), _1,
-                  _2, _3),
+        std::bind(&::bosdyn::api::spot_cam::AudioService::StubInterface::AsyncSetVolume,
+                  m_stub.get(), _1, _2, _3),
         std::bind(&AudioClient::OnSetVolumeComplete, this, _1, _2, _3, _4, _5), std::move(response),
         parameters);
 
@@ -229,8 +229,8 @@ std::shared_future<GetVolumeResultType> AudioClient::GetVolumeAsync(
                                                       ::bosdyn::api::spot_cam::GetVolumeResponse,
                                                       ::bosdyn::api::spot_cam::GetVolumeResponse>(
         request,
-        std::bind(&::bosdyn::api::spot_cam::AudioService::Stub::AsyncGetVolume, m_stub.get(), _1,
-                  _2, _3),
+        std::bind(&::bosdyn::api::spot_cam::AudioService::StubInterface::AsyncGetVolume,
+                  m_stub.get(), _1, _2, _3),
         std::bind(&AudioClient::OnGetVolumeComplete, this, _1, _2, _3, _4, _5), std::move(response),
         parameters);
 
@@ -286,8 +286,9 @@ std::shared_future<SetAudioCaptureChannelResultType> AudioClient::SetAudioCaptur
                           ::bosdyn::api::spot_cam::SetAudioCaptureChannelResponse,
                           ::bosdyn::api::spot_cam::SetAudioCaptureChannelResponse>(
             request,
-            std::bind(&::bosdyn::api::spot_cam::AudioService::Stub::AsyncSetAudioCaptureChannel,
-                      m_stub.get(), _1, _2, _3),
+            std::bind(
+                &::bosdyn::api::spot_cam::AudioService::StubInterface::AsyncSetAudioCaptureChannel,
+                m_stub.get(), _1, _2, _3),
             std::bind(&AudioClient::OnSetAudioCaptureChannelComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
@@ -326,8 +327,9 @@ std::shared_future<GetAudioCaptureChannelResultType> AudioClient::GetAudioCaptur
                           ::bosdyn::api::spot_cam::GetAudioCaptureChannelResponse,
                           ::bosdyn::api::spot_cam::GetAudioCaptureChannelResponse>(
             request,
-            std::bind(&::bosdyn::api::spot_cam::AudioService::Stub::AsyncGetAudioCaptureChannel,
-                      m_stub.get(), _1, _2, _3),
+            std::bind(
+                &::bosdyn::api::spot_cam::AudioService::StubInterface::AsyncGetAudioCaptureChannel,
+                m_stub.get(), _1, _2, _3),
             std::bind(&AudioClient::OnGetAudioCaptureChannelComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
@@ -380,8 +382,9 @@ std::shared_future<SetAudioCaptureGainResultType> AudioClient::SetAudioCaptureGa
                           ::bosdyn::api::spot_cam::SetAudioCaptureGainResponse,
                           ::bosdyn::api::spot_cam::SetAudioCaptureGainResponse>(
             request,
-            std::bind(&::bosdyn::api::spot_cam::AudioService::Stub::AsyncSetAudioCaptureGain,
-                      m_stub.get(), _1, _2, _3),
+            std::bind(
+                &::bosdyn::api::spot_cam::AudioService::StubInterface::AsyncSetAudioCaptureGain,
+                m_stub.get(), _1, _2, _3),
             std::bind(&AudioClient::OnSetAudioCaptureGainComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
@@ -430,8 +433,9 @@ std::shared_future<GetAudioCaptureGainResultType> AudioClient::GetAudioCaptureGa
                           ::bosdyn::api::spot_cam::GetAudioCaptureGainResponse,
                           ::bosdyn::api::spot_cam::GetAudioCaptureGainResponse>(
             request,
-            std::bind(&::bosdyn::api::spot_cam::AudioService::Stub::AsyncGetAudioCaptureGain,
-                      m_stub.get(), _1, _2, _3),
+            std::bind(
+                &::bosdyn::api::spot_cam::AudioService::StubInterface::AsyncGetAudioCaptureGain,
+                m_stub.get(), _1, _2, _3),
             std::bind(&AudioClient::OnGetAudioCaptureGainComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 

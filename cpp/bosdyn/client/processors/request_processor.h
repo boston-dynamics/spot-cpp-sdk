@@ -25,8 +25,9 @@ class RequestProcessor {
     virtual ~RequestProcessor() = default;
 
     // Process a request before it is sent over the wire.
-    virtual ::bosdyn::common::Status Process(grpc::ClientContext* context, ::bosdyn::api::RequestHeader* request_header,
-                           ::google::protobuf::Message* full_request) = 0;
+    virtual ::bosdyn::common::Status Process(grpc::ClientContext* context,
+                                             ::bosdyn::api::RequestHeader* request_header,
+                                             ::google::protobuf::Message* full_request) = 0;
 };
 
 }  // namespace client

@@ -51,24 +51,28 @@ class NetworkClient : public ServiceClient {
     void SetComms(const std::shared_ptr<grpc::ChannelInterface>& channel) override;
     // End of ServiceClient overrides.
 
-    // Get the default service name the spot cam network service will be registered in the directory with.
+    // Get the default service name the spot cam network service will be registered in the directory
+    // with.
     static std::string GetDefaultServiceName() { return s_default_service_name; }
 
-    // Get the default service type for the spot cam network service that will be registered in the directory.
+    // Get the default service type for the spot cam network service that will be registered in the
+    // directory.
     static std::string GetServiceType() { return s_service_type; }
 
  private:
     // Callback function registered for the asynchronous grpc calls.
     void OnSetICEConfigurationComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::spot_cam::SetICEConfigurationRequest& request,
+        MessagePumpCallBase* call,
+        const ::bosdyn::api::spot_cam::SetICEConfigurationRequest& request,
         ::bosdyn::api::spot_cam::SetICEConfigurationResponse&& response, const grpc::Status& status,
         std::promise<SetICEConfigurationResultType> promise);
     void OnGetICEConfigurationComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::spot_cam::GetICEConfigurationRequest& request,
+        MessagePumpCallBase* call,
+        const ::bosdyn::api::spot_cam::GetICEConfigurationRequest& request,
         ::bosdyn::api::spot_cam::GetICEConfigurationResponse&& response, const grpc::Status& status,
         std::promise<GetICEConfigurationResultType> promise);
 
-    std::unique_ptr<::bosdyn::api::spot_cam::NetworkService::Stub> m_stub;
+    std::unique_ptr<::bosdyn::api::spot_cam::NetworkService::StubInterface> m_stub;
 
     // Default service name for the spot cam network service.
     static const char* s_default_service_name;

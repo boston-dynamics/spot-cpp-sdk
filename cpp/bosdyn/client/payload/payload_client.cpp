@@ -30,24 +30,26 @@ std::shared_future<ListPayloadsResultType> PayloadClient::ListPayloadsAsync(
         InitiateAsyncCall<::bosdyn::api::ListPayloadsRequest, ::bosdyn::api::ListPayloadsResponse,
                           ::bosdyn::api::ListPayloadsResponse>(
             request,
-            std::bind(&::bosdyn::api::PayloadService::Stub::AsyncListPayloads, m_stub.get(), _1, _2, _3),
+            std::bind(&::bosdyn::api::PayloadService::StubInterface::AsyncListPayloads,
+                      m_stub.get(), _1, _2, _3),
             std::bind(&PayloadClient::OnListPayloadsComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
     return future;
 }
 
-ListPayloadsResultType PayloadClient::ListPayloads(
-    const RPCParameters& parameters) {
+ListPayloadsResultType PayloadClient::ListPayloads(const RPCParameters& parameters) {
     return ListPayloadsAsync().get();
 }
 
-void PayloadClient::OnListPayloadsComplete(
-    MessagePumpCallBase* call, const ::bosdyn::api::ListPayloadsRequest& request,
-    ::bosdyn::api::ListPayloadsResponse&& response, const grpc::Status& status,
-    std::promise<ListPayloadsResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::ListPayloadsResponse>(
-        status, response, SDKErrorCode::Success);
+void PayloadClient::OnListPayloadsComplete(MessagePumpCallBase* call,
+                                           const ::bosdyn::api::ListPayloadsRequest& request,
+                                           ::bosdyn::api::ListPayloadsResponse&& response,
+                                           const grpc::Status& status,
+                                           std::promise<ListPayloadsResultType> promise) {
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::ListPayloadsResponse>(
+            status, response, SDKErrorCode::Success);
 
     promise.set_value({ret_status, std::move(response)});
 }

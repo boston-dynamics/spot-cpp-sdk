@@ -25,12 +25,12 @@ PayloadRegistrationKeepAlive::PayloadRegistrationKeepAlive(
       m_rpc_interval(rpc_interval),
       m_should_exit(false),
       m_is_alive(false) {
-          m_register_request.mutable_payload()->CopyFrom(payload);
-          m_register_request.set_payload_secret(secret);
+    m_register_request.mutable_payload()->CopyFrom(payload);
+    m_register_request.set_payload_secret(secret);
 
-          // Start the thread.
-          m_thread = std::thread(&PayloadRegistrationKeepAlive::PeriodicReregisterThreadMethod, this);
-      }
+    // Start the thread.
+    m_thread = std::thread(&PayloadRegistrationKeepAlive::PeriodicReregisterThreadMethod, this);
+}
 
 PayloadRegistrationKeepAlive::~PayloadRegistrationKeepAlive() { Shutdown(); }
 
@@ -55,8 +55,9 @@ void PayloadRegistrationKeepAlive::PeriodicReregisterThreadMethod() {
             m_last_result = m_payload_registration_client->RegisterPayload(m_register_request);
 
             // If payload registration failed in an unexpected way, log the error.
-            if (!m_last_result && m_last_result.status.code() !=
-                                      ::bosdyn::api::RegisterPayloadResponse::STATUS_ALREADY_EXISTS) {
+            if (!m_last_result &&
+                m_last_result.status.code() !=
+                    ::bosdyn::api::RegisterPayloadResponse::STATUS_ALREADY_EXISTS) {
                 // Do not spam logs.
                 if (::bosdyn::common::SecSinceEpoch() > last_log_time + m_log_limit) {
                     last_log_time = ::bosdyn::common::SecSinceEpoch();

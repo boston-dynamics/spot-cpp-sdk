@@ -14,8 +14,8 @@
 #include <bosdyn/api/time_sync_service.pb.h>
 
 #include "bosdyn/client/service_client/service_client.h"
-#include "bosdyn/common/status.h"
 #include "bosdyn/client/time_sync/time_sync_error_codes.h"
+#include "bosdyn/common/status.h"
 
 namespace bosdyn {
 
@@ -35,9 +35,8 @@ class TimeSyncClient : public ServiceClient {
         const RPCParameters& parameters = RPCParameters());
 
     // Synchronous method to time sync update.
-    TimeSyncUpdateResultType TimeSyncUpdate(
-        ::bosdyn::api::TimeSyncUpdateRequest& request,
-        const RPCParameters& parameters = RPCParameters());
+    TimeSyncUpdateResultType TimeSyncUpdate(::bosdyn::api::TimeSyncUpdateRequest& request,
+                                            const RPCParameters& parameters = RPCParameters());
 
 
     // Start of ServiceClient overrides.
@@ -49,14 +48,16 @@ class TimeSyncClient : public ServiceClient {
     // with.
     static std::string GetDefaultServiceName() { return s_default_service_name; }
 
-    // Get the default service type for the Timesync service that will be registered in the directory.
+    // Get the default service type for the Timesync service that will be registered in the
+    // directory.
     static std::string GetServiceType() { return s_service_type; }
 
  private:
-    void OnTimeSyncUpdateComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::TimeSyncUpdateRequest& request,
-        ::bosdyn::api::TimeSyncUpdateResponse&& response, const grpc::Status& status,
-        std::promise<TimeSyncUpdateResultType> promise);
+    void OnTimeSyncUpdateComplete(MessagePumpCallBase* call,
+                                  const ::bosdyn::api::TimeSyncUpdateRequest& request,
+                                  ::bosdyn::api::TimeSyncUpdateResponse&& response,
+                                  const grpc::Status& status,
+                                  std::promise<TimeSyncUpdateResultType> promise);
 
 
     // Default service name for the Timesync service.
@@ -65,7 +66,7 @@ class TimeSyncClient : public ServiceClient {
     // Default service type for the Timesync service.
     static const char* s_service_type;
 
-    std::unique_ptr<::bosdyn::api::TimeSyncService::Stub> m_stub;
+    std::unique_ptr<::bosdyn::api::TimeSyncService::StubInterface> m_stub;
 };
 
 }  // namespace client

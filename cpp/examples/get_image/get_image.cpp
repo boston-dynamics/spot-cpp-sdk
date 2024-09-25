@@ -9,12 +9,11 @@
 
 #include <CLI/CLI.hpp>
 
-#include "bosdyn/client/sdk/client_sdk.h"
 #include "bosdyn/client/image/image_client.h"
+#include "bosdyn/client/sdk/client_sdk.h"
 #include "bosdyn/client/util/cli_util.h"
 
 int main(int argc, char** argv) {
-
     // Parse the arguments.
     CLI::App parser{"GetImage"};
     ::bosdyn::client::CommonCLIArgs common_args;
@@ -22,8 +21,8 @@ int main(int argc, char** argv) {
     CLI11_PARSE(parser, argc, argv);
 
     // Create a Client SDK object.
-    std::unique_ptr<::bosdyn::client::ClientSdk> client_sdk = ::bosdyn::client::CreateStandardSDK(
-        "get_image");
+    std::unique_ptr<::bosdyn::client::ClientSdk> client_sdk =
+        ::bosdyn::client::CreateStandardSDK("get_image");
     std::cout << "------Created SDK" << std::endl;
 
     // Create a robot instance. A robot instance represents a single user on a single robot.
@@ -36,8 +35,8 @@ int main(int argc, char** argv) {
     std::unique_ptr<::bosdyn::client::Robot> robot = std::move(robot_result.response);
     std::cout << "------Created Robot" << std::endl;
 
-    ::bosdyn::common::Status status = robot->Authenticate(common_args.username,
-                                                          common_args.password);
+    ::bosdyn::common::Status status =
+        robot->Authenticate(common_args.username, common_args.password);
     if (!status) {
         std::cerr << "Could not authenticate with robot: " << status.DebugString() << std::endl;
         return 0;
@@ -76,7 +75,8 @@ int main(int argc, char** argv) {
         image_client_result.response->GetImageAsync(request_message);
 
     // Make a different call before blocking on the futures.
-    ::bosdyn::client::ImageListSourcesResultType result = image_client_result.response->ListImageSources();
+    ::bosdyn::client::ImageListSourcesResultType result =
+        image_client_result.response->ListImageSources();
     if (!result.status) {
         std::cerr << "ImageClient Error: " << result.status.DebugString() << std::endl;
         return 0;

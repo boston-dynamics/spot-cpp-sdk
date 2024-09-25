@@ -9,15 +9,12 @@
 
 #pragma once
 
-#include <list>
-#include <thread>
-
 #include "bosdyn/client/directory_registration/directory_registration_client.h"
+#include "bosdyn/client/lease/lease_wallet.h"
 #include "bosdyn/client/processors/request_processor_chain.h"
 #include "bosdyn/client/processors/response_processor_chain.h"
 #include "bosdyn/client/robot/robot.h"
 #include "bosdyn/client/service_client/message_pump.h"
-#include "bosdyn/client/service_client/service_client.h"
 
 #include <bosdyn/api/directory.pb.h>
 

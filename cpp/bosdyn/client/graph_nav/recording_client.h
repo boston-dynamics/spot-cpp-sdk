@@ -14,9 +14,9 @@
 
 #include <future>
 
+#include "bosdyn/client/graph_nav/recording_error_codes.h"
 #include "bosdyn/client/service_client/service_client.h"
 #include "bosdyn/common/status.h"
-#include "bosdyn/client/graph_nav/recording_error_codes.h"
 
 namespace bosdyn {
 
@@ -32,7 +32,8 @@ typedef Result<::bosdyn::api::graph_nav::StopRecordingResponse> StopRecordingRes
 typedef Result<::bosdyn::api::graph_nav::CreateWaypointResponse> CreateWaypointResultType;
 
 // Return type for the SetRecordingEnvironment method.
-typedef Result<::bosdyn::api::graph_nav::SetRecordingEnvironmentResponse> SetRecordingEnvironmentResultType;
+typedef Result<::bosdyn::api::graph_nav::SetRecordingEnvironmentResponse>
+    SetRecordingEnvironmentResultType;
 
 // Return type for the CreateEdge method.
 typedef Result<::bosdyn::api::graph_nav::CreateEdgeResponse> CreateEdgeResultType;
@@ -55,8 +56,9 @@ class GraphNavRecordingClient : public ServiceClient {
         const RPCParameters& parameters = RPCParameters());
 
     // Synchronous method to execute a StartRecording request.
-    StartRecordingResultType StartRecording(::bosdyn::api::graph_nav::StartRecordingRequest& request,
-                                            const RPCParameters& parameters = RPCParameters());
+    StartRecordingResultType StartRecording(
+        ::bosdyn::api::graph_nav::StartRecordingRequest& request,
+        const RPCParameters& parameters = RPCParameters());
 
     // Asynchronous method to execute a StopRecording request.
     std::shared_future<StopRecordingResultType> StopRecordingAsync(
@@ -73,8 +75,9 @@ class GraphNavRecordingClient : public ServiceClient {
         const RPCParameters& parameters = RPCParameters());
 
     // Synchronous method to execute a CreateWaypoint request.
-    CreateWaypointResultType CreateWaypoint(::bosdyn::api::graph_nav::CreateWaypointRequest& request,
-                                            const RPCParameters& parameters = RPCParameters());
+    CreateWaypointResultType CreateWaypoint(
+        ::bosdyn::api::graph_nav::CreateWaypointRequest& request,
+        const RPCParameters& parameters = RPCParameters());
 
     // Asynchronous method to execute a SetRecordingEnvironment request.
     std::shared_future<SetRecordingEnvironmentResultType> SetRecordingEnvironmentAsync(
@@ -126,7 +129,7 @@ class GraphNavRecordingClient : public ServiceClient {
  private:
     // The stub for the GraphNavRecording client to communicate it's rpc with (and pass to the
     // robot).
-    std::unique_ptr<::bosdyn::api::graph_nav::GraphNavRecordingService::Stub> m_stub;
+    std::unique_ptr<::bosdyn::api::graph_nav::GraphNavRecordingService::StubInterface> m_stub;
 
     // Default service name for the GraphNavRecording service.
     static const char* s_default_service_name;
@@ -164,9 +167,10 @@ class GraphNavRecordingClient : public ServiceClient {
     // Callback that will return the SetRecordingEnvironmentResponse message after
     // SetRecordingEnvironment rpc returns to the client.
     void OnSetRecordingEnvironmentComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::graph_nav::SetRecordingEnvironmentRequest& request,
-        ::bosdyn::api::graph_nav::SetRecordingEnvironmentResponse&& response, const grpc::Status& status,
-        std::promise<SetRecordingEnvironmentResultType> promise);
+        MessagePumpCallBase* call,
+        const ::bosdyn::api::graph_nav::SetRecordingEnvironmentRequest& request,
+        ::bosdyn::api::graph_nav::SetRecordingEnvironmentResponse&& response,
+        const grpc::Status& status, std::promise<SetRecordingEnvironmentResultType> promise);
 
     // Callback that will return the CreateEdgeResponse message after CreateEdge
     // rpc returns to the client.

@@ -15,17 +15,16 @@
 
 #include <future>
 
+#include "bosdyn/client/estop/estop_error_codes.h"
 #include "bosdyn/client/service_client/service_client.h"
 #include "bosdyn/common/status.h"
-#include "bosdyn/client/estop/estop_error_codes.h"
 
 namespace bosdyn {
 
 namespace client {
 
 typedef Result<::bosdyn::api::RegisterEstopEndpointResponse> RegisterEstopEndpointResultType;
-typedef Result<::bosdyn::api::DeregisterEstopEndpointResponse>
-    DeregisterEstopEndpointResultType;
+typedef Result<::bosdyn::api::DeregisterEstopEndpointResponse> DeregisterEstopEndpointResultType;
 typedef Result<::bosdyn::api::GetEstopConfigResponse> GetEstopConfigResultType;
 typedef Result<::bosdyn::api::SetEstopConfigResponse> SetEstopConfigResultType;
 typedef Result<::bosdyn::api::EstopCheckInResponse> EstopCheckInResultType;
@@ -63,9 +62,8 @@ class EstopClient : public ServiceClient {
         const RPCParameters& parameters = RPCParameters());
 
     // Synchronous method to return the E-Stop configuration of the robot.
-    GetEstopConfigResultType GetEstopConfig(
-        const std::string& target_config_id = "",
-        const RPCParameters& parameters = RPCParameters());
+    GetEstopConfigResultType GetEstopConfig(const std::string& target_config_id = "",
+                                            const RPCParameters& parameters = RPCParameters());
 
     // Asynchronous method to change the E-Stop configuration on robot.
     std::shared_future<SetEstopConfigResultType> SetEstopConfigAsync(
@@ -73,9 +71,9 @@ class EstopClient : public ServiceClient {
         const RPCParameters& parameters = RPCParameters());
 
     // Synchronous method to change the E-Stop configuration on robot.
-    SetEstopConfigResultType SetEstopConfig(
-        ::bosdyn::api::EstopConfig& estop_config, const std::string& target_config_id,
-        const RPCParameters& parameters = RPCParameters());
+    SetEstopConfigResultType SetEstopConfig(::bosdyn::api::EstopConfig& estop_config,
+                                            const std::string& target_config_id,
+                                            const RPCParameters& parameters = RPCParameters());
 
     // Asynchronous method to return the E-Stop status of the robot.
     std::shared_future<GetEstopSystemStatusResultType> GetEstopStatusAsync(
@@ -91,9 +89,8 @@ class EstopClient : public ServiceClient {
         const RPCParameters& parameters = RPCParameters());
 
     // Synchronous method to checkin with the E-Stop service of the robot.
-    EstopCheckInResultType EstopCheckIn(
-        ::bosdyn::api::EstopCheckInRequest& request,
-        const RPCParameters& parameters = RPCParameters());
+    EstopCheckInResultType EstopCheckIn(::bosdyn::api::EstopCheckInRequest& request,
+                                        const RPCParameters& parameters = RPCParameters());
 
     // Start of ServiceClient overrides.
     QualityOfService GetQualityOfService() const override;
@@ -108,10 +105,11 @@ class EstopClient : public ServiceClient {
 
  private:
     // Callback function registered for the asynchronous calls to register an endpoint.
-    void OnRegisterEstopEndpointComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::RegisterEstopEndpointRequest& request,
-        ::bosdyn::api::RegisterEstopEndpointResponse&& response, const grpc::Status& status,
-        std::promise<RegisterEstopEndpointResultType> promise);
+    void OnRegisterEstopEndpointComplete(MessagePumpCallBase* call,
+                                         const ::bosdyn::api::RegisterEstopEndpointRequest& request,
+                                         ::bosdyn::api::RegisterEstopEndpointResponse&& response,
+                                         const grpc::Status& status,
+                                         std::promise<RegisterEstopEndpointResultType> promise);
 
     // Callback function registered for the asynchronous calls to deregister an endpoint.
     void OnDeregisterEstopEndpointComplete(
@@ -120,30 +118,34 @@ class EstopClient : public ServiceClient {
         std::promise<DeregisterEstopEndpointResultType> promise);
 
     // Callback function registered for the asynchronous calls to get the E-Stop config.
-    void OnGetEstopConfigComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::GetEstopConfigRequest& request,
-        ::bosdyn::api::GetEstopConfigResponse&& response, const grpc::Status& status,
-        std::promise<GetEstopConfigResultType> promise);
+    void OnGetEstopConfigComplete(MessagePumpCallBase* call,
+                                  const ::bosdyn::api::GetEstopConfigRequest& request,
+                                  ::bosdyn::api::GetEstopConfigResponse&& response,
+                                  const grpc::Status& status,
+                                  std::promise<GetEstopConfigResultType> promise);
 
     // Callback function registered for the asynchronous calls to set the E-Stop config.
-    void OnSetEstopConfigComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::SetEstopConfigRequest& request,
-        ::bosdyn::api::SetEstopConfigResponse&& response, const grpc::Status& status,
-        std::promise<SetEstopConfigResultType> promise);
+    void OnSetEstopConfigComplete(MessagePumpCallBase* call,
+                                  const ::bosdyn::api::SetEstopConfigRequest& request,
+                                  ::bosdyn::api::SetEstopConfigResponse&& response,
+                                  const grpc::Status& status,
+                                  std::promise<SetEstopConfigResultType> promise);
 
     // Callback function registered for the asynchronous calls to get the E-Stop status.
-    void OnGetEstopStatusComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::GetEstopSystemStatusRequest& request,
-        ::bosdyn::api::GetEstopSystemStatusResponse&& response, const grpc::Status& status,
-        std::promise<GetEstopSystemStatusResultType> promise);
+    void OnGetEstopStatusComplete(MessagePumpCallBase* call,
+                                  const ::bosdyn::api::GetEstopSystemStatusRequest& request,
+                                  ::bosdyn::api::GetEstopSystemStatusResponse&& response,
+                                  const grpc::Status& status,
+                                  std::promise<GetEstopSystemStatusResultType> promise);
 
     // Callback function registered for the asynchronous calls to checkin with the E-Stop service.
-    void OnEstopCheckInComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::EstopCheckInRequest& request,
-        ::bosdyn::api::EstopCheckInResponse&& response, const grpc::Status& status,
-        std::promise<EstopCheckInResultType> promise);
+    void OnEstopCheckInComplete(MessagePumpCallBase* call,
+                                const ::bosdyn::api::EstopCheckInRequest& request,
+                                ::bosdyn::api::EstopCheckInResponse&& response,
+                                const grpc::Status& status,
+                                std::promise<EstopCheckInResultType> promise);
 
-    std::unique_ptr<::bosdyn::api::EstopService::Stub> m_stub;
+    std::unique_ptr<::bosdyn::api::EstopService::StubInterface> m_stub;
 
     // Default service name for the E-Stop service.
     static const char* s_default_service_name;

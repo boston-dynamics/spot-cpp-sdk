@@ -27,13 +27,14 @@ std::shared_future<GetLicenseInfoResultType> LicenseClient::GetLicenseInfoAsync(
     std::shared_future<GetLicenseInfoResultType> future = response.get_future();
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
 
-    MessagePumpCallBase* one_time =
-        InitiateAsyncCall<::bosdyn::api::GetLicenseInfoRequest, ::bosdyn::api::GetLicenseInfoResponse,
-                          ::bosdyn::api::GetLicenseInfoResponse>(
-            request,
-            std::bind(&::bosdyn::api::LicenseService::Stub::AsyncGetLicenseInfo, m_stub.get(), _1, _2, _3),
-            std::bind(&LicenseClient::OnGetLicenseInfoComplete, this, _1, _2, _3, _4, _5),
-            std::move(response), parameters);
+    MessagePumpCallBase* one_time = InitiateAsyncCall<::bosdyn::api::GetLicenseInfoRequest,
+                                                      ::bosdyn::api::GetLicenseInfoResponse,
+                                                      ::bosdyn::api::GetLicenseInfoResponse>(
+        request,
+        std::bind(&::bosdyn::api::LicenseService::StubInterface::AsyncGetLicenseInfo, m_stub.get(),
+                  _1, _2, _3),
+        std::bind(&LicenseClient::OnGetLicenseInfoComplete, this, _1, _2, _3, _4, _5),
+        std::move(response), parameters);
 
     return future;
 }
@@ -47,8 +48,9 @@ void LicenseClient::OnGetLicenseInfoComplete(MessagePumpCallBase* call,
                                              ::bosdyn::api::GetLicenseInfoResponse&& response,
                                              const grpc::Status& status,
                                              std::promise<GetLicenseInfoResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::GetLicenseInfoResponse>(
-        status, response, SDKErrorCode::Success);
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::GetLicenseInfoResponse>(
+            status, response, SDKErrorCode::Success);
 
     promise.set_value({ret_status, std::move(response)});
 }
@@ -59,29 +61,30 @@ std::shared_future<GetFeatureEnabledResultType> LicenseClient::GetFeatureEnabled
     std::shared_future<GetFeatureEnabledResultType> future = response.get_future();
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
 
-    MessagePumpCallBase* one_time =
-        InitiateAsyncCall<::bosdyn::api::GetFeatureEnabledRequest, ::bosdyn::api::GetFeatureEnabledResponse,
-                          ::bosdyn::api::GetFeatureEnabledResponse>(
-            request,
-            std::bind(&::bosdyn::api::LicenseService::Stub::AsyncGetFeatureEnabled, m_stub.get(), _1, _2, _3),
-            std::bind(&LicenseClient::OnGetFeatureEnabledComplete, this, _1, _2, _3, _4, _5),
-            std::move(response), parameters);
+    MessagePumpCallBase* one_time = InitiateAsyncCall<::bosdyn::api::GetFeatureEnabledRequest,
+                                                      ::bosdyn::api::GetFeatureEnabledResponse,
+                                                      ::bosdyn::api::GetFeatureEnabledResponse>(
+        request,
+        std::bind(&::bosdyn::api::LicenseService::StubInterface::AsyncGetFeatureEnabled,
+                  m_stub.get(), _1, _2, _3),
+        std::bind(&LicenseClient::OnGetFeatureEnabledComplete, this, _1, _2, _3, _4, _5),
+        std::move(response), parameters);
 
     return future;
 }
 
-GetFeatureEnabledResultType LicenseClient::GetFeatureEnabled(::bosdyn::api::GetFeatureEnabledRequest& request,
-                                                             const RPCParameters& parameters) {
+GetFeatureEnabledResultType LicenseClient::GetFeatureEnabled(
+    ::bosdyn::api::GetFeatureEnabledRequest& request, const RPCParameters& parameters) {
     return GetFeatureEnabledAsync(request, parameters).get();
 }
 
-void LicenseClient::OnGetFeatureEnabledComplete(MessagePumpCallBase* call,
-                                                const ::bosdyn::api::GetFeatureEnabledRequest& request,
-                                                ::bosdyn::api::GetFeatureEnabledResponse&& response,
-                                                const grpc::Status& status,
-                                                std::promise<GetFeatureEnabledResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::GetFeatureEnabledResponse>(
-        status, response, SDKErrorCode::Success);
+void LicenseClient::OnGetFeatureEnabledComplete(
+    MessagePumpCallBase* call, const ::bosdyn::api::GetFeatureEnabledRequest& request,
+    ::bosdyn::api::GetFeatureEnabledResponse&& response, const grpc::Status& status,
+    std::promise<GetFeatureEnabledResultType> promise) {
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::GetFeatureEnabledResponse>(
+            status, response, SDKErrorCode::Success);
 
     promise.set_value({ret_status, std::move(response)});
 }

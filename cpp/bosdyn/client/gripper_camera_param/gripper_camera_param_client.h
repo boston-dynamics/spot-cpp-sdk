@@ -86,7 +86,7 @@ class GripperCameraParamClient : public ServiceClient {
         ::bosdyn::api::GripperCameraGetParamResponse&& response, const grpc::Status& status,
         std::promise<GripperCameraGetParamResponseType> promise);
 
-    std::unique_ptr<::bosdyn::api::GripperCameraParamService::Stub> m_stub;
+    std::unique_ptr<::bosdyn::api::GripperCameraParamService::StubInterface> m_stub;
 
     // Lease wallet for commands.
     std::shared_ptr<LeaseWallet> m_lease_wallet;

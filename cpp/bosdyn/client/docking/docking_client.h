@@ -14,18 +14,19 @@
 #include <bosdyn/api/docking/docking_service.grpc.pb.h>
 #include <bosdyn/api/docking/docking_service.pb.h>
 
-#include "bosdyn/client/service_client/service_client.h"
-#include "bosdyn/common/time.h"
 #include "bosdyn/client/docking/docking_error_codes.h"
-#include "bosdyn/common/status.h"
+#include "bosdyn/client/service_client/service_client.h"
 #include "bosdyn/client/time_sync/time_sync_helpers.h"
+#include "bosdyn/common/status.h"
+#include "bosdyn/common/time.h"
 
 namespace bosdyn {
 
 namespace client {
 
 typedef Result<::bosdyn::api::docking::DockingCommandResponse> DockingCommandResultType;
-typedef Result<::bosdyn::api::docking::DockingCommandFeedbackResponse> DockingCommandFeedbackResultType;
+typedef Result<::bosdyn::api::docking::DockingCommandFeedbackResponse>
+    DockingCommandFeedbackResultType;
 typedef Result<::bosdyn::api::docking::GetDockingConfigResponse> GetDockingConfigResultType;
 typedef Result<::bosdyn::api::docking::GetDockingStateResponse> GetDockingStateResultType;
 
@@ -41,16 +42,14 @@ class DockingClient : public ServiceClient {
         const RPCParameters& parameters = RPCParameters());
 
     // Synchronous method to request the dock ID ranges.
-    GetDockingConfigResultType GetDockingConfig(
-        const RPCParameters& parameters = RPCParameters());
+    GetDockingConfigResultType GetDockingConfig(const RPCParameters& parameters = RPCParameters());
 
     // Asynchronous method to request the docking service state.
     std::shared_future<GetDockingStateResultType> GetDockingStateAsync(
         const RPCParameters& parameters = RPCParameters());
 
     // Synchronous method to request the docking service state.
-    GetDockingStateResultType GetDockingState(
-        const RPCParameters& parameters = RPCParameters());
+    GetDockingStateResultType GetDockingState(const RPCParameters& parameters = RPCParameters());
 
     // Asynchronous method to start docking the robot.
     std::shared_future<DockingCommandResultType> DockingCommandAsync(
@@ -58,9 +57,8 @@ class DockingClient : public ServiceClient {
         const RPCParameters& parameters = RPCParameters());
 
     // Synchronous method to start doing the robot.
-    DockingCommandResultType DockingCommand(
-        ::bosdyn::api::docking::DockingCommandRequest& request,
-        const RPCParameters& parameters = RPCParameters());
+    DockingCommandResultType DockingCommand(::bosdyn::api::docking::DockingCommandRequest& request,
+                                            const RPCParameters& parameters = RPCParameters());
 
     // Asynchronous method to request docking command feedback. The status field in the return
     // object does not incorporate the value of the status field in the protobuf response object
@@ -106,39 +104,44 @@ class DockingClient : public ServiceClient {
     // with.
     static std::string GetDefaultServiceName() { return s_default_service_name; }
 
-    // Get the default service type for the Docking service that will be registered in the directory.
+    // Get the default service type for the Docking service that will be registered in the
+    // directory.
     static std::string GetServiceType() { return s_service_type; }
 
  private:
     // Callback that will return the GetDockingConfigResponse message after GetDockingConfig rpc
     // returns to the client.
-    void OnGetDockingConfigComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::docking::GetDockingConfigRequest& request,
-        ::bosdyn::api::docking::GetDockingConfigResponse&& response, const grpc::Status& status,
-        std::promise<GetDockingConfigResultType> promise);
+    void OnGetDockingConfigComplete(MessagePumpCallBase* call,
+                                    const ::bosdyn::api::docking::GetDockingConfigRequest& request,
+                                    ::bosdyn::api::docking::GetDockingConfigResponse&& response,
+                                    const grpc::Status& status,
+                                    std::promise<GetDockingConfigResultType> promise);
 
     // Callback that will return the GetDockingStateResponse message after GetDockingState rpc
     // returns to the client.
-    void OnGetDockingStateComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::docking::GetDockingStateRequest& request,
-        ::bosdyn::api::docking::GetDockingStateResponse&& response, const grpc::Status& status,
-        std::promise<GetDockingStateResultType> promise);
+    void OnGetDockingStateComplete(MessagePumpCallBase* call,
+                                   const ::bosdyn::api::docking::GetDockingStateRequest& request,
+                                   ::bosdyn::api::docking::GetDockingStateResponse&& response,
+                                   const grpc::Status& status,
+                                   std::promise<GetDockingStateResultType> promise);
 
     // Callback that will return the DockingCommandResponse message after DockingCommand rpc returns
     // to the client.
-    void OnDockingCommandComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::docking::DockingCommandRequest& request,
-        ::bosdyn::api::docking::DockingCommandResponse&& response, const grpc::Status& status,
-        std::promise<DockingCommandResultType> promise);
+    void OnDockingCommandComplete(MessagePumpCallBase* call,
+                                  const ::bosdyn::api::docking::DockingCommandRequest& request,
+                                  ::bosdyn::api::docking::DockingCommandResponse&& response,
+                                  const grpc::Status& status,
+                                  std::promise<DockingCommandResultType> promise);
 
     // Callback that will return the DockingCommandResponse message after DockingCommand rpc returns
     // to the client.
     void OnDockingCommandFeedbackComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::docking::DockingCommandFeedbackRequest& request,
-        ::bosdyn::api::docking::DockingCommandFeedbackResponse&& response, const grpc::Status& status,
-        std::promise<DockingCommandFeedbackResultType> promise);
+        MessagePumpCallBase* call,
+        const ::bosdyn::api::docking::DockingCommandFeedbackRequest& request,
+        ::bosdyn::api::docking::DockingCommandFeedbackResponse&& response,
+        const grpc::Status& status, std::promise<DockingCommandFeedbackResultType> promise);
 
-    std::unique_ptr<::bosdyn::api::docking::DockingService::Stub> m_stub;
+    std::unique_ptr<::bosdyn::api::docking::DockingService::StubInterface> m_stub;
 
     // Lease wallet for commands.
     std::shared_ptr<LeaseWallet> m_lease_wallet;

@@ -9,8 +9,8 @@
 
 #pragma once
 
-#include "bosdyn/client/service_client/service_client.h"
 #include "bosdyn/client/directory/directory_error_codes.h"
+#include "bosdyn/client/service_client/service_client.h"
 
 #include <bosdyn/api/directory_service.grpc.pb.h>
 #include <bosdyn/api/directory_service.pb.h>
@@ -34,21 +34,18 @@ class DirectoryClient : public ServiceClient {
         const RPCParameters& parameters = RPCParameters());
 
     // Synchronous method to get a ListServiceEntriesResponse.
-    DirectoryListResultType ListServiceEntries(
-        const RPCParameters& parameters = RPCParameters());
+    DirectoryListResultType ListServiceEntries(const RPCParameters& parameters = RPCParameters());
 
 
     // Asynchronous method to get a GetServiceEntryResponse for the corresponding ServiceClient
     // with the given name.
     std::shared_future<DirectoryEntryResultType> GetServiceEntryAsync(
-        const std::string& service_name,
-        const RPCParameters& parameters = RPCParameters());
+        const std::string& service_name, const RPCParameters& parameters = RPCParameters());
 
     // Synchronous method to get a GetServiceEntryResponse for the corresponding ServiceClient
     // with the given name.
-    DirectoryEntryResultType GetServiceEntry(
-        const std::string& service_name,
-        const RPCParameters& parameters = RPCParameters());
+    DirectoryEntryResultType GetServiceEntry(const std::string& service_name,
+                                             const RPCParameters& parameters = RPCParameters());
 
     // Start of ServiceClient overrides.
     QualityOfService GetQualityOfService() const override;
@@ -63,25 +60,28 @@ class DirectoryClient : public ServiceClient {
     // with.
     static std::string GetDefaultServiceAuthority() { return s_default_service_authority; }
 
-    // Get the default service type for the Directory service that will be registered in the directory.
+    // Get the default service type for the Directory service that will be registered in the
+    // directory.
     static std::string GetServiceType() { return s_service_type; }
 
  private:
     // Callback function registered for the asynchronous calls to get ListServiceEntriesResponse.
-    void OnGetListComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::ListServiceEntriesRequest& request,
-        ::bosdyn::api::ListServiceEntriesResponse&& response, const grpc::Status& status,
-        std::promise<DirectoryListResultType> promise);
+    void OnGetListComplete(MessagePumpCallBase* call,
+                           const ::bosdyn::api::ListServiceEntriesRequest& request,
+                           ::bosdyn::api::ListServiceEntriesResponse&& response,
+                           const grpc::Status& status,
+                           std::promise<DirectoryListResultType> promise);
 
 
     // Callback function registered for the asynchronous calls to get GetServiceEntryResponse.
-    void OnGetEntryComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::GetServiceEntryRequest& request,
-        ::bosdyn::api::GetServiceEntryResponse&& response, const grpc::Status& status,
-        std::promise<DirectoryEntryResultType> promise);
+    void OnGetEntryComplete(MessagePumpCallBase* call,
+                            const ::bosdyn::api::GetServiceEntryRequest& request,
+                            ::bosdyn::api::GetServiceEntryResponse&& response,
+                            const grpc::Status& status,
+                            std::promise<DirectoryEntryResultType> promise);
 
     // Comms stuff.
-    std::unique_ptr<::bosdyn::api::DirectoryService::Stub> m_stub;
+    std::unique_ptr<::bosdyn::api::DirectoryService::StubInterface> m_stub;
 
     // Default service name for the Directory service.
     static const char* s_default_service_name;

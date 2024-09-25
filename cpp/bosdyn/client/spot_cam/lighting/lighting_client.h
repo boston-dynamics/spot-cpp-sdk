@@ -36,16 +36,14 @@ class LightingClient : public ServiceClient {
     std::shared_future<GetLEDBrightnessResultType> GetLEDBrightnessAsync(
         const RPCParameters& parameters = RPCParameters());
 
-    GetLEDBrightnessResultType GetLEDBrightness(
-        const RPCParameters& parameters = RPCParameters());
+    GetLEDBrightnessResultType GetLEDBrightness(const RPCParameters& parameters = RPCParameters());
 
     std::shared_future<SetLEDBrightnessResultType> SetLEDBrightnessAsync(
         const std::map<int32_t, float>& brightnesses,
         const RPCParameters& parameters = RPCParameters());
 
-    SetLEDBrightnessResultType SetLEDBrightness(
-        const std::map<int32_t, float>& brightnesses,
-        const RPCParameters& parameters = RPCParameters());
+    SetLEDBrightnessResultType SetLEDBrightness(const std::map<int32_t, float>& brightnesses,
+                                                const RPCParameters& parameters = RPCParameters());
 
     std::shared_future<SetLEDBrightnessResultType> SetLEDBrightnessAsync(
         ::bosdyn::api::spot_cam::SetLEDBrightnessRequest& request,
@@ -60,24 +58,28 @@ class LightingClient : public ServiceClient {
     void SetComms(const std::shared_ptr<grpc::ChannelInterface>& channel) override;
     // End of ServiceClient overrides.
 
-    // Get the default service name the spot cam lighting service will be registered in the directory with.
+    // Get the default service name the spot cam lighting service will be registered in the
+    // directory with.
     static std::string GetDefaultServiceName() { return s_default_service_name; }
 
-    // Get the default service type for the spot cam lighting service that will be registered in the directory.
+    // Get the default service type for the spot cam lighting service that will be registered in the
+    // directory.
     static std::string GetServiceType() { return s_service_type; }
 
  private:
     // Callback function registered for the asynchronous grpc calls.
-    void OnGetLEDBrightnessComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::spot_cam::GetLEDBrightnessRequest& request,
-        ::bosdyn::api::spot_cam::GetLEDBrightnessResponse&& response, const grpc::Status& status,
-        std::promise<GetLEDBrightnessResultType> promise);
-    void OnSetLEDBrightnessComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::spot_cam::SetLEDBrightnessRequest& request,
-        ::bosdyn::api::spot_cam::SetLEDBrightnessResponse&& response, const grpc::Status& status,
-        std::promise<SetLEDBrightnessResultType> promise);
+    void OnGetLEDBrightnessComplete(MessagePumpCallBase* call,
+                                    const ::bosdyn::api::spot_cam::GetLEDBrightnessRequest& request,
+                                    ::bosdyn::api::spot_cam::GetLEDBrightnessResponse&& response,
+                                    const grpc::Status& status,
+                                    std::promise<GetLEDBrightnessResultType> promise);
+    void OnSetLEDBrightnessComplete(MessagePumpCallBase* call,
+                                    const ::bosdyn::api::spot_cam::SetLEDBrightnessRequest& request,
+                                    ::bosdyn::api::spot_cam::SetLEDBrightnessResponse&& response,
+                                    const grpc::Status& status,
+                                    std::promise<SetLEDBrightnessResultType> promise);
 
-    std::unique_ptr<::bosdyn::api::spot_cam::LightingService::Stub> m_stub;
+    std::unique_ptr<::bosdyn::api::spot_cam::LightingService::StubInterface> m_stub;
 
     // Default service name for the spotcam lighting service.
     static const char* s_default_service_name;

@@ -8,10 +8,10 @@
 
 
 
+#include <CLI/CLI.hpp>
 #include <atomic>
 #include <string>
 #include <vector>
-#include <CLI/CLI.hpp>
 
 #include "bosdyn/client/fault/fault_client.h"
 #include "bosdyn/client/fault/util.h"
@@ -19,14 +19,12 @@
 #include "bosdyn/client/spot_cam/ptz/ptz_client.h"
 #include "bosdyn/client/util/cli_util.h"
 
-
 // Server which services GRPC requests for point clouds using the velodyne driver.
 bosdyn::common::Status run(const ::bosdyn::client::CommonCLIArgs& args,
                            const std::string& ptz_choice, double pan, double tilt, double zoom) {
-
     // Create an sdk, robot, and payload registration client.
-    std::unique_ptr<bosdyn::client::ClientSdk> client_sdk = bosdyn::client::CreateStandardSDK(
-        "PTZ_command");
+    std::unique_ptr<bosdyn::client::ClientSdk> client_sdk =
+        bosdyn::client::CreateStandardSDK("PTZ_command");
     std::cout << "------Created SDK" << std::endl;
     auto client_result = client_sdk->CreateRobot(args.hostname);
     if (!client_result) {
@@ -35,7 +33,7 @@ bosdyn::common::Status run(const ::bosdyn::client::CommonCLIArgs& args,
     std::unique_ptr<bosdyn::client::Robot> robot = client_result.move();
 
     auto status = robot->Authenticate(args.username, args.password);
-    if ( !status) {
+    if (!status) {
         return status;
     }
     std::cout << "------Robot instance configured" << std::endl;
@@ -54,7 +52,8 @@ bosdyn::common::Status run(const ::bosdyn::client::CommonCLIArgs& args,
                 bosdyn::client::spot_cam::PtzClient::GetDefaultServiceName());
 
         if (fut_result) {
-            std::cout << "------PTZ Service found:\n" << fut_result.response.DebugString() << std::endl;
+            std::cout << "------PTZ Service found:\n"
+                      << fut_result.response.DebugString() << std::endl;
             break;
         }
         std::this_thread::sleep_for(std::chrono::seconds(5));

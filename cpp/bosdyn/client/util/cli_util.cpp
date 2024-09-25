@@ -8,8 +8,8 @@
 
 
 #include "bosdyn/client/util/cli_util.h"
-#include "bosdyn/common/status.h"
 #include <CLI/CLI.hpp>
+#include "bosdyn/common/status.h"
 
 namespace bosdyn {
 
@@ -22,9 +22,9 @@ void AddBaseArguments(CLI::App& parser, std::string& hostname) {
 void AddCommonArguments(CLI::App& parser, CommonCLIArgs& args) {
     AddBaseArguments(parser, args.hostname);
     parser.add_option("--username", args.username, "Username to authenticate with the robot.")
-            ->envname("BOSDYN_CLIENT_USERNAME");
+        ->envname("BOSDYN_CLIENT_USERNAME");
     parser.add_option("--password", args.password, "Password to authenticate with the robot.")
-            ->envname("BOSDYN_CLIENT_PASSWORD");
+        ->envname("BOSDYN_CLIENT_PASSWORD");
 }
 
 

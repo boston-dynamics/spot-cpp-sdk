@@ -58,43 +58,42 @@ bool get_a_tform_b(const ::bosdyn::api::FrameTreeSnapshot& frame_tree_snapshot,
 // Expresses the SE(3) velocity in the frame_c.  Returns false if the frame names are not in the
 // FrameTreeSnapshot, the FrameTreeSnapshot is not a well formed tree graph.
 bool ExpressVelocityInNewFrame(const ::bosdyn::api::FrameTreeSnapshot& frame_tree_snapshot,
-                                   const std::string& frame_b, const std::string& frame_c,
-                                   const ::bosdyn::api::SE3Velocity& vel_of_a_in_b,
-                                   ::bosdyn::api::SE3Velocity* output_vel_of_a_in_c);
+                               const std::string& frame_b, const std::string& frame_c,
+                               const ::bosdyn::api::SE3Velocity& vel_of_a_in_b,
+                               ::bosdyn::api::SE3Velocity* output_vel_of_a_in_c);
 
 // Similar to SE(3) velocity conversions, except for SE(2) velocities.  This is only valid for
 // SE(2) frame names, which are "odom", "vision", and "flat_body" frames.
 bool ExpressVelocityInNewFrame(const ::bosdyn::api::FrameTreeSnapshot& frame_tree_snapshot,
-                                   const std::string& se2_frame_b, const std::string& se2_frame_c,
-                                   const ::bosdyn::api::SE2Velocity& vel_of_a_in_b,
-                                   ::bosdyn::api::SE2Velocity* output_vel_of_a_in_c);
+                               const std::string& se2_frame_b, const std::string& se2_frame_c,
+                               const ::bosdyn::api::SE2Velocity& vel_of_a_in_b,
+                               ::bosdyn::api::SE2Velocity* output_vel_of_a_in_c);
 
 // Check if transform in graph.
 bool CheckSE3_a_tform_b(const ::bosdyn::api::FrameTreeSnapshot& frame_tree_snapshot,
-                         const std::string& frame_a, const std::string& frame_b);
+                        const std::string& frame_a, const std::string& frame_b);
 bool CheckSE2_a_tform_b(const ::bosdyn::api::FrameTreeSnapshot& frame_tree_snapshot,
-                         const std::string& frame_a, const std::string& frame_b);
+                        const std::string& frame_a, const std::string& frame_b);
 
 // Check if a frame_name is represented in a transform edge in the tree.
 bool IsFrameInTree(const ::bosdyn::api::FrameTreeSnapshot& frame_tree_snapshot,
-                      const std::string& frame_name);
+                   const std::string& frame_name);
 
 // Helpers for commonly accessed transforms.
 bool GetWorldTformBody(const ::bosdyn::api::FrameTreeSnapshot& frame_tree_snapshot,
-                          ::bosdyn::api::SE3Pose* out_pose);
-bool GetOdomTformBody(const ::bosdyn::api::FrameTreeSnapshot& frame_tree_snapshot,
                        ::bosdyn::api::SE3Pose* out_pose);
+bool GetOdomTformBody(const ::bosdyn::api::FrameTreeSnapshot& frame_tree_snapshot,
+                      ::bosdyn::api::SE3Pose* out_pose);
 
 // Add an edge to a FrameTreeSnapshot.
-bool AddEdgeToFrameTree(const std::string& parent_frame_name,
-                            const std::string& child_frame_name, const ::bosdyn::api::SE3Pose& pose,
-                            ::bosdyn::api::FrameTreeSnapshot* frame_tree_snapshot);
+bool AddEdgeToFrameTree(const std::string& parent_frame_name, const std::string& child_frame_name,
+                        const ::bosdyn::api::SE3Pose& pose,
+                        ::bosdyn::api::FrameTreeSnapshot* frame_tree_snapshot);
 
 // Set the pose on an existing edge in a snapshot. Predominantly intended for tests.
 bool SetPoseOnExistingEdge(const std::string& parent_frame_name,
-                               const std::string& child_frame_name,
-                               const ::bosdyn::api::SE3Pose& pose,
-                               ::bosdyn::api::FrameTreeSnapshot* frame_tree_snapshot);
+                           const std::string& child_frame_name, const ::bosdyn::api::SE3Pose& pose,
+                           ::bosdyn::api::FrameTreeSnapshot* frame_tree_snapshot);
 
 // Get all frames in the tree.
 std::vector<std::string> ListFramesInTree(

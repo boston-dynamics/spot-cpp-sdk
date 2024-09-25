@@ -25,13 +25,14 @@ The [C++ reference guide](../../cpp/README.md) documents all of the C++ classes 
 ### Supported platforms and versions
 
 The C++ SDK is supported on the following platforms:
-  * Ubuntu 18.04 LTS
-  * Windows 10
-  * MacOS 10.14 (Mojave and Catalina)
+
+- Ubuntu 22.04 LTS
+- Windows 10
+- MacOS 10.14 (Mojave and Catalina)
 
 ## Contents
 
-* [Quickstart](quickstart.md)
-* [Differences from Python SDK](cpp_sdk_differences.md)
-* [Examples](../../cpp/examples/README.md)
-* [C++ Reference Guide](../../cpp/README.md)
+- [Quickstart](quickstart.md)
+- [Differences from Python SDK](cpp_sdk_differences.md)
+- [Examples](../../cpp/examples/README.md)
+- [C++ Reference Guide](../../cpp/README.md)

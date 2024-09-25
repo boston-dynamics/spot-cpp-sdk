@@ -122,16 +122,19 @@ const char kTaskFrame[] = "task";
 const char kDesiredToolAtEndFrame[] = "desired_tool_at_end";
 const char kMeasuredToolAtStartFrame[] = "measured_tool_at_start";
 const char kGazeTargetFrame[] = "gaze_target";
+
+// Foot related frames
 const char kFrontLeftFootFrame[] = "fl_foot";
 const char kFrontRightFootFrame[] = "fr_foot";
 const char kHindLeftFootFrame[] = "hl_foot";
 const char kHindRightFootFrame[] = "hr_foot";
 const std::array<const char*, 4> kFootFrames{kFrontLeftFootFrame, kFrontRightFootFrame,
                                              kHindLeftFootFrame, kHindRightFootFrame};
+const char kFeetCenterFrame[] = "feet_center";
 
 // Various frame names used for localization with respect to the Earth.
-const std::string kEarthFrame = "ecef"; // Earth Centered Earth Fixed
-const std::string kEnuFrame = "enu"; // East North Up
+const std::string kEarthFrame = "ecef";  // Earth Centered Earth Fixed
+const std::string kEnuFrame = "enu";     // East North Up
 }  // namespace api
 
 }  // namespace bosdyn

@@ -48,13 +48,11 @@ std::error_code make_error_code(RPCErrorCode);
 }  // namespace client
 }  // namespace bosdyn
 
-
 enum class RetryableRPCCondition {
     // no 0
     Retryable = 1,
     Persistent = 2,
 };
-
 
 namespace std {
 template <>
@@ -63,6 +61,5 @@ struct is_error_code_enum<::bosdyn::client::RPCErrorCode> : true_type {};
 template <>
 struct is_error_condition_enum<RetryableRPCCondition> : true_type {};
 }  // namespace std
-
 
 std::error_condition make_error_condition(RetryableRPCCondition);

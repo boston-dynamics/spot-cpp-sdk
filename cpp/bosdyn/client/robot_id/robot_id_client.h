@@ -47,17 +47,18 @@ class RobotIdClient : public ServiceClient {
     // with.
     static std::string GetDefaultServiceAuthority() { return s_default_service_authority; }
 
-    // Get the default service type for the RobotId service that will be registered in the directory.
+    // Get the default service type for the RobotId service that will be registered in the
+    // directory.
     static std::string GetServiceType() { return s_service_type; }
 
  private:
     // Callback function registered for the asynchronous calls.
-    void OnGetRobotIdComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::RobotIdRequest& request,
-        ::bosdyn::api::RobotIdResponse&& response, const grpc::Status& status,
-        std::promise<RobotIdResultType> promise);
+    void OnGetRobotIdComplete(MessagePumpCallBase* call,
+                              const ::bosdyn::api::RobotIdRequest& request,
+                              ::bosdyn::api::RobotIdResponse&& response, const grpc::Status& status,
+                              std::promise<RobotIdResultType> promise);
 
-    std::unique_ptr<::bosdyn::api::RobotIdService::Stub> m_stub;
+    std::unique_ptr<::bosdyn::api::RobotIdService::StubInterface> m_stub;
 
     // Default service name for the RobotId service.
     static const char* s_default_service_name;

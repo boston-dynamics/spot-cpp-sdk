@@ -34,4 +34,3 @@ namespace std {
 template <>
 struct is_error_code_enum<bosdyn::client::LeaseWalletErrorCode> : true_type {};
 }  // namespace std
-

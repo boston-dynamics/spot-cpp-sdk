@@ -19,8 +19,8 @@ class Robot;  // Forward class declaration to resolve the circular dependency
 
 class TokenManager {
  public:
-    explicit TokenManager(
-        ::bosdyn::client::Robot* robot, ::bosdyn::common::Duration refresh_interval = std::chrono::seconds(3600));
+    explicit TokenManager(::bosdyn::client::Robot* robot,
+                          ::bosdyn::common::Duration refresh_interval = std::chrono::seconds(3600));
 
     ~TokenManager();
 

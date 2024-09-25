@@ -8,8 +8,8 @@
 
 
 #include "bosdyn/client/error_codes/client_creation_error_code.h"
-#include "bosdyn/client/error_codes/sdk_error_code.h"
 #include "bosdyn/client/error_codes/error_type_condition.h"
+#include "bosdyn/client/error_codes/sdk_error_code.h"
 #include "bosdyn/common/success_condition.h"
 
 namespace {  // anonymous namespace
@@ -21,13 +21,15 @@ struct ClientCreationErrorCodeCategory : std::error_category {
 };
 
 bool ClientCreationErrorCodeCategory::equivalent(int valcode,
-                                      const std::error_condition& cond) const noexcept {
+                                                 const std::error_condition& cond) const noexcept {
     if (cond == SuccessCondition::Success) return (valcode == 0);
     if (cond == ErrorTypeCondition::SDKError) return true;
     return false;
 }
 
-const char* ClientCreationErrorCodeCategory::name() const noexcept { return "ClientCreationErrorCode"; }
+const char* ClientCreationErrorCodeCategory::name() const noexcept {
+    return "ClientCreationErrorCode";
+}
 
 std::string ClientCreationErrorCodeCategory::message(int value) const {
     switch (static_cast<ClientCreationErrorCode>(value)) {

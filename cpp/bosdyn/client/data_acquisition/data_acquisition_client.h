@@ -11,8 +11,8 @@
 
 #include <bosdyn/api/data_acquisition_service.grpc.pb.h>
 #include <bosdyn/api/data_acquisition_service.pb.h>
-#include "bosdyn/client/service_client/service_client.h"
 #include "bosdyn/client/data_acquisition/data_acquisition_error_codes.h"
+#include "bosdyn/client/service_client/service_client.h"
 
 namespace bosdyn {
 
@@ -32,19 +32,22 @@ class DataAcquisitionClient : public ServiceClient {
 
     // Asynchronous RPC to trigger data acquisition to save data and metadata to the data buffer.
     std::shared_future<DataAcquisitionAcquireDataResultType> AcquireDataAsync(
-        ::bosdyn::api::AcquireDataRequest& request, const RPCParameters& parameters = RPCParameters());
+        ::bosdyn::api::AcquireDataRequest& request,
+        const RPCParameters& parameters = RPCParameters());
 
     // Synchronous RPC to trigger data acquisition to save data and metadata to the data buffer.
     DataAcquisitionAcquireDataResultType AcquireData(
-        ::bosdyn::api::AcquireDataRequest& request, const RPCParameters& parameters = RPCParameters());
+        ::bosdyn::api::AcquireDataRequest& request,
+        const RPCParameters& parameters = RPCParameters());
 
     // Asynchronous RPC to query the status of a data acquisition.
     std::shared_future<DataAcquisitionGetStatusResultType> GetStatusAsync(
-        ::bosdyn::api::GetStatusRequest& request, const RPCParameters& parameters = RPCParameters());
+        ::bosdyn::api::GetStatusRequest& request,
+        const RPCParameters& parameters = RPCParameters());
 
     // Synchronous RPC to query the status of a data acquisition.
-    DataAcquisitionGetStatusResultType GetStatus(
-        ::bosdyn::api::GetStatusRequest& request, const RPCParameters& parameters = RPCParameters());
+    DataAcquisitionGetStatusResultType GetStatus(::bosdyn::api::GetStatusRequest& request,
+                                                 const RPCParameters& parameters = RPCParameters());
 
     // Asynchronous RPC to get service info from the data acquisition service.
     std::shared_future<DataAcquisitionServiceInfoResultType> GetServiceInfoAsync(
@@ -56,11 +59,13 @@ class DataAcquisitionClient : public ServiceClient {
 
     // Asynchronous RPC to cancel an in-progress data acquisition.
     std::shared_future<DataAcquisitionCancelAcquisitionResultType> CancelAcquisitionAsync(
-        ::bosdyn::api::CancelAcquisitionRequest& request, const RPCParameters& parameters = RPCParameters());
+        ::bosdyn::api::CancelAcquisitionRequest& request,
+        const RPCParameters& parameters = RPCParameters());
 
     // Synchronous RPC to cancel an in-progress data acquisition.
     DataAcquisitionCancelAcquisitionResultType CancelAcquisition(
-        ::bosdyn::api::CancelAcquisitionRequest& request, const RPCParameters& parameters = RPCParameters());
+        ::bosdyn::api::CancelAcquisitionRequest& request,
+        const RPCParameters& parameters = RPCParameters());
 
     // Asynchronous RPC to request live data for each capability.
     std::shared_future<DataAcquisitionLiveDataResultType> GetLiveDataAsync(
@@ -81,21 +86,26 @@ class DataAcquisitionClient : public ServiceClient {
     // Get the default service type for the image service that will be registered in the directory.
     static std::string GetServiceType() { return s_service_type; }
 
-private:
+ private:
     // Callback function registered for the asynchronous calls to acquire data.
-    void OnAcquireDataComplete(MessagePumpCallBase* call, const ::bosdyn::api::AcquireDataRequest& request,
-                               ::bosdyn::api::AcquireDataResponse&& response, const grpc::Status& status,
+    void OnAcquireDataComplete(MessagePumpCallBase* call,
+                               const ::bosdyn::api::AcquireDataRequest& request,
+                               ::bosdyn::api::AcquireDataResponse&& response,
+                               const grpc::Status& status,
                                std::promise<DataAcquisitionAcquireDataResultType> promise);
 
     // Callback function registered for the asynchronous calls to get status.
-    void OnGetStatusComplete(MessagePumpCallBase* call, const ::bosdyn::api::GetStatusRequest& request,
-                             ::bosdyn::api::GetStatusResponse&& response, const grpc::Status& status,
+    void OnGetStatusComplete(MessagePumpCallBase* call,
+                             const ::bosdyn::api::GetStatusRequest& request,
+                             ::bosdyn::api::GetStatusResponse&& response,
+                             const grpc::Status& status,
                              std::promise<DataAcquisitionGetStatusResultType> promise);
 
     // Callback function registered for the asynchronous calls to get service info.
     void OnGetServiceInfoComplete(MessagePumpCallBase* call,
                                   const ::bosdyn::api::GetServiceInfoRequest& request,
-                                  ::bosdyn::api::GetServiceInfoResponse&& response, const grpc::Status& status,
+                                  ::bosdyn::api::GetServiceInfoResponse&& response,
+                                  const grpc::Status& status,
                                   std::promise<DataAcquisitionServiceInfoResultType> promise);
 
     // Callback function registered for the asynchronous calls to cancel acquisition.
@@ -105,11 +115,12 @@ private:
         std::promise<DataAcquisitionCancelAcquisitionResultType> promise);
 
     // Callback function registered for the asynchronous calls to get live data.
-    void OnLiveDataComplete(MessagePumpCallBase* call, const ::bosdyn::api::LiveDataRequest& request,
-        ::bosdyn::api::LiveDataResponse&& response, const grpc::Status& status,
-        std::promise<DataAcquisitionLiveDataResultType> promise);
+    void OnLiveDataComplete(MessagePumpCallBase* call,
+                            const ::bosdyn::api::LiveDataRequest& request,
+                            ::bosdyn::api::LiveDataResponse&& response, const grpc::Status& status,
+                            std::promise<DataAcquisitionLiveDataResultType> promise);
 
-    std::unique_ptr<::bosdyn::api::DataAcquisitionService::Stub> m_stub;
+    std::unique_ptr<::bosdyn::api::DataAcquisitionService::StubInterface> m_stub;
 
     // Default service name for the Data Acquisition service.
     static const char* s_default_service_name;

@@ -21,19 +21,18 @@
 
 #include <bosdyn/api/geometry.pb.h>
 #include <CLI/CLI.hpp>
-#include "bosdyn/client/sdk/client_sdk.h"
 #include "bosdyn/client/lease/lease_client.h"
-#include "bosdyn/math/frame_helpers.h"
-#include "bosdyn/math/proto_math.h"
 #include "bosdyn/client/robot_command/robot_command_builder.h"
 #include "bosdyn/client/robot_command/robot_command_client.h"
+#include "bosdyn/client/robot_command/robot_command_helpers.h"
 #include "bosdyn/client/robot_id/robot_id_client.h"
+#include "bosdyn/client/sdk/client_sdk.h"
 #include "bosdyn/client/time_sync/time_sync_helpers.h"
 #include "bosdyn/client/util/cli_util.h"
-
+#include "bosdyn/math/frame_helpers.h"
+#include "bosdyn/math/proto_math.h"
 
 int main(int argc, char** argv) {
-
     // Parse the arguments.
     CLI::App parser{"BasicRobotCommand"};
     ::bosdyn::client::CommonCLIArgs common_args;
@@ -41,7 +40,8 @@ int main(int argc, char** argv) {
     CLI11_PARSE(parser, argc, argv);
 
     // Create a Client SDK object.
-    std::unique_ptr<::bosdyn::client::ClientSdk> client_sdk = ::bosdyn::client::CreateStandardSDK("basic_cmd_spot");
+    std::unique_ptr<::bosdyn::client::ClientSdk> client_sdk =
+        ::bosdyn::client::CreateStandardSDK("basic_cmd_spot");
 
     // Create a robot instance. A robot instance represents a single user on a single robot.
     ::bosdyn::client::Result<std::unique_ptr<::bosdyn::client::Robot>> robot_result =
@@ -69,8 +69,7 @@ int main(int argc, char** argv) {
                   << robot_cmd_client_resp.status.DebugString() << std::endl;
         return 0;
     }
-    ::bosdyn::client::RobotCommandClient* robot_command_client =
-        robot_cmd_client_resp.response;
+    ::bosdyn::client::RobotCommandClient* robot_command_client = robot_cmd_client_resp.response;
 
     // Use the Robot object's timesync endpoint and set a pointer within the robot command client
     // such that it can automatically update command end times in the robot's clock time.
@@ -111,7 +110,8 @@ int main(int argc, char** argv) {
     }
     if (estop_status.response) {
         std::cerr << "Robot is estopped. Please use an external E-Stop client, such as the estop "
-                "Python SDK example, to configure E-Stop." << std::endl;
+                     "Python SDK example, to configure E-Stop."
+                  << std::endl;
         return 0;
     }
     std::cout << "------E-Stop configured" << std::endl;
@@ -132,7 +132,11 @@ int main(int argc, char** argv) {
                   << std::endl;
         return 0;
     }
-    std::this_thread::sleep_for(std::chrono::seconds(5));
+    auto block_res =
+        BlockUntilStandComplete(*robot_command_client, stand_res.response.robot_command_id());
+    if (!block_res) {
+        return block_res.status.Chain("Stand command failed");
+    }
 
     // Get the current instance of the frame tree snapshot from the robot object (which will use the
     // robot state client).
@@ -145,7 +149,8 @@ int main(int argc, char** argv) {
     bosdyn::api::FrameTreeSnapshot frame_tree_snapshot = *frame_tree_snapshot_res.response;
 
     // Issue a trajectory command in the body frame. We will make the robot move forward 1 meter.
-    auto command_res = ::bosdyn::client::TrajectoryCommandInBodyFrame(1.0, 0.0, 0.0, frame_tree_snapshot);
+    auto command_res =
+        ::bosdyn::client::TrajectoryCommandInBodyFrame(1.0, 0.0, 0.0, frame_tree_snapshot);
     if (!command_res.status) {
         std::cerr << "Failed to get a transform between the odom frame and the body frame: "
                   << command_res.status << std::endl;
@@ -159,13 +164,18 @@ int main(int argc, char** argv) {
                   << std::endl;
         return 0;
     }
+    auto traj_block_res = BlockUntilSE2TrajectoryComplete(*robot_command_client,
+                                                          goto_res.response.robot_command_id());
+    if (!traj_block_res) {
+        return traj_block_res.status.Chain("Trajectory command failed");
+    }
 
     // Stand up the robot.
     bosdyn::api::RobotCommand poweroff_command = ::bosdyn::client::SafePowerOffCommand();
     auto poweroff_res = robot_command_client->RobotCommand(poweroff_command);
     if (!poweroff_res.status) {
-        std::cerr << "Failed to complete the safe power off command: " << poweroff_res.status.DebugString()
-                  << std::endl;
+        std::cerr << "Failed to complete the safe power off command: "
+                  << poweroff_res.status.DebugString() << std::endl;
         return 0;
     }
     std::cout << "------Robot is powered off." << std::endl;

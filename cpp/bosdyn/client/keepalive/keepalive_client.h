@@ -103,7 +103,7 @@ class KeepaliveClient : public ServiceClient {
                            ::bosdyn::api::keepalive::CheckInResponse&& response,
                            const grpc::Status& status, std::promise<CheckInResultType> promise);
 
-    std::unique_ptr<::bosdyn::api::keepalive::KeepaliveService::Stub> m_stub;
+    std::unique_ptr<::bosdyn::api::keepalive::KeepaliveService::StubInterface> m_stub;
 
     // Default service name for the Auto Return service.
     static const char* s_default_service_name;

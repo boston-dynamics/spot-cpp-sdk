@@ -232,6 +232,43 @@ RobotCommandFeedbackResultType BlockUntilStandComplete(
              "The StandCommand failed or timed out."},
             feedback_res.move()};
 }
+
+RobotCommandFeedbackResultType BlockUntilSE2TrajectoryComplete(
+    ::bosdyn::client::RobotCommandClient& robot_command_client, int cmd_id,
+    ::bosdyn::common::Duration timeout, ::bosdyn::common::Duration poll_period) {
+    ::bosdyn::api::RobotCommandFeedbackRequest feedback_req;
+    feedback_req.set_robot_command_id(cmd_id);
+
+    ::bosdyn::client::RobotCommandFeedbackResultType feedback_res;
+
+    auto start_time = ::bosdyn::common::NsecSinceEpoch();
+    const auto end_time = start_time + timeout;
+
+    while (timeout <= ::bosdyn::common::Duration(0) ||
+           ::bosdyn::common::NsecSinceEpoch() < end_time) {
+        feedback_res = robot_command_client.RobotCommandFeedback(feedback_req);
+        // If the RPC timed out but this function hasn't timed out, keep trying.
+        if (!feedback_res.status &&
+            feedback_res.status.code() != ::bosdyn::client::RPCErrorCode::TimedOutError) {
+            return feedback_res;
+        }
+
+        auto traj_feedback = feedback_res.response.feedback()
+                                 .synchronized_feedback()
+                                 .mobility_command_feedback()
+                                 .se2_trajectory_feedback();
+
+        if (traj_feedback.status() ==
+            ::bosdyn::api::SE2TrajectoryCommand::Feedback::STATUS_STOPPED) {
+            return {{BlockingRobotCommandErrorCode::Success}, feedback_res.move()};
+        }
+
+        std::this_thread::sleep_for(poll_period);
+    }
+    return {{BlockingRobotCommandErrorCode::CommandTimeoutError,
+             "The TrajectoryCommand failed or timed out."},
+            feedback_res.move()};
+}
 }  // namespace client
 
 }  // namespace bosdyn

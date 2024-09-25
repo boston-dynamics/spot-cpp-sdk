@@ -31,8 +31,8 @@ std::shared_future<ListPtzResultType> PtzClient::ListPtzAsync(const RPCParameter
                                                       ::bosdyn::api::spot_cam::ListPtzResponse,
                                                       ::bosdyn::api::spot_cam::ListPtzResponse>(
         request,
-        std::bind(&::bosdyn::api::spot_cam::PtzService::Stub::AsyncListPtz, m_stub.get(), _1, _2,
-                  _3),
+        std::bind(&::bosdyn::api::spot_cam::PtzService::StubInterface::AsyncListPtz, m_stub.get(),
+                  _1, _2, _3),
         std::bind(&PtzClient::OnListPtzComplete, this, _1, _2, _3, _4, _5), std::move(response),
         parameters);
 
@@ -79,8 +79,8 @@ std::shared_future<GetPtzPositionResultType> PtzClient::GetPtzPositionAsync(
                           ::bosdyn::api::spot_cam::GetPtzPositionResponse,
                           ::bosdyn::api::spot_cam::GetPtzPositionResponse>(
             request,
-            std::bind(&::bosdyn::api::spot_cam::PtzService::Stub::AsyncGetPtzPosition, m_stub.get(),
-                      _1, _2, _3),
+            std::bind(&::bosdyn::api::spot_cam::PtzService::StubInterface::AsyncGetPtzPosition,
+                      m_stub.get(), _1, _2, _3),
             std::bind(&PtzClient::OnGetPtzPositionComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
@@ -126,8 +126,8 @@ std::shared_future<GetPtzVelocityResultType> PtzClient::GetPtzVelocityAsync(
                           ::bosdyn::api::spot_cam::GetPtzVelocityResponse,
                           ::bosdyn::api::spot_cam::GetPtzVelocityResponse>(
             request,
-            std::bind(&::bosdyn::api::spot_cam::PtzService::Stub::AsyncGetPtzVelocity, m_stub.get(),
-                      _1, _2, _3),
+            std::bind(&::bosdyn::api::spot_cam::PtzService::StubInterface::AsyncGetPtzVelocity,
+                      m_stub.get(), _1, _2, _3),
             std::bind(&PtzClient::OnGetPtzVelocityComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
@@ -179,8 +179,8 @@ std::shared_future<SetPtzPositionResultType> PtzClient::SetPtzPositionAsync(
                           ::bosdyn::api::spot_cam::SetPtzPositionResponse,
                           ::bosdyn::api::spot_cam::SetPtzPositionResponse>(
             request,
-            std::bind(&::bosdyn::api::spot_cam::PtzService::Stub::AsyncSetPtzPosition, m_stub.get(),
-                      _1, _2, _3),
+            std::bind(&::bosdyn::api::spot_cam::PtzService::StubInterface::AsyncSetPtzPosition,
+                      m_stub.get(), _1, _2, _3),
             std::bind(&PtzClient::OnSetPtzPositionComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
@@ -232,8 +232,8 @@ std::shared_future<SetPtzVelocityResultType> PtzClient::SetPtzVelocityAsync(
                           ::bosdyn::api::spot_cam::SetPtzVelocityResponse,
                           ::bosdyn::api::spot_cam::SetPtzVelocityResponse>(
             request,
-            std::bind(&::bosdyn::api::spot_cam::PtzService::Stub::AsyncSetPtzVelocity, m_stub.get(),
-                      _1, _2, _3),
+            std::bind(&::bosdyn::api::spot_cam::PtzService::StubInterface::AsyncSetPtzVelocity,
+                      m_stub.get(), _1, _2, _3),
             std::bind(&PtzClient::OnSetPtzVelocityComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
@@ -268,8 +268,8 @@ std::shared_future<InitializeLensResultType> PtzClient::InitializeLensAsync(
                           ::bosdyn::api::spot_cam::InitializeLensResponse,
                           ::bosdyn::api::spot_cam::InitializeLensResponse>(
             request,
-            std::bind(&::bosdyn::api::spot_cam::PtzService::Stub::AsyncInitializeLens, m_stub.get(),
-                      _1, _2, _3),
+            std::bind(&::bosdyn::api::spot_cam::PtzService::StubInterface::AsyncInitializeLens,
+                      m_stub.get(), _1, _2, _3),
             std::bind(&PtzClient::OnInitializeLensComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
@@ -308,7 +308,7 @@ std::shared_future<GetPtzFocusStateResultType> PtzClient::GetPtzFocusStateAsync(
                           ::bosdyn::api::spot_cam::GetPtzFocusStateResponse,
                           ::bosdyn::api::spot_cam::GetPtzFocusStateResponse>(
             request,
-            std::bind(&::bosdyn::api::spot_cam::PtzService::Stub::AsyncGetPtzFocusState,
+            std::bind(&::bosdyn::api::spot_cam::PtzService::StubInterface::AsyncGetPtzFocusState,
                       m_stub.get(), _1, _2, _3),
             std::bind(&PtzClient::OnGetPtzFocusStateComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
@@ -370,7 +370,7 @@ std::shared_future<SetPtzFocusStateResultType> PtzClient::SetPtzFocusStateAsync(
                           ::bosdyn::api::spot_cam::SetPtzFocusStateResponse,
                           ::bosdyn::api::spot_cam::SetPtzFocusStateResponse>(
             request,
-            std::bind(&::bosdyn::api::spot_cam::PtzService::Stub::AsyncSetPtzFocusState,
+            std::bind(&::bosdyn::api::spot_cam::PtzService::StubInterface::AsyncSetPtzFocusState,
                       m_stub.get(), _1, _2, _3),
             std::bind(&PtzClient::OnSetPtzFocusStateComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);

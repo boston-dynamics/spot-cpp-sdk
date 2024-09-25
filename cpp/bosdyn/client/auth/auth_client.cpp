@@ -24,9 +24,9 @@ const char* AuthClient::s_default_service_authority = "auth.spot.robot";
 
 const char* AuthClient::s_service_type = "bosdyn.api.AuthService";
 
-std::shared_future<AuthResultType> AuthClient::GetAuthTokenAsync(
-    const std::string& username, const std::string& password,
-    const RPCParameters& parameters) {
+std::shared_future<AuthResultType> AuthClient::GetAuthTokenAsync(const std::string& username,
+                                                                 const std::string& password,
+                                                                 const RPCParameters& parameters) {
     std::promise<AuthResultType> response;
     std::shared_future<AuthResultType> future = response.get_future();
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
@@ -36,16 +36,18 @@ std::shared_future<AuthResultType> AuthClient::GetAuthTokenAsync(
     request.set_password(password);
 
     MessagePumpCallBase* one_time =
-        InitiateAsyncCall<::bosdyn::api::GetAuthTokenRequest, ::bosdyn::api::GetAuthTokenResponse, ::bosdyn::api::GetAuthTokenResponse>(
+        InitiateAsyncCall<::bosdyn::api::GetAuthTokenRequest, ::bosdyn::api::GetAuthTokenResponse,
+                          ::bosdyn::api::GetAuthTokenResponse>(
             request,
-            std::bind(&::bosdyn::api::AuthService::Stub::AsyncGetAuthToken, m_stub.get(), _1, _2, _3),
+            std::bind(&::bosdyn::api::AuthService::StubInterface::AsyncGetAuthToken, m_stub.get(),
+                      _1, _2, _3),
             std::bind(&AuthClient::OnGetAuthTokenComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
     return future;
 }
 
-std::shared_future<AuthResultType> AuthClient::GetAuthTokenAsync(
-    const std::string& token, const RPCParameters& parameters) {
+std::shared_future<AuthResultType> AuthClient::GetAuthTokenAsync(const std::string& token,
+                                                                 const RPCParameters& parameters) {
     std::promise<AuthResultType> response;
     std::shared_future<AuthResultType> future = response.get_future();
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
@@ -54,33 +56,35 @@ std::shared_future<AuthResultType> AuthClient::GetAuthTokenAsync(
     request.set_token(token);
 
     MessagePumpCallBase* one_time =
-        InitiateAsyncCall<::bosdyn::api::GetAuthTokenRequest, ::bosdyn::api::GetAuthTokenResponse, ::bosdyn::api::GetAuthTokenResponse>(
+        InitiateAsyncCall<::bosdyn::api::GetAuthTokenRequest, ::bosdyn::api::GetAuthTokenResponse,
+                          ::bosdyn::api::GetAuthTokenResponse>(
             request,
-            std::bind(&::bosdyn::api::AuthService::Stub::AsyncGetAuthToken, m_stub.get(), _1, _2, _3),
+            std::bind(&::bosdyn::api::AuthService::StubInterface::AsyncGetAuthToken, m_stub.get(),
+                      _1, _2, _3),
             std::bind(&AuthClient::OnGetAuthTokenComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
     return future;
 }
 
-AuthResultType AuthClient::GetAuthToken(
-    const std::string& username, const std::string& password,
-    const RPCParameters& parameters) {
+AuthResultType AuthClient::GetAuthToken(const std::string& username, const std::string& password,
+                                        const RPCParameters& parameters) {
     return GetAuthTokenAsync(username, password, parameters).get();
 }
 
-AuthResultType AuthClient::GetAuthToken(
-    const std::string& token, const RPCParameters& parameters) {
+AuthResultType AuthClient::GetAuthToken(const std::string& token, const RPCParameters& parameters) {
     return GetAuthTokenAsync(token, parameters).get();
 }
 
 // Set the outstanding response, which will update any futures. Reset it.
-void AuthClient::OnGetAuthTokenComplete(
-    MessagePumpCallBase* call, const ::bosdyn::api::GetAuthTokenRequest& request,
-    ::bosdyn::api::GetAuthTokenResponse&& response, const grpc::Status& status,
-    std::promise<AuthResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::GetAuthTokenResponse>(
-        status, response, response.status());
+void AuthClient::OnGetAuthTokenComplete(MessagePumpCallBase* call,
+                                        const ::bosdyn::api::GetAuthTokenRequest& request,
+                                        ::bosdyn::api::GetAuthTokenResponse&& response,
+                                        const grpc::Status& status,
+                                        std::promise<AuthResultType> promise) {
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::GetAuthTokenResponse>(status, response,
+                                                                              response.status());
     if (!ret_status) {
         promise.set_value({ret_status, std::move(response)});
         return;

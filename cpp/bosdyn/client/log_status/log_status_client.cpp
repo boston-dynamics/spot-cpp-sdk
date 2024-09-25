@@ -30,8 +30,9 @@ std::shared_future<GetLogStatusResponseType> LogStatusClient::GetLogStatusAsync(
                           bosdyn::api::log_status::GetLogStatusResponse,
                           ::bosdyn::api::log_status::GetLogStatusResponse>(
             request,
-            std::bind(&::bosdyn::api::log_status::LogStatusService::Stub::AsyncGetLogStatus,
-                      m_stub.get(), _1, _2, _3),
+            std::bind(
+                &::bosdyn::api::log_status::LogStatusService::StubInterface::AsyncGetLogStatus,
+                m_stub.get(), _1, _2, _3),
             std::bind(&LogStatusClient::OnGetLogStatusComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
@@ -50,15 +51,16 @@ std::shared_future<GetActiveLogStatusesResponseType> LogStatusClient::GetActiveL
     std::shared_future<GetActiveLogStatusesResponseType> future = response.get_future();
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
 
-    MessagePumpCallBase* one_time =
-        InitiateAsyncCall<bosdyn::api::log_status::GetActiveLogStatusesRequest,
-                          bosdyn::api::log_status::GetActiveLogStatusesResponse,
-                          ::bosdyn::api::log_status::GetActiveLogStatusesResponse>(
-            request,
-            std::bind(&::bosdyn::api::log_status::LogStatusService::Stub::AsyncGetActiveLogStatuses,
-                      m_stub.get(), _1, _2, _3),
-            std::bind(&LogStatusClient::OnGetActiveLogStatusesComplete, this, _1, _2, _3, _4, _5),
-            std::move(response), parameters);
+    MessagePumpCallBase* one_time = InitiateAsyncCall<
+        bosdyn::api::log_status::GetActiveLogStatusesRequest,
+        bosdyn::api::log_status::GetActiveLogStatusesResponse,
+        ::bosdyn::api::log_status::GetActiveLogStatusesResponse>(
+        request,
+        std::bind(
+            &::bosdyn::api::log_status::LogStatusService::StubInterface::AsyncGetActiveLogStatuses,
+            m_stub.get(), _1, _2, _3),
+        std::bind(&LogStatusClient::OnGetActiveLogStatusesComplete, this, _1, _2, _3, _4, _5),
+        std::move(response), parameters);
 
     return future;
 }
@@ -70,34 +72,34 @@ GetActiveLogStatusesResponseType LogStatusClient::GetActiveLogStatuses(
 }
 
 std::shared_future<StartExperimentLogResponseType> LogStatusClient::StartExperimentLogAsync(
-        ::bosdyn::api::log_status::StartExperimentLogRequest& request,
-        const RPCParameters& parameters) {
+    ::bosdyn::api::log_status::StartExperimentLogRequest& request,
+    const RPCParameters& parameters) {
     std::promise<StartExperimentLogResponseType> response;
     std::shared_future<StartExperimentLogResponseType> future = response.get_future();
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
 
-    MessagePumpCallBase* one_time =
-            InitiateAsyncCall<bosdyn::api::log_status::StartExperimentLogRequest,
-                    bosdyn::api::log_status::StartExperimentLogResponse,
-                    ::bosdyn::api::log_status::StartExperimentLogResponse>(
-                    request,
-                    std::bind(&::bosdyn::api::log_status::LogStatusService::Stub::AsyncStartExperimentLog,
-                              m_stub.get(), _1, _2, _3),
-                    std::bind(&LogStatusClient::OnStartExperimentLogComplete, this, _1, _2, _3, _4, _5),
-                    std::move(response), parameters);
+    MessagePumpCallBase* one_time = InitiateAsyncCall<
+        bosdyn::api::log_status::StartExperimentLogRequest,
+        bosdyn::api::log_status::StartExperimentLogResponse,
+        ::bosdyn::api::log_status::StartExperimentLogResponse>(
+        request,
+        std::bind(
+            &::bosdyn::api::log_status::LogStatusService::StubInterface::AsyncStartExperimentLog,
+            m_stub.get(), _1, _2, _3),
+        std::bind(&LogStatusClient::OnStartExperimentLogComplete, this, _1, _2, _3, _4, _5),
+        std::move(response), parameters);
 
     return future;
 }
 
 StartExperimentLogResponseType LogStatusClient::StartExperimentLog(
-        ::bosdyn::api::log_status::StartExperimentLogRequest& request,
-        const RPCParameters& parameters) {
+    ::bosdyn::api::log_status::StartExperimentLogRequest& request,
+    const RPCParameters& parameters) {
     return StartExperimentLogAsync(request, parameters).get();
 }
 
 std::shared_future<StartRetroLogResponseType> LogStatusClient::StartRetroLogAsync(
-    ::bosdyn::api::log_status::StartRetroLogRequest& request,
-    const RPCParameters& parameters) {
+    ::bosdyn::api::log_status::StartRetroLogRequest& request, const RPCParameters& parameters) {
     std::promise<StartRetroLogResponseType> response;
     std::shared_future<StartRetroLogResponseType> future = response.get_future();
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
@@ -107,8 +109,9 @@ std::shared_future<StartRetroLogResponseType> LogStatusClient::StartRetroLogAsyn
                           bosdyn::api::log_status::StartRetroLogResponse,
                           ::bosdyn::api::log_status::StartRetroLogResponse>(
             request,
-            std::bind(&::bosdyn::api::log_status::LogStatusService::Stub::AsyncStartRetroLog,
-                      m_stub.get(), _1, _2, _3),
+            std::bind(
+                &::bosdyn::api::log_status::LogStatusService::StubInterface::AsyncStartRetroLog,
+                m_stub.get(), _1, _2, _3),
             std::bind(&LogStatusClient::OnStartRetroLogComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
@@ -116,8 +119,7 @@ std::shared_future<StartRetroLogResponseType> LogStatusClient::StartRetroLogAsyn
 }
 
 StartRetroLogResponseType LogStatusClient::StartRetroLog(
-    ::bosdyn::api::log_status::StartRetroLogRequest& request,
-    const RPCParameters& parameters) {
+    ::bosdyn::api::log_status::StartRetroLogRequest& request, const RPCParameters& parameters) {
     return StartRetroLogAsync(request, parameters).get();
 }
 
@@ -128,15 +130,16 @@ std::shared_future<UpdateExperimentLogResponseType> LogStatusClient::UpdateExper
     std::shared_future<UpdateExperimentLogResponseType> future = response.get_future();
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
 
-    MessagePumpCallBase* one_time =
-        InitiateAsyncCall<bosdyn::api::log_status::UpdateExperimentLogRequest,
-                          bosdyn::api::log_status::UpdateExperimentLogResponse,
-                          ::bosdyn::api::log_status::UpdateExperimentLogResponse>(
-            request,
-            std::bind(&::bosdyn::api::log_status::LogStatusService::Stub::AsyncUpdateExperimentLog,
-                      m_stub.get(), _1, _2, _3),
-            std::bind(&LogStatusClient::OnUpdateExperimentLogComplete, this, _1, _2, _3, _4, _5),
-            std::move(response), parameters);
+    MessagePumpCallBase* one_time = InitiateAsyncCall<
+        bosdyn::api::log_status::UpdateExperimentLogRequest,
+        bosdyn::api::log_status::UpdateExperimentLogResponse,
+        ::bosdyn::api::log_status::UpdateExperimentLogResponse>(
+        request,
+        std::bind(
+            &::bosdyn::api::log_status::LogStatusService::StubInterface::AsyncUpdateExperimentLog,
+            m_stub.get(), _1, _2, _3),
+        std::bind(&LogStatusClient::OnUpdateExperimentLogComplete, this, _1, _2, _3, _4, _5),
+        std::move(response), parameters);
 
     return future;
 }
@@ -158,8 +161,9 @@ std::shared_future<TerminateLogResponseType> LogStatusClient::TerminateLogAsync(
                           bosdyn::api::log_status::TerminateLogResponse,
                           ::bosdyn::api::log_status::TerminateLogResponse>(
             request,
-            std::bind(&::bosdyn::api::log_status::LogStatusService::Stub::AsyncTerminateLog,
-                      m_stub.get(), _1, _2, _3),
+            std::bind(
+                &::bosdyn::api::log_status::LogStatusService::StubInterface::AsyncTerminateLog,
+                m_stub.get(), _1, _2, _3),
             std::bind(&LogStatusClient::OnTerminateLogComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
@@ -193,12 +197,12 @@ void LogStatusClient::OnGetActiveLogStatusesComplete(
 }
 
 void LogStatusClient::OnStartExperimentLogComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::log_status::StartExperimentLogRequest& request,
-        ::bosdyn::api::log_status::StartExperimentLogResponse&& response, const grpc::Status& status,
-        std::promise<StartExperimentLogResponseType> promise) {
+    MessagePumpCallBase* call, const ::bosdyn::api::log_status::StartExperimentLogRequest& request,
+    ::bosdyn::api::log_status::StartExperimentLogResponse&& response, const grpc::Status& status,
+    std::promise<StartExperimentLogResponseType> promise) {
     ::bosdyn::common::Status ret_status =
-            ProcessResponseAndGetFinalStatus<::bosdyn::api::log_status::StartExperimentLogResponse>(
-                    status, response, response.status());
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::log_status::StartExperimentLogResponse>(
+            status, response, response.status());
     promise.set_value({ret_status, std::move(response)});
 }
 

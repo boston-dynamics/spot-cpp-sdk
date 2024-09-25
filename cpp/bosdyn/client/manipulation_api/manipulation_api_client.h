@@ -119,7 +119,7 @@ class ManipulationApiClient : public ServiceClient {
                                  const grpc::Status& status,
                                  std::promise<OverrideGraspResultType> promise);
 
-    std::unique_ptr<::bosdyn::api::ManipulationApiService::Stub> m_stub;
+    std::unique_ptr<::bosdyn::api::ManipulationApiService::StubInterface> m_stub;
 
     // Default service name for the manipulation API service.
     static const char* s_default_service_name;

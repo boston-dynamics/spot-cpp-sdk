@@ -49,8 +49,7 @@ class WorldObjectClient : public ServiceClient {
         const RPCParameters& parameters = RPCParameters());
 
     // Synchronous RPC method to list all world objects with no filters.
-    ListWorldObjectsResultType ListWorldObjects(
-        const RPCParameters& parameters = RPCParameters());
+    ListWorldObjectsResultType ListWorldObjects(const RPCParameters& parameters = RPCParameters());
 
     // Asynchronous RPC method to list all world objects taking the full request, which can
     // be used to specify filters on the object type or timestamp.
@@ -60,9 +59,8 @@ class WorldObjectClient : public ServiceClient {
 
     // Synchronous RPC method to list all world objects taking the full request, which can
     // be used to specify filters on the object type or timestamp.
-    ListWorldObjectsResultType ListWorldObjects(
-        ::bosdyn::api::ListWorldObjectRequest& request,
-        const RPCParameters& parameters = RPCParameters());
+    ListWorldObjectsResultType ListWorldObjects(::bosdyn::api::ListWorldObjectRequest& request,
+                                                const RPCParameters& parameters = RPCParameters());
 
     // Asynchronous RPC method to mutate (add, change, delete) a world object.
     std::shared_future<MutateWorldObjectsResultType> MutateWorldObjectsAsync(
@@ -87,25 +85,28 @@ class WorldObjectClient : public ServiceClient {
     // with.
     static std::string GetDefaultServiceName() { return s_default_service_name; }
 
-    // Get the default service type for the WorldObject service that will be registered in the directory.
+    // Get the default service type for the WorldObject service that will be registered in the
+    // directory.
     static std::string GetServiceType() { return s_service_type; }
 
  private:
     // List world objects response callback.
-    void OnListWorldObjectsComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::ListWorldObjectRequest& request,
-        ::bosdyn::api::ListWorldObjectResponse&& response, const grpc::Status& status,
-        std::promise<ListWorldObjectsResultType> promise);
+    void OnListWorldObjectsComplete(MessagePumpCallBase* call,
+                                    const ::bosdyn::api::ListWorldObjectRequest& request,
+                                    ::bosdyn::api::ListWorldObjectResponse&& response,
+                                    const grpc::Status& status,
+                                    std::promise<ListWorldObjectsResultType> promise);
 
     // Mutate world objects response callback.
-    void OnMutateWorldObjectsComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::MutateWorldObjectRequest& request,
-        ::bosdyn::api::MutateWorldObjectResponse&& response, const grpc::Status& status,
-        std::promise<MutateWorldObjectsResultType> promise);
+    void OnMutateWorldObjectsComplete(MessagePumpCallBase* call,
+                                      const ::bosdyn::api::MutateWorldObjectRequest& request,
+                                      ::bosdyn::api::MutateWorldObjectResponse&& response,
+                                      const grpc::Status& status,
+                                      std::promise<MutateWorldObjectsResultType> promise);
 
 
     // The stub for the world object client to communicate it's rpc with (and pass to the robot).
-    std::unique_ptr<::bosdyn::api::WorldObjectService::Stub> m_stub;
+    std::unique_ptr<::bosdyn::api::WorldObjectService::StubInterface> m_stub;
 
     // Default service name for the WorldObject service.
     static const char* s_default_service_name;

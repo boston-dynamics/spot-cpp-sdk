@@ -33,7 +33,7 @@ std::shared_future<ModifyPolicyResultType> KeepaliveClient::ModifyPolicyAsync(
                           ::bosdyn::api::keepalive::ModifyPolicyResponse,
                           ::bosdyn::api::keepalive::ModifyPolicyResponse>(
             request,
-            std::bind(&::bosdyn::api::keepalive::KeepaliveService::Stub::AsyncModifyPolicy,
+            std::bind(&::bosdyn::api::keepalive::KeepaliveService::StubInterface::AsyncModifyPolicy,
                       m_stub.get(), _1, _2, _3),
             std::bind(&KeepaliveClient::OnModifyPolicyComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
@@ -66,8 +66,8 @@ std::shared_future<GetStatusResultType> KeepaliveClient::GetStatusAsync(
                                                       ::bosdyn::api::keepalive::GetStatusResponse,
                                                       ::bosdyn::api::keepalive::GetStatusResponse>(
         request,
-        std::bind(&::bosdyn::api::keepalive::KeepaliveService::Stub::AsyncGetStatus, m_stub.get(),
-                  _1, _2, _3),
+        std::bind(&::bosdyn::api::keepalive::KeepaliveService::StubInterface::AsyncGetStatus,
+                  m_stub.get(), _1, _2, _3),
         std::bind(&KeepaliveClient::OnGetStatusComplete, this, _1, _2, _3, _4, _5),
         std::move(response), parameters);
 
@@ -100,8 +100,8 @@ std::shared_future<CheckInResultType> KeepaliveClient::CheckInAsync(
                                                       ::bosdyn::api::keepalive::CheckInResponse,
                                                       ::bosdyn::api::keepalive::CheckInResponse>(
         request,
-        std::bind(&::bosdyn::api::keepalive::KeepaliveService::Stub::AsyncCheckIn, m_stub.get(), _1,
-                  _2, _3),
+        std::bind(&::bosdyn::api::keepalive::KeepaliveService::StubInterface::AsyncCheckIn,
+                  m_stub.get(), _1, _2, _3),
         std::bind(&KeepaliveClient::OnCheckInComplete, this, _1, _2, _3, _4, _5),
         std::move(response), parameters);
 

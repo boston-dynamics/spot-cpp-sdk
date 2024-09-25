@@ -19,7 +19,6 @@ namespace common {
 Status::Status(const std::error_code& code, std::string message)
     : m_code(code), m_message(std::move(message)) {}
 
-
 Status Status::Chain(std::string message) const {
     message += ": ";
     message += m_message;
@@ -42,9 +41,9 @@ std::string Status::DebugString() const {
 }
 
 Status::operator bool() const {
-    // ::bosdyn::common::Status is the opposite of an std::error_code, meaning if error_code is set to
-    // success/0, which casts to false, ::bosdyn::common::Status will be set to true. This makes it more
-    // intuitive if it is used as the return type of a method.
+    // ::bosdyn::common::Status is the opposite of an std::error_code, meaning if error_code is set
+    // to success/0, which casts to false, ::bosdyn::common::Status will be set to true. This makes
+    // it more intuitive if it is used as the return type of a method.
     return (m_code == SuccessCondition::Success);
 }
 

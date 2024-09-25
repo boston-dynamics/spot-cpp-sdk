@@ -9,8 +9,8 @@
 
 #pragma once
 
-#include "bosdyn/client/service_client/result.h"
 #include "bosdyn/client/error_codes/sdk_error_code.h"
+#include "bosdyn/client/service_client/result.h"
 
 #include <bosdyn/api/data_chunk.pb.h>
 
@@ -28,7 +28,6 @@ namespace client {
 Result<std::string> StringFromDataChunks(
     const std::vector<const ::bosdyn::api::DataChunk*>& data_chunks);
 
-
 /**
  * Create a message from deserializing concatenated data chunks.
  *
@@ -36,9 +35,8 @@ Result<std::string> StringFromDataChunks(
  *
  * @return Result struct with std::shared_ptr with the deserialized message.
  */
-template<class T>
-Result<T> MessageFromDataChunks(
-    const std::vector<const ::bosdyn::api::DataChunk*>& data_chunks){
+template <class T>
+Result<T> MessageFromDataChunks(const std::vector<const ::bosdyn::api::DataChunk*>& data_chunks) {
     const Result<std::string>& result = StringFromDataChunks(data_chunks);
     if (!result) {
         return {result.status, {}};
@@ -47,11 +45,11 @@ Result<T> MessageFromDataChunks(
     T output;
     if (!output.ParseFromString(result.response)) {
         return {::bosdyn::common::Status(SDKErrorCode::GenericSDKError,
-                       "Could not deserialize concatenated chunks into message"), {}};
+                                         "Could not deserialize concatenated chunks into message"),
+                {}};
     }
     return {::bosdyn::common::Status(SDKErrorCode::Success), std::move(output)};
 }
-
 
 /**
  * Create a vector of data chunks from a std::string.
@@ -61,9 +59,7 @@ Result<T> MessageFromDataChunks(
  *
  * @return None, output from method is returned in chunks argument.
  */
-void StringToDataChunks(const std::string& data,
-                        std::vector<::bosdyn::api::DataChunk>* chunks);
-
+void StringToDataChunks(const std::string& data, std::vector<::bosdyn::api::DataChunk>* chunks);
 
 /**
  * Create a vector of data chunks from a templatized message.
@@ -75,12 +71,13 @@ void StringToDataChunks(const std::string& data,
  *
  * @return ::bosdyn::common::Status with any errors found.
  */
-template<class T>
+template <class T>
 ::bosdyn::common::Status MessageToDataChunks(const T& message,
-                           std::vector<::bosdyn::api::DataChunk>* chunks) {
+                                             std::vector<::bosdyn::api::DataChunk>* chunks) {
     std::string buffer;
     if (!message.SerializeToString(&buffer)) {
-        return ::bosdyn::common::Status(SDKErrorCode::GenericSDKError, "Could not serialize message");
+        return ::bosdyn::common::Status(SDKErrorCode::GenericSDKError,
+                                        "Could not serialize message");
     }
     StringToDataChunks(buffer, chunks);
     return ::bosdyn::common::Status(SDKErrorCode::Success);

@@ -43,8 +43,8 @@ std::shared_future<RobotCommandResultType> RobotCommandClient::RobotCommandAsync
         InitiateAsyncCall<::bosdyn::api::RobotCommandRequest, ::bosdyn::api::RobotCommandResponse,
                           ::bosdyn::api::RobotCommandResponse>(
             request,
-            std::bind(&::bosdyn::api::RobotCommandService::Stub::AsyncRobotCommand, m_stub.get(),
-                      _1, _2, _3),
+            std::bind(&::bosdyn::api::RobotCommandService::StubInterface::AsyncRobotCommand,
+                      m_stub.get(), _1, _2, _3),
             std::bind(&RobotCommandClient::OnRobotCommandComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
@@ -162,7 +162,7 @@ std::shared_future<RobotCommandFeedbackResultType> RobotCommandClient::RobotComm
                                                       ::bosdyn::api::RobotCommandFeedbackResponse,
                                                       ::bosdyn::api::RobotCommandFeedbackResponse>(
         request,
-        std::bind(&::bosdyn::api::RobotCommandService::Stub::AsyncRobotCommandFeedback,
+        std::bind(&::bosdyn::api::RobotCommandService::StubInterface::AsyncRobotCommandFeedback,
                   m_stub.get(), _1, _2, _3),
         std::bind(&RobotCommandClient::OnRobotCommandFeedbackComplete, this, _1, _2, _3, _4, _5),
         std::move(response), parameters);
@@ -209,8 +209,8 @@ std::shared_future<ClearBehaviorFaultResultType> RobotCommandClient::ClearBehavi
                                                       ::bosdyn::api::ClearBehaviorFaultResponse,
                                                       ::bosdyn::api::ClearBehaviorFaultResponse>(
         request,
-        std::bind(&::bosdyn::api::RobotCommandService::Stub::AsyncClearBehaviorFault, m_stub.get(),
-                  _1, _2, _3),
+        std::bind(&::bosdyn::api::RobotCommandService::StubInterface::AsyncClearBehaviorFault,
+                  m_stub.get(), _1, _2, _3),
         std::bind(&RobotCommandClient::OnClearBehaviorFaultComplete, this, _1, _2, _3, _4, _5),
         std::move(response), parameters);
 

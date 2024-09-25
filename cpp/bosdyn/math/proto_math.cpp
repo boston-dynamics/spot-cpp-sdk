@@ -513,7 +513,7 @@ bool SafeInflate(const ::bosdyn::api::SE2Pose& in_se2_pose, const std::string& b
     if (!IsGravityAlignedFrameName(base_frame_name)) {
         return false;
     }
-    *out_se3_pose = Inflate(in_se2_pose);
+    *out_se3_pose = Inflate(in_se2_pose, z_height);
     return true;
 }
 

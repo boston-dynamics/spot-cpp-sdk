@@ -25,7 +25,7 @@ namespace client {
 template <class RequestType>
 void SetRequestHeader(const std::string client_name, RequestType* req) {
     ::bosdyn::common::SetTimestamp(::bosdyn::common::NowNsec(),
-                                 req->mutable_header()->mutable_request_timestamp());
+                                   req->mutable_header()->mutable_request_timestamp());
     req->mutable_header()->set_client_name(client_name);
 }
 

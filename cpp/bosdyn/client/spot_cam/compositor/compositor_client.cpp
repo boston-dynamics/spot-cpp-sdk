@@ -45,8 +45,8 @@ std::shared_future<SetScreenResultType> CompositorClient::SetScreenAsync(
                                                       ::bosdyn::api::spot_cam::SetScreenResponse,
                                                       ::bosdyn::api::spot_cam::SetScreenResponse>(
         request,
-        std::bind(&::bosdyn::api::spot_cam::CompositorService::Stub::AsyncSetScreen, m_stub.get(),
-                  _1, _2, _3),
+        std::bind(&::bosdyn::api::spot_cam::CompositorService::StubInterface::AsyncSetScreen,
+                  m_stub.get(), _1, _2, _3),
         std::bind(&CompositorClient::OnSetScreenComplete, this, _1, _2, _3, _4, _5),
         std::move(response), parameters);
 
@@ -82,8 +82,9 @@ std::shared_future<GetIrColormapResultType> CompositorClient::GetIrColormapAsync
                           ::bosdyn::api::spot_cam::GetIrColormapResponse,
                           ::bosdyn::api::spot_cam::GetIrColormapResponse>(
             request,
-            std::bind(&::bosdyn::api::spot_cam::CompositorService::Stub::AsyncGetIrColormap,
-                      m_stub.get(), _1, _2, _3),
+            std::bind(
+                &::bosdyn::api::spot_cam::CompositorService::StubInterface::AsyncGetIrColormap,
+                m_stub.get(), _1, _2, _3),
             std::bind(&CompositorClient::OnGetIrColormapComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
@@ -128,8 +129,9 @@ std::shared_future<SetIrColormapResultType> CompositorClient::SetIrColormapAsync
                           ::bosdyn::api::spot_cam::SetIrColormapResponse,
                           ::bosdyn::api::spot_cam::SetIrColormapResponse>(
             request,
-            std::bind(&::bosdyn::api::spot_cam::CompositorService::Stub::AsyncSetIrColormap,
-                      m_stub.get(), _1, _2, _3),
+            std::bind(
+                &::bosdyn::api::spot_cam::CompositorService::StubInterface::AsyncSetIrColormap,
+                m_stub.get(), _1, _2, _3),
             std::bind(&CompositorClient::OnSetIrColormapComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
@@ -244,8 +246,9 @@ std::shared_future<SetIrMeterOverlayResultType> CompositorClient::SetIrMeterOver
                           ::bosdyn::api::spot_cam::SetIrMeterOverlayResponse,
                           ::bosdyn::api::spot_cam::SetIrMeterOverlayResponse>(
             request,
-            std::bind(&::bosdyn::api::spot_cam::CompositorService::Stub::AsyncSetIrMeterOverlay,
-                      m_stub.get(), _1, _2, _3),
+            std::bind(
+                &::bosdyn::api::spot_cam::CompositorService::StubInterface::AsyncSetIrMeterOverlay,
+                m_stub.get(), _1, _2, _3),
             std::bind(&CompositorClient::OnSetIrMeterOverlayComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
@@ -269,8 +272,9 @@ std::shared_future<GetIrMeterOverlayResultType> CompositorClient::GetIrMeterOver
                           ::bosdyn::api::spot_cam::GetIrMeterOverlayResponse,
                           ::bosdyn::api::spot_cam::GetIrMeterOverlayResponse>(
             request,
-            std::bind(&::bosdyn::api::spot_cam::CompositorService::Stub::AsyncGetIrMeterOverlay,
-                      m_stub.get(), _1, _2, _3),
+            std::bind(
+                &::bosdyn::api::spot_cam::CompositorService::StubInterface::AsyncGetIrMeterOverlay,
+                m_stub.get(), _1, _2, _3),
             std::bind(&CompositorClient::OnGetIrMeterOverlayComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
@@ -336,8 +340,8 @@ std::shared_future<GetScreenResultType> CompositorClient::GetScreenAsync(
                                                       ::bosdyn::api::spot_cam::GetScreenResponse,
                                                       ::bosdyn::api::spot_cam::GetScreenResponse>(
         request,
-        std::bind(&::bosdyn::api::spot_cam::CompositorService::Stub::AsyncGetScreen, m_stub.get(),
-                  _1, _2, _3),
+        std::bind(&::bosdyn::api::spot_cam::CompositorService::StubInterface::AsyncGetScreen,
+                  m_stub.get(), _1, _2, _3),
         std::bind(&CompositorClient::OnGetScreenComplete, this, _1, _2, _3, _4, _5),
         std::move(response), parameters);
 
@@ -371,8 +375,8 @@ std::shared_future<ListScreensResultType> CompositorClient::ListScreensAsync(
                                                       ::bosdyn::api::spot_cam::ListScreensResponse,
                                                       ::bosdyn::api::spot_cam::ListScreensResponse>(
         request,
-        std::bind(&::bosdyn::api::spot_cam::CompositorService::Stub::AsyncListScreens, m_stub.get(),
-                  _1, _2, _3),
+        std::bind(&::bosdyn::api::spot_cam::CompositorService::StubInterface::AsyncListScreens,
+                  m_stub.get(), _1, _2, _3),
         std::bind(&CompositorClient::OnListScreensComplete, this, _1, _2, _3, _4, _5),
         std::move(response), parameters);
 
@@ -406,8 +410,9 @@ std::shared_future<GetVisibleCamerasResultType> CompositorClient::GetVisibleCame
                           ::bosdyn::api::spot_cam::GetVisibleCamerasResponse,
                           ::bosdyn::api::spot_cam::GetVisibleCamerasResponse>(
             request,
-            std::bind(&::bosdyn::api::spot_cam::CompositorService::Stub::AsyncGetVisibleCameras,
-                      m_stub.get(), _1, _2, _3),
+            std::bind(
+                &::bosdyn::api::spot_cam::CompositorService::StubInterface::AsyncGetVisibleCameras,
+                m_stub.get(), _1, _2, _3),
             std::bind(&CompositorClient::OnGetVisibleCamerasComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 

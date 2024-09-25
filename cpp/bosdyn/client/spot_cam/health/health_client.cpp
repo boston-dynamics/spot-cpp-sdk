@@ -37,7 +37,7 @@ std::shared_future<ClearBITEventsResultType> HealthClient::ClearBITEventsAsync(
                           ::bosdyn::api::spot_cam::ClearBITEventsResponse,
                           ::bosdyn::api::spot_cam::ClearBITEventsResponse>(
             request,
-            std::bind(&::bosdyn::api::spot_cam::HealthService::Stub::AsyncClearBITEvents,
+            std::bind(&::bosdyn::api::spot_cam::HealthService::StubInterface::AsyncClearBITEvents,
                       m_stub.get(), _1, _2, _3),
             std::bind(&HealthClient::OnClearBITEventsComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
@@ -72,7 +72,7 @@ std::shared_future<GetBITStatusResultType> HealthClient::GetBITStatusAsync(
                           ::bosdyn::api::spot_cam::GetBITStatusResponse,
                           ::bosdyn::api::spot_cam::GetBITStatusResponse>(
             request,
-            std::bind(&::bosdyn::api::spot_cam::HealthService::Stub::AsyncGetBITStatus,
+            std::bind(&::bosdyn::api::spot_cam::HealthService::StubInterface::AsyncGetBITStatus,
                       m_stub.get(), _1, _2, _3),
             std::bind(&HealthClient::OnGetBITStatusComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
@@ -107,7 +107,7 @@ std::shared_future<GetTemperatureResultType> HealthClient::GetTemperatureAsync(
                           ::bosdyn::api::spot_cam::GetTemperatureResponse,
                           ::bosdyn::api::spot_cam::GetTemperatureResponse>(
             request,
-            std::bind(&::bosdyn::api::spot_cam::HealthService::Stub::AsyncGetTemperature,
+            std::bind(&::bosdyn::api::spot_cam::HealthService::StubInterface::AsyncGetTemperature,
                       m_stub.get(), _1, _2, _3),
             std::bind(&HealthClient::OnGetTemperatureComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
@@ -141,7 +141,7 @@ std::shared_future<GetSystemLogResultType> HealthClient::GetSystemLogAsync(
         InitiateResponseStreamAsyncCall<::bosdyn::api::spot_cam::GetSystemLogRequest,
                                         ::bosdyn::api::spot_cam::GetSystemLogResponse, std::string>(
             request,
-            std::bind(&::bosdyn::api::spot_cam::HealthService::Stub::AsyncGetSystemLog,
+            std::bind(&::bosdyn::api::spot_cam::HealthService::StubInterface::AsyncGetSystemLog,
                       m_stub.get(), _1, _2, _3, _4),
             std::bind(&HealthClient::OnGetSystemLogComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);

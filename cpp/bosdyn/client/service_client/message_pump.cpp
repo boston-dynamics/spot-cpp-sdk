@@ -50,9 +50,10 @@ UpdateStatus MessagePump::CompleteOne(::bosdyn::common::Duration duration) {
             if (tag != nullptr) {
                 MessagePumpCallBase* call_base = static_cast<MessagePumpCallBase*>(tag);
                 if (call_base->OnCompletionQueueEvent(ok)) {
-                    // IMPORTANT NOTE: The OutstandingCallTracker owns a unique_ptr to the call base object. The
-                    // call base object will be deleted by this RemoveCall function because the unique_ptr will be
-                    // when it is removed from the map in the OutstandingCallTracker.
+                    // IMPORTANT NOTE: The OutstandingCallTracker owns a unique_ptr to the call base
+                    // object. The call base object will be deleted by this RemoveCall function
+                    // because the unique_ptr will be when it is removed from the map in the
+                    // OutstandingCallTracker.
                     m_outstanding_calls.RemoveCall(call_base);
                 }
             }
@@ -83,10 +84,10 @@ void MessagePump::RequestShutdown() {
         m_has_auto_update_started = false;
     }
 
-    // Finally, delete all remaining call objects  from the OutstandingCallTracker. Note, we delete these at
-    // the very end because a call object also contains references to m_context and m_response, and these
-    // are referenced in any AsyncNext calls that could get issued within the CompleteOne function by the
-    // completion queue or when trying to join the auto update thread.
+    // Finally, delete all remaining call objects  from the OutstandingCallTracker. Note, we delete
+    // these at the very end because a call object also contains references to m_context and
+    // m_response, and these are referenced in any AsyncNext calls that could get issued within the
+    // CompleteOne function by the completion queue or when trying to join the auto update thread.
     m_outstanding_calls.RemoveAllCalls();
 
 }
@@ -120,7 +121,6 @@ void OutstandingCallTracker::RemoveAllCalls() {
     std::lock_guard<std::mutex> lock(m_mutex);
     m_calls.clear();
 }
-
 
 }  // namespace client
 

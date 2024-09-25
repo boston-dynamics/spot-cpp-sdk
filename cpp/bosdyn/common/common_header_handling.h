@@ -156,8 +156,8 @@ enum RequestReflectOption {
 /// \param[out] out_response           Response, whose header is to be updated by this call.
 /// \return     False if header was not validated, true if validated.
 template <class RequestType, class ResponseType>
-[[deprecated("Call the other overload of ValidateRequestHeaderAndRespond instead")]] \
-bool ValidateRequestHeaderAndRespond(const RequestType& request,
+[[deprecated("Call the other overload of ValidateRequestHeaderAndRespond instead")]] bool
+ValidateRequestHeaderAndRespond(const RequestType& request,
                                 RequestReflectOption response_reflect_option,
                                 ResponseType* out_response) {
     return ValidateRequestHeaderAndRespond(request, out_response, response_reflect_option);

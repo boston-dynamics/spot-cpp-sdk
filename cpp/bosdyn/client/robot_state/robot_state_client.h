@@ -56,8 +56,7 @@ class RobotStateClient : public ServiceClient {
         const RPCParameters& parameters = RPCParameters());
 
     // Synchronous method to get dynamic robot state.
-    RobotStateResultType GetRobotState(
-        const RPCParameters& parameters = RPCParameters());
+    RobotStateResultType GetRobotState(const RPCParameters& parameters = RPCParameters());
 
     // Asynchronous method to get the robot metrics, which includes different robot parameters and
     // the associated descriptions, units, and values.
@@ -65,11 +64,10 @@ class RobotStateClient : public ServiceClient {
         const RPCParameters& parameters = RPCParameters());
 
     // Synchronous method to get the robot metrics.
-    RobotMetricsResultType GetRobotMetrics(
-        const RPCParameters& parameters = RPCParameters());
+    RobotMetricsResultType GetRobotMetrics(const RPCParameters& parameters = RPCParameters());
 
-    // Asynchronous method to get the robot hardware configuration, which includes the robot skeleton
-    // containing all link and joint object models and urdf.
+    // Asynchronous method to get the robot hardware configuration, which includes the robot
+    // skeleton containing all link and joint object models and urdf.
     std::shared_future<HardwareConfigurationResultType> GetRobotHardwareConfigurationAsync(
         const RPCParameters& parameters = RPCParameters());
 
@@ -80,13 +78,11 @@ class RobotStateClient : public ServiceClient {
     // Asynchronous method to get OBJ file for a specific robot link. Typically this RPC is called
     // after getting the full hardware configuration such that a specific link name can be used.
     std::shared_future<LinkObjectModelResultType> GetRobotLinkModelAsync(
-        const std::string& link_name,
-        const RPCParameters& parameters = RPCParameters());
+        const std::string& link_name, const RPCParameters& parameters = RPCParameters());
 
     // Synchronous method to get OBJ file for a specific robot link.
-    LinkObjectModelResultType GetRobotLinkModel(
-        const std::string& link_name,
-        const RPCParameters& parameters = RPCParameters());
+    LinkObjectModelResultType GetRobotLinkModel(const std::string& link_name,
+                                                const RPCParameters& parameters = RPCParameters());
 
     // Sets the QualityOfService enum for the robot state client to be used for network selection
     // optimization.
@@ -99,12 +95,13 @@ class RobotStateClient : public ServiceClient {
     // Get the default service name the RobotState service will be registered in the directory with.
     static std::string GetDefaultServiceName() { return s_default_service_name; }
 
-    // Get the default service type for the RobotState service that will be registered in the directory.
+    // Get the default service type for the RobotState service that will be registered in the
+    // directory.
     static std::string GetServiceType() { return s_service_type; }
 
  private:
     // The stub for the robot state client to communicate it's rpc with (and pass to the robot).
-    std::unique_ptr<::bosdyn::api::RobotStateService::Stub> m_stub;
+    std::unique_ptr<::bosdyn::api::RobotStateService::StubInterface> m_stub;
 
     // Default service name for the RobotState service.
     static const char* s_default_service_name;
@@ -114,17 +111,19 @@ class RobotStateClient : public ServiceClient {
 
     // Callback that will return the current RobotState message after GetRobotState rpc returns to
     // the client.
-    void OnGetRobotStateComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::RobotStateRequest& request,
-        ::bosdyn::api::RobotStateResponse&& response, const grpc::Status& status,
-        std::promise<RobotStateResultType> promise);
+    void OnGetRobotStateComplete(MessagePumpCallBase* call,
+                                 const ::bosdyn::api::RobotStateRequest& request,
+                                 ::bosdyn::api::RobotStateResponse&& response,
+                                 const grpc::Status& status,
+                                 std::promise<RobotStateResultType> promise);
 
     // Callback that will return the current RobotMetrics message after GetRobotMetrics rpc returns
     // to the client.
-    void OnGetRobotMetricsComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::RobotMetricsRequest& request,
-        ::bosdyn::api::RobotMetricsResponse&& response, const grpc::Status& status,
-        std::promise<RobotMetricsResultType> promise);
+    void OnGetRobotMetricsComplete(MessagePumpCallBase* call,
+                                   const ::bosdyn::api::RobotMetricsRequest& request,
+                                   ::bosdyn::api::RobotMetricsResponse&& response,
+                                   const grpc::Status& status,
+                                   std::promise<RobotMetricsResultType> promise);
 
     // Callback that will return the current HardwareConfiguration message after
     // GetRobotHardwareConfiguration rpc returns to the client.
@@ -135,10 +134,11 @@ class RobotStateClient : public ServiceClient {
 
     // Callback that will return the current link object model message for the specific link
     // requested after the GetRobotLinkObjectModel rpc returns to the client.
-    void OnGetRobotLinkObjectModelComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::RobotLinkModelRequest& request,
-        ::bosdyn::api::RobotLinkModelResponse&& response, const grpc::Status& status,
-        std::promise<LinkObjectModelResultType> promise);
+    void OnGetRobotLinkObjectModelComplete(MessagePumpCallBase* call,
+                                           const ::bosdyn::api::RobotLinkModelRequest& request,
+                                           ::bosdyn::api::RobotLinkModelResponse&& response,
+                                           const grpc::Status& status,
+                                           std::promise<LinkObjectModelResultType> promise);
 
 };
 

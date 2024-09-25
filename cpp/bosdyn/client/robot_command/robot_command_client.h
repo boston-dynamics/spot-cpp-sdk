@@ -16,11 +16,11 @@
 #include <future>
 
 #include "robot_command_error_codes.h"
-#include "bosdyn/client/service_client/service_client.h"
-#include "bosdyn/common/status.h"
 #include "bosdyn/client/lease/lease.h"
 #include "bosdyn/client/lease/lease_processors.h"
+#include "bosdyn/client/service_client/service_client.h"
 #include "bosdyn/client/time_sync/time_sync_helpers.h"
+#include "bosdyn/common/status.h"
 
 namespace bosdyn {
 
@@ -51,17 +51,18 @@ class RobotCommandClient : public ServiceClient {
     std::shared_future<RobotCommandResultType> RobotCommandAsync(
         ::bosdyn::api::RobotCommand& command, Lease* lease = nullptr,
         TimeSyncEndpoint* time_sync_endpoint = nullptr,
-        ::bosdyn::common::TimePoint end_time = ::bosdyn::common::TimePoint(::bosdyn::common::Duration(0)),
+        ::bosdyn::common::TimePoint end_time =
+            ::bosdyn::common::TimePoint(::bosdyn::common::Duration(0)),
         const RPCParameters& parameters = RPCParameters());
 
     // Synchronous method to issue a robot command.
-    RobotCommandResultType RobotCommand(
-        ::bosdyn::api::RobotCommandRequest& request,
-        const RPCParameters& parameters = RPCParameters());
+    RobotCommandResultType RobotCommand(::bosdyn::api::RobotCommandRequest& request,
+                                        const RPCParameters& parameters = RPCParameters());
     RobotCommandResultType RobotCommand(
         ::bosdyn::api::RobotCommand& command, Lease* lease = nullptr,
         TimeSyncEndpoint* time_sync_endpoint = nullptr,
-        ::bosdyn::common::TimePoint end_time = ::bosdyn::common::TimePoint(::bosdyn::common::Duration(0)),
+        ::bosdyn::common::TimePoint end_time =
+            ::bosdyn::common::TimePoint(::bosdyn::common::Duration(0)),
         const RPCParameters& parameters = RPCParameters());
 
     // Asynchronous method to request robot command feedback, which indicates the state
@@ -96,10 +97,9 @@ class RobotCommandClient : public ServiceClient {
 
     // Override the update from method to set the lease wallet for the robot command client
     // to be the same as the lease wallet of the robot object.
-    void UpdateServiceFrom(
-        RequestProcessorChain& request_processor_chain,
-        ResponseProcessorChain& response_processor_chain,
-        const std::shared_ptr<LeaseWallet>& lease_wallet) override;
+    void UpdateServiceFrom(RequestProcessorChain& request_processor_chain,
+                           ResponseProcessorChain& response_processor_chain,
+                           const std::shared_ptr<LeaseWallet>& lease_wallet) override;
     // End of ServiceClient overrides.
 
     // Get the default service name the RobotCommand service will be registered in the directory
@@ -112,29 +112,33 @@ class RobotCommandClient : public ServiceClient {
     // Add a timesync endpoint into the client. This will be used to convert command end times.
     void AddTimeSyncEndpoint(TimeSyncEndpoint* endpoint) { m_time_sync_endpoint = endpoint; };
 
-    // Get the default service type for the robot command service that will be registered in the directory.
+    // Get the default service type for the robot command service that will be registered in the
+    // directory.
     static std::string GetServiceType() { return s_service_type; }
 
  private:
     // Callback function registered for the asynchronous calls to issue a robot command.
-    void OnRobotCommandComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::RobotCommandRequest& request,
-        ::bosdyn::api::RobotCommandResponse&& response, const grpc::Status& status,
-        std::promise<RobotCommandResultType> promise);
+    void OnRobotCommandComplete(MessagePumpCallBase* call,
+                                const ::bosdyn::api::RobotCommandRequest& request,
+                                ::bosdyn::api::RobotCommandResponse&& response,
+                                const grpc::Status& status,
+                                std::promise<RobotCommandResultType> promise);
 
     // Callback function registered for the asynchronous calls to request command feedback.
-    void OnRobotCommandFeedbackComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::RobotCommandFeedbackRequest& request,
-        ::bosdyn::api::RobotCommandFeedbackResponse&& response, const grpc::Status& status,
-        std::promise<RobotCommandFeedbackResultType> promise);
+    void OnRobotCommandFeedbackComplete(MessagePumpCallBase* call,
+                                        const ::bosdyn::api::RobotCommandFeedbackRequest& request,
+                                        ::bosdyn::api::RobotCommandFeedbackResponse&& response,
+                                        const grpc::Status& status,
+                                        std::promise<RobotCommandFeedbackResultType> promise);
 
     // Callback function registered for the asynchronous calls to clear a behavior fault.
-    void OnClearBehaviorFaultComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::ClearBehaviorFaultRequest& request,
-        ::bosdyn::api::ClearBehaviorFaultResponse&& response, const grpc::Status& status,
-        std::promise<ClearBehaviorFaultResultType> promise);
+    void OnClearBehaviorFaultComplete(MessagePumpCallBase* call,
+                                      const ::bosdyn::api::ClearBehaviorFaultRequest& request,
+                                      ::bosdyn::api::ClearBehaviorFaultResponse&& response,
+                                      const grpc::Status& status,
+                                      std::promise<ClearBehaviorFaultResultType> promise);
 
-    std::unique_ptr<::bosdyn::api::RobotCommandService::Stub> m_stub;
+    std::unique_ptr<::bosdyn::api::RobotCommandService::StubInterface> m_stub;
 
     // Default service name for the robot command service.
     static const char* s_default_service_name;
@@ -151,12 +155,11 @@ class RobotCommandClient : public ServiceClient {
     TimeSyncEndpoint* m_time_sync_endpoint = nullptr;
 
     // Helper function to update the robot command messages that contain and require a timestamp.
-    void MutateEndTime(
-        ::bosdyn::api::RobotCommand* robot_command, const google::protobuf::Timestamp& end_time);
+    void MutateEndTime(::bosdyn::api::RobotCommand* robot_command,
+                       const google::protobuf::Timestamp& end_time);
 
-    void MutateEndTime(
-        ::bosdyn::api::MobilityCommand::Request* mobility_command,
-        const google::protobuf::Timestamp& end_time);
+    void MutateEndTime(::bosdyn::api::MobilityCommand::Request* mobility_command,
+                       const google::protobuf::Timestamp& end_time);
 };
 
 }  // namespace client

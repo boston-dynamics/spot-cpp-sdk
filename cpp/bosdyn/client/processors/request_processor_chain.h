@@ -43,8 +43,9 @@ class RequestProcessorChain {
     void PrependProcessor(const std::shared_ptr<RequestProcessor>& processor);
 
     // Run all processors over a new request.
-    ::bosdyn::common::Status Process(grpc::ClientContext* context, ::bosdyn::api::RequestHeader* request_header,
-                   ::google::protobuf::Message* full_request);
+    ::bosdyn::common::Status Process(grpc::ClientContext* context,
+                                     ::bosdyn::api::RequestHeader* request_header,
+                                     ::google::protobuf::Message* full_request);
 
  private:
     std::list<std::shared_ptr<RequestProcessor>> m_processors;

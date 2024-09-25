@@ -17,9 +17,9 @@
 #include <string>
 #include <vector>
 
-#include "bosdyn/client/service_client/service_client.h"
-#include "bosdyn/client/service_client/rpc_parameters.h"
 #include "bosdyn/client/image/image_error_codes.h"
+#include "bosdyn/client/service_client/rpc_parameters.h"
+#include "bosdyn/client/service_client/service_client.h"
 
 namespace bosdyn {
 
@@ -39,8 +39,7 @@ class ImageClient : public ServiceClient {
         const RPCParameters& parameters = RPCParameters());
 
     // Synchronous method to get a ListImageSourcesResponse.
-    ImageListSourcesResultType ListImageSources(
-        const RPCParameters& parameters = RPCParameters());
+    ImageListSourcesResultType ListImageSources(const RPCParameters& parameters = RPCParameters());
 
     // Asynchronous method to get a GetImageResponse for a list of image sources. Defaults for
     // image quality and image type are used.
@@ -50,21 +49,18 @@ class ImageClient : public ServiceClient {
 
     // Synchronous method to get a GetImageResponse for a list of image sources. Defaults for
     // image quality and image type are used.
-    GetImageResultType GetImage(
-        const std::vector<std::string>& image_sources,
-        const RPCParameters& parameters = RPCParameters());
+    GetImageResultType GetImage(const std::vector<std::string>& image_sources,
+                                const RPCParameters& parameters = RPCParameters());
 
     // Asynchronous method to get a GetImageResponse for the given GetImageRequest.
     // request is not const because the method updates the header.
     std::shared_future<GetImageResultType> GetImageAsync(
-        ::bosdyn::api::GetImageRequest& request,
-        const RPCParameters& parameters = RPCParameters());
+        ::bosdyn::api::GetImageRequest& request, const RPCParameters& parameters = RPCParameters());
 
     // Synchronous method to get a GetImageResponse for the given GetImageRequest.
     // request is not const because the method updates the header.
-    GetImageResultType GetImage(
-        ::bosdyn::api::GetImageRequest& request,
-        const RPCParameters& parameters = RPCParameters());
+    GetImageResultType GetImage(::bosdyn::api::GetImageRequest& request,
+                                const RPCParameters& parameters = RPCParameters());
 
     // Start of ServiceClient overrides.
     QualityOfService GetQualityOfService() const override;
@@ -79,23 +75,26 @@ class ImageClient : public ServiceClient {
 
  private:
     // Callback function registered for the asynchronous ListSources calls.
-    void OnListSourcesComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::ListImageSourcesRequest& request,
-        ::bosdyn::api::ListImageSourcesResponse&& response, const grpc::Status& status,
-        std::promise<ImageListSourcesResultType> promise);
+    void OnListSourcesComplete(MessagePumpCallBase* call,
+                               const ::bosdyn::api::ListImageSourcesRequest& request,
+                               ::bosdyn::api::ListImageSourcesResponse&& response,
+                               const grpc::Status& status,
+                               std::promise<ImageListSourcesResultType> promise);
 
     // Callback function registered for the asynchronous GetImage calls.
-    void OnGetImageComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::GetImageRequest& request,
-        ::bosdyn::api::GetImageResponse&& response, const grpc::Status& status,
-        std::promise<GetImageResultType> promise);
+    void OnGetImageComplete(MessagePumpCallBase* call,
+                            const ::bosdyn::api::GetImageRequest& request,
+                            ::bosdyn::api::GetImageResponse&& response, const grpc::Status& status,
+                            std::promise<GetImageResultType> promise);
 
-    static void BuildImageRequest(::bosdyn::api::ImageRequest* image_request, const std::string& image_source_name,
-                           double quality_percent = 75.0,
-                           const ::bosdyn::api::Image_Format& image_format = ::bosdyn::api::Image_Format_FORMAT_UNKNOWN,
-                           const double resize_ratio = 0.0);
+    static void BuildImageRequest(::bosdyn::api::ImageRequest* image_request,
+                                  const std::string& image_source_name,
+                                  double quality_percent = 75.0,
+                                  const ::bosdyn::api::Image_Format& image_format =
+                                      ::bosdyn::api::Image_Format_FORMAT_UNKNOWN,
+                                  const double resize_ratio = 0.0);
 
-    std::unique_ptr<::bosdyn::api::ImageService::Stub> m_stub;
+    std::unique_ptr<::bosdyn::api::ImageService::StubInterface> m_stub;
 
     // Default service name for the Image service.
     static const char* s_default_service_name;

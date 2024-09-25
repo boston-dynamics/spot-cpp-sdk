@@ -30,23 +30,25 @@ std::shared_future<StartRecordingResultType> GraphNavRecordingClient::StartRecor
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
     // Run a lease processor function to attempt to automatically apply a lease to the request if
     // a lease is not already set.
-    auto lease_status = ProcessRequestWithLease(&request, m_lease_wallet.get(),
-                                                ::bosdyn::client::kBodyResource);
+    auto lease_status =
+        ProcessRequestWithLease(&request, m_lease_wallet.get(), ::bosdyn::client::kBodyResource);
     if (!lease_status) {
-        // Failed to set a lease with the lease wallet. Return early since the request will fail without a lease.
+        // Failed to set a lease with the lease wallet. Return early since the request will fail
+        // without a lease.
         response.set_value({lease_status, {}});
         return future;
     }
 
-    MessagePumpCallBase* one_time =
-        InitiateAsyncCall<::bosdyn::api::graph_nav::StartRecordingRequest,
-                          ::bosdyn::api::graph_nav::StartRecordingResponse,
-                          ::bosdyn::api::graph_nav::StartRecordingResponse>(
-            request,
-            std::bind(&::bosdyn::api::graph_nav::GraphNavRecordingService::Stub::AsyncStartRecording,
-                      m_stub.get(), _1, _2, _3),
-            std::bind(&GraphNavRecordingClient::OnStartRecordingComplete, this, _1, _2, _3, _4, _5),
-            std::move(response), parameters);
+    MessagePumpCallBase* one_time = InitiateAsyncCall<
+        ::bosdyn::api::graph_nav::StartRecordingRequest,
+        ::bosdyn::api::graph_nav::StartRecordingResponse,
+        ::bosdyn::api::graph_nav::StartRecordingResponse>(
+        request,
+        std::bind(
+            &::bosdyn::api::graph_nav::GraphNavRecordingService::StubInterface::AsyncStartRecording,
+            m_stub.get(), _1, _2, _3),
+        std::bind(&GraphNavRecordingClient::OnStartRecordingComplete, this, _1, _2, _3, _4, _5),
+        std::move(response), parameters);
 
     return future;
 }
@@ -64,8 +66,7 @@ void GraphNavRecordingClient::OnStartRecordingComplete(
         ProcessResponseWithLeaseAndGetFinalStatus<::bosdyn::api::graph_nav::StartRecordingResponse>(
             status, response, response.status(), m_lease_wallet.get());
 
-    promise.set_value(
-        {ret_status, std::move(response)});
+    promise.set_value({ret_status, std::move(response)});
 }
 
 std::shared_future<StopRecordingResultType> GraphNavRecordingClient::StopRecordingAsync(
@@ -75,23 +76,25 @@ std::shared_future<StopRecordingResultType> GraphNavRecordingClient::StopRecordi
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
     // Run a lease processor function to attempt to automatically apply a lease to the request if
     // a lease is not already set.
-    auto lease_status = ProcessRequestWithLease(&request, m_lease_wallet.get(),
-                                                ::bosdyn::client::kBodyResource);
+    auto lease_status =
+        ProcessRequestWithLease(&request, m_lease_wallet.get(), ::bosdyn::client::kBodyResource);
     if (!lease_status) {
-        // Failed to set a lease with the lease wallet. Return early since the request will fail without a lease.
+        // Failed to set a lease with the lease wallet. Return early since the request will fail
+        // without a lease.
         response.set_value({lease_status, {}});
         return future;
     }
 
-    MessagePumpCallBase* one_time =
-        InitiateAsyncCall<::bosdyn::api::graph_nav::StopRecordingRequest,
-                          ::bosdyn::api::graph_nav::StopRecordingResponse,
-                          ::bosdyn::api::graph_nav::StopRecordingResponse>(
-            request,
-            std::bind(&::bosdyn::api::graph_nav::GraphNavRecordingService::Stub::AsyncStopRecording,
-                      m_stub.get(), _1, _2, _3),
-            std::bind(&GraphNavRecordingClient::OnStopRecordingComplete, this, _1, _2, _3, _4, _5),
-            std::move(response), parameters);
+    MessagePumpCallBase* one_time = InitiateAsyncCall<
+        ::bosdyn::api::graph_nav::StopRecordingRequest,
+        ::bosdyn::api::graph_nav::StopRecordingResponse,
+        ::bosdyn::api::graph_nav::StopRecordingResponse>(
+        request,
+        std::bind(
+            &::bosdyn::api::graph_nav::GraphNavRecordingService::StubInterface::AsyncStopRecording,
+            m_stub.get(), _1, _2, _3),
+        std::bind(&GraphNavRecordingClient::OnStopRecordingComplete, this, _1, _2, _3, _4, _5),
+        std::move(response), parameters);
 
     return future;
 }
@@ -109,8 +112,7 @@ void GraphNavRecordingClient::OnStopRecordingComplete(
         ProcessResponseWithLeaseAndGetFinalStatus<::bosdyn::api::graph_nav::StopRecordingResponse>(
             status, response, response.status(), m_lease_wallet.get());
 
-    promise.set_value(
-        {ret_status, std::move(response)});
+    promise.set_value({ret_status, std::move(response)});
 }
 
 std::shared_future<CreateWaypointResultType> GraphNavRecordingClient::CreateWaypointAsync(
@@ -120,23 +122,25 @@ std::shared_future<CreateWaypointResultType> GraphNavRecordingClient::CreateWayp
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
     // Run a lease processor function to attempt to automatically apply a lease to the request if
     // a lease is not already set.
-    auto lease_status = ProcessRequestWithLease(&request, m_lease_wallet.get(),
-                                                ::bosdyn::client::kBodyResource);
+    auto lease_status =
+        ProcessRequestWithLease(&request, m_lease_wallet.get(), ::bosdyn::client::kBodyResource);
     if (!lease_status) {
-        // Failed to set a lease with the lease wallet. Return early since the request will fail without a lease.
+        // Failed to set a lease with the lease wallet. Return early since the request will fail
+        // without a lease.
         response.set_value({lease_status, {}});
         return future;
     }
 
-    MessagePumpCallBase* one_time =
-        InitiateAsyncCall<::bosdyn::api::graph_nav::CreateWaypointRequest,
-                          ::bosdyn::api::graph_nav::CreateWaypointResponse,
-                          ::bosdyn::api::graph_nav::CreateWaypointResponse>(
-            request,
-            std::bind(&::bosdyn::api::graph_nav::GraphNavRecordingService::Stub::AsyncCreateWaypoint,
-                      m_stub.get(), _1, _2, _3),
-            std::bind(&GraphNavRecordingClient::OnCreateWaypointComplete, this, _1, _2, _3, _4, _5),
-            std::move(response), parameters);
+    MessagePumpCallBase* one_time = InitiateAsyncCall<
+        ::bosdyn::api::graph_nav::CreateWaypointRequest,
+        ::bosdyn::api::graph_nav::CreateWaypointResponse,
+        ::bosdyn::api::graph_nav::CreateWaypointResponse>(
+        request,
+        std::bind(
+            &::bosdyn::api::graph_nav::GraphNavRecordingService::StubInterface::AsyncCreateWaypoint,
+            m_stub.get(), _1, _2, _3),
+        std::bind(&GraphNavRecordingClient::OnCreateWaypointComplete, this, _1, _2, _3, _4, _5),
+        std::move(response), parameters);
 
     return future;
 }
@@ -154,22 +158,23 @@ void GraphNavRecordingClient::OnCreateWaypointComplete(
         ProcessResponseWithLeaseAndGetFinalStatus<::bosdyn::api::graph_nav::CreateWaypointResponse>(
             status, response, response.status(), m_lease_wallet.get());
 
-    promise.set_value(
-        {ret_status, std::move(response)});
+    promise.set_value({ret_status, std::move(response)});
 }
 
 std::shared_future<SetRecordingEnvironmentResultType>
 GraphNavRecordingClient::SetRecordingEnvironmentAsync(
-    ::bosdyn::api::graph_nav::SetRecordingEnvironmentRequest& request, const RPCParameters& parameters) {
+    ::bosdyn::api::graph_nav::SetRecordingEnvironmentRequest& request,
+    const RPCParameters& parameters) {
     std::promise<SetRecordingEnvironmentResultType> response;
     std::shared_future<SetRecordingEnvironmentResultType> future = response.get_future();
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
     // Run a lease processor function to attempt to automatically apply a lease to the request if
     // a lease is not already set.
-    auto lease_status = ProcessRequestWithLease(&request, m_lease_wallet.get(),
-                                                ::bosdyn::client::kBodyResource);
+    auto lease_status =
+        ProcessRequestWithLease(&request, m_lease_wallet.get(), ::bosdyn::client::kBodyResource);
     if (!lease_status) {
-        // Failed to set a lease with the lease wallet. Return early since the request will fail without a lease.
+        // Failed to set a lease with the lease wallet. Return early since the request will fail
+        // without a lease.
         response.set_value({lease_status, {}});
         return future;
     }
@@ -179,7 +184,8 @@ GraphNavRecordingClient::SetRecordingEnvironmentAsync(
                           ::bosdyn::api::graph_nav::SetRecordingEnvironmentResponse,
                           ::bosdyn::api::graph_nav::SetRecordingEnvironmentResponse>(
             request,
-            std::bind(&::bosdyn::api::graph_nav::GraphNavRecordingService::Stub::AsyncSetRecordingEnvironment,
+            std::bind(&::bosdyn::api::graph_nav::GraphNavRecordingService::StubInterface::
+                          AsyncSetRecordingEnvironment,
                       m_stub.get(), _1, _2, _3),
             std::bind(&GraphNavRecordingClient::OnSetRecordingEnvironmentComplete, this, _1, _2, _3,
                       _4, _5),
@@ -189,20 +195,21 @@ GraphNavRecordingClient::SetRecordingEnvironmentAsync(
 }
 
 SetRecordingEnvironmentResultType GraphNavRecordingClient::SetRecordingEnvironment(
-    ::bosdyn::api::graph_nav::SetRecordingEnvironmentRequest& request, const RPCParameters& parameters) {
+    ::bosdyn::api::graph_nav::SetRecordingEnvironmentRequest& request,
+    const RPCParameters& parameters) {
     return SetRecordingEnvironmentAsync(request, parameters).get();
 }
 
 void GraphNavRecordingClient::OnSetRecordingEnvironmentComplete(
-    MessagePumpCallBase* call, const ::bosdyn::api::graph_nav::SetRecordingEnvironmentRequest& request,
-    ::bosdyn::api::graph_nav::SetRecordingEnvironmentResponse&& response, const grpc::Status& status,
-    std::promise<SetRecordingEnvironmentResultType> promise) {
-    ::bosdyn::common::Status ret_status =
-        ProcessResponseWithLeaseAndGetFinalStatus<::bosdyn::api::graph_nav::SetRecordingEnvironmentResponse>(
-            status, response, SDKErrorCode::Success, m_lease_wallet.get());
+    MessagePumpCallBase* call,
+    const ::bosdyn::api::graph_nav::SetRecordingEnvironmentRequest& request,
+    ::bosdyn::api::graph_nav::SetRecordingEnvironmentResponse&& response,
+    const grpc::Status& status, std::promise<SetRecordingEnvironmentResultType> promise) {
+    ::bosdyn::common::Status ret_status = ProcessResponseWithLeaseAndGetFinalStatus<
+        ::bosdyn::api::graph_nav::SetRecordingEnvironmentResponse>(
+        status, response, SDKErrorCode::Success, m_lease_wallet.get());
 
-    promise.set_value(
-        {ret_status, std::move(response)});
+    promise.set_value({ret_status, std::move(response)});
 }
 
 std::shared_future<CreateEdgeResultType> GraphNavRecordingClient::CreateEdgeAsync(
@@ -212,22 +219,24 @@ std::shared_future<CreateEdgeResultType> GraphNavRecordingClient::CreateEdgeAsyn
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
     // Run a lease processor function to attempt to automatically apply a lease to the request if
     // a lease is not already set.
-    auto lease_status = ProcessRequestWithLease(&request, m_lease_wallet.get(),
-                                                ::bosdyn::client::kBodyResource);
+    auto lease_status =
+        ProcessRequestWithLease(&request, m_lease_wallet.get(), ::bosdyn::client::kBodyResource);
     if (!lease_status) {
-        // Failed to set a lease with the lease wallet. Return early since the request will fail without a lease.
+        // Failed to set a lease with the lease wallet. Return early since the request will fail
+        // without a lease.
         response.set_value({lease_status, {}});
         return future;
     }
 
-    MessagePumpCallBase* one_time =
-        InitiateAsyncCall<::bosdyn::api::graph_nav::CreateEdgeRequest, ::bosdyn::api::graph_nav::CreateEdgeResponse,
-                          ::bosdyn::api::graph_nav::CreateEdgeResponse>(
-            request,
-            std::bind(&::bosdyn::api::graph_nav::GraphNavRecordingService::Stub::AsyncCreateEdge,
-                      m_stub.get(), _1, _2, _3),
-            std::bind(&GraphNavRecordingClient::OnCreateEdgeComplete, this, _1, _2, _3, _4, _5),
-            std::move(response), parameters);
+    MessagePumpCallBase* one_time = InitiateAsyncCall<::bosdyn::api::graph_nav::CreateEdgeRequest,
+                                                      ::bosdyn::api::graph_nav::CreateEdgeResponse,
+                                                      ::bosdyn::api::graph_nav::CreateEdgeResponse>(
+        request,
+        std::bind(
+            &::bosdyn::api::graph_nav::GraphNavRecordingService::StubInterface::AsyncCreateEdge,
+            m_stub.get(), _1, _2, _3),
+        std::bind(&GraphNavRecordingClient::OnCreateEdgeComplete, this, _1, _2, _3, _4, _5),
+        std::move(response), parameters);
 
     return future;
 }
@@ -260,7 +269,8 @@ std::shared_future<GetRecordStatusResultType> GraphNavRecordingClient::GetRecord
                           ::bosdyn::api::graph_nav::GetRecordStatusResponse,
                           ::bosdyn::api::graph_nav::GetRecordStatusResponse>(
             request,
-            std::bind(&::bosdyn::api::graph_nav::GraphNavRecordingService::Stub::AsyncGetRecordStatus,
+            std::bind(&::bosdyn::api::graph_nav::GraphNavRecordingService::StubInterface::
+                          AsyncGetRecordStatus,
                       m_stub.get(), _1, _2, _3),
             std::bind(&GraphNavRecordingClient::OnGetRecordStatusComplete, this, _1, _2, _3, _4,
                       _5),
@@ -278,11 +288,11 @@ void GraphNavRecordingClient::OnGetRecordStatusComplete(
     MessagePumpCallBase* call, const ::bosdyn::api::graph_nav::GetRecordStatusRequest& request,
     ::bosdyn::api::graph_nav::GetRecordStatusResponse&& response, const grpc::Status& status,
     std::promise<GetRecordStatusResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::graph_nav::GetRecordStatusResponse>(
-        status, response, SDKErrorCode::Success);
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::graph_nav::GetRecordStatusResponse>(
+            status, response, SDKErrorCode::Success);
 
-    promise.set_value(
-        {ret_status, std::move(response)});
+    promise.set_value({ret_status, std::move(response)});
 }
 
 ServiceClient::QualityOfService GraphNavRecordingClient::GetQualityOfService() const {

@@ -65,7 +65,8 @@ bool SetOkIfNotError(::bosdyn::api::ResponseHeader* out_header) {
     return out_header->error().code() == ::bosdyn::api::CommonError::CODE_OK;
 }
 
-bool SetInvalidRequest(const std::string& error_message, ::bosdyn::api::ResponseHeader* out_header) {
+bool SetInvalidRequest(const std::string& error_message,
+                       ::bosdyn::api::ResponseHeader* out_header) {
     SetError(::bosdyn::api::CommonError::CODE_INVALID_REQUEST, error_message, out_header);
     return false;
 }

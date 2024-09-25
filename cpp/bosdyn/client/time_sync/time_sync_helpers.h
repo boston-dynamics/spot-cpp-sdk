@@ -14,8 +14,8 @@
 #include <thread>
 
 #include "bosdyn/client/service_client/common_result_types.h"
-#include "bosdyn/common/robot_time_converter.h"
 #include "bosdyn/client/time_sync/time_sync_client.h"
+#include "bosdyn/common/robot_time_converter.h"
 
 namespace bosdyn {
 
@@ -62,10 +62,8 @@ class TimeSyncEndpoint {
 class TimeSyncThread {
  public:
     explicit TimeSyncThread(TimeSyncClient* client, ::bosdyn::common::Duration time_sync_interval =
-                            std::chrono::nanoseconds(int64_t(60 * 1e9)))
-        : m_time_sync_interval(time_sync_interval),
-          m_time_sync_endpoint(client),
-          m_thread() {}
+                                                        std::chrono::nanoseconds(int64_t(60 * 1e9)))
+        : m_time_sync_interval(time_sync_interval), m_time_sync_endpoint(client), m_thread() {}
 
     ~TimeSyncThread() { Stop(); }
 

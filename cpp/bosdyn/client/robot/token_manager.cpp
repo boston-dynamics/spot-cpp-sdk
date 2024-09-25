@@ -14,16 +14,14 @@ namespace bosdyn {
 
 namespace client {
 
-TokenManager::TokenManager(Robot* robot, ::bosdyn::common::Duration refresh_interval) :
-    m_robot(robot),
-    m_refresh_thread_is_alive(true),
-    m_user_token_refresh_interval(refresh_interval){
+TokenManager::TokenManager(Robot* robot, ::bosdyn::common::Duration refresh_interval)
+    : m_robot(robot),
+      m_refresh_thread_is_alive(true),
+      m_user_token_refresh_interval(refresh_interval) {
     m_refresh_thread = std::thread(&TokenManager::Update, this);
 }
 
-TokenManager::~TokenManager() {
-    Stop();
-}
+TokenManager::~TokenManager() { Stop(); }
 
 void TokenManager::Stop() {
     {
@@ -45,8 +43,7 @@ void TokenManager::Update() {
     while (WaitForInterval()) {
         ::bosdyn::common::Status status = m_robot->AuthenticateWithToken(m_robot->GetUserToken());
         if (!status) {
-            fprintf(stderr, "AuthenticateWithToken failed: '%s'\n",
-                    status.DebugString().c_str());
+            fprintf(stderr, "AuthenticateWithToken failed: '%s'\n", status.DebugString().c_str());
         }
     }
 }

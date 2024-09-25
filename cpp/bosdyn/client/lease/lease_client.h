@@ -16,9 +16,9 @@
 #include <future>
 
 #include "lease.h"
+#include "bosdyn/client/lease/lease_resources.h"
 #include "bosdyn/client/service_client/service_client.h"
 #include "bosdyn/common/status.h"
-#include "bosdyn/client/lease/lease_resources.h"
 
 namespace bosdyn {
 
@@ -40,23 +40,19 @@ class LeaseClient : public ServiceClient {
 
     // Asynchronous method to acquire a lease for a resource, if resource available.
     std::shared_future<AcquireLeaseResultType> AcquireLeaseAsync(
-        const std::string& resource,
-        const RPCParameters& parameters = RPCParameters());
+        const std::string& resource, const RPCParameters& parameters = RPCParameters());
 
     // Synchronous method to issue an acquire lease request.
-    AcquireLeaseResultType AcquireLease(
-        const std::string& resource,
-        const RPCParameters& parameters = RPCParameters());
+    AcquireLeaseResultType AcquireLease(const std::string& resource,
+                                        const RPCParameters& parameters = RPCParameters());
 
     // Asynchronous method to take a lease for a resource, even if another client has a lease.
     std::shared_future<TakeLeaseResultType> TakeLeaseAsync(
-        const std::string& resource,
-        const RPCParameters& parameters = RPCParameters());
+        const std::string& resource, const RPCParameters& parameters = RPCParameters());
 
     // Synchronous method to issue a take lease request.
-    TakeLeaseResultType TakeLease(
-        const std::string& resource,
-        const RPCParameters& parameters = RPCParameters());
+    TakeLeaseResultType TakeLease(const std::string& resource,
+                                  const RPCParameters& parameters = RPCParameters());
 
     // Asynchronous method to return a lease for a resource.
     std::shared_future<ReturnLeaseResultType> ReturnLeaseAsync(
@@ -64,19 +60,16 @@ class LeaseClient : public ServiceClient {
         const RPCParameters& parameters = RPCParameters());
 
     // Synchronous method to issue a return lease request.
-    ReturnLeaseResultType ReturnLease(
-        ::bosdyn::api::ReturnLeaseRequest& request,
-        const RPCParameters& parameters = RPCParameters());
+    ReturnLeaseResultType ReturnLease(::bosdyn::api::ReturnLeaseRequest& request,
+                                      const RPCParameters& parameters = RPCParameters());
 
     // Asynchronous method to list all leases for a resource.
     std::shared_future<ListLeasesResultType> ListLeasesAsync(
-        bool include_full_lease_info=false,
-        const RPCParameters& parameters = RPCParameters());
+        bool include_full_lease_info = false, const RPCParameters& parameters = RPCParameters());
 
     // Synchronous method to issue a list leases request.
-    ListLeasesResultType ListLeases(
-        bool include_full_lease_info=false,
-        const RPCParameters& parameters = RPCParameters());
+    ListLeasesResultType ListLeases(bool include_full_lease_info = false,
+                                    const RPCParameters& parameters = RPCParameters());
 
     // Asynchronous method to retain possession of a lease.
     std::shared_future<RetainLeaseResultType> RetainLeaseAsync(
@@ -91,10 +84,9 @@ class LeaseClient : public ServiceClient {
     // Start of ServiceClient overrides.
     QualityOfService GetQualityOfService() const override;
     void SetComms(const std::shared_ptr<grpc::ChannelInterface>& channel) override;
-    void UpdateServiceFrom(
-        RequestProcessorChain& request_processor_chain,
-        ResponseProcessorChain& response_processor_chain,
-        const std::shared_ptr<LeaseWallet>& lease_wallet) override;
+    void UpdateServiceFrom(RequestProcessorChain& request_processor_chain,
+                           ResponseProcessorChain& response_processor_chain,
+                           const std::shared_ptr<LeaseWallet>& lease_wallet) override;
     // End of ServiceClient overrides.
 
     // Get the default service name the Lease service will be registered in the directory with.
@@ -108,37 +100,41 @@ class LeaseClient : public ServiceClient {
 
  private:
     // Callback function registered for the asynchronous calls to acquire a lease.
-    void OnAcquireLeaseComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::AcquireLeaseRequest& request,
-        ::bosdyn::api::AcquireLeaseResponse&& response, const grpc::Status& status,
-        std::promise<AcquireLeaseResultType> promise);
+    void OnAcquireLeaseComplete(MessagePumpCallBase* call,
+                                const ::bosdyn::api::AcquireLeaseRequest& request,
+                                ::bosdyn::api::AcquireLeaseResponse&& response,
+                                const grpc::Status& status,
+                                std::promise<AcquireLeaseResultType> promise);
 
     // Callback function registered for the asynchronous calls to forcefully take a lease.
-    void OnTakeLeaseComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::TakeLeaseRequest& request,
-        ::bosdyn::api::TakeLeaseResponse&& response, const grpc::Status& status,
-        std::promise<TakeLeaseResultType> promise);
+    void OnTakeLeaseComplete(MessagePumpCallBase* call,
+                             const ::bosdyn::api::TakeLeaseRequest& request,
+                             ::bosdyn::api::TakeLeaseResponse&& response,
+                             const grpc::Status& status, std::promise<TakeLeaseResultType> promise);
 
     // Callback function registered for the asynchronous calls to return a lease.
-    void OnReturnLeaseComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::ReturnLeaseRequest& request,
-        ::bosdyn::api::ReturnLeaseResponse&& response, const grpc::Status& status,
-        std::promise<ReturnLeaseResultType> promise);
+    void OnReturnLeaseComplete(MessagePumpCallBase* call,
+                               const ::bosdyn::api::ReturnLeaseRequest& request,
+                               ::bosdyn::api::ReturnLeaseResponse&& response,
+                               const grpc::Status& status,
+                               std::promise<ReturnLeaseResultType> promise);
 
     // Callback function registered for the asynchronous calls to list all leases and their owners.
-    void OnListLeasesComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::ListLeasesRequest& request,
-        ::bosdyn::api::ListLeasesResponse&& response, const grpc::Status& status,
-        std::promise<ListLeasesResultType> promise);
+    void OnListLeasesComplete(MessagePumpCallBase* call,
+                              const ::bosdyn::api::ListLeasesRequest& request,
+                              ::bosdyn::api::ListLeasesResponse&& response,
+                              const grpc::Status& status,
+                              std::promise<ListLeasesResultType> promise);
 
     // Callback function registered for the asynchronous calls to retain a lease.
-    void OnRetainLeaseComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::RetainLeaseRequest& request,
-        ::bosdyn::api::RetainLeaseResponse&& response, const grpc::Status& status,
-        std::promise<RetainLeaseResultType> promise);
+    void OnRetainLeaseComplete(MessagePumpCallBase* call,
+                               const ::bosdyn::api::RetainLeaseRequest& request,
+                               ::bosdyn::api::RetainLeaseResponse&& response,
+                               const grpc::Status& status,
+                               std::promise<RetainLeaseResultType> promise);
 
 
-    std::unique_ptr<::bosdyn::api::LeaseService::Stub> m_stub;
+    std::unique_ptr<::bosdyn::api::LeaseService::StubInterface> m_stub;
 
     // Default service name for the robot command service.
     static const char* s_default_service_name;

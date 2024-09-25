@@ -8,9 +8,45 @@ Development Kit License (20191101-BDSDK-SL).
 
 # Spot C++ SDK Release Notes
 
+## Spot C++ SDK version 4.1.0 BETA
+
+### New Features
+
+#### Graph Nav
+
+- Added support for uploading and downloading [graphs](../protos/bosdyn/api/graph_nav/map.proto#graph) larger than 4 MB has been added via the [UploadGraphStreaming](../protos/bosdyn/api/graph_nav/graph_nav_service.proto#uploadgraphstreaming) and [DownloadGraphStreaming](../protos/bosdyn/api/graph_nav/graph_nav_service.proto#downloadgraphstreaming) RPCs, respectively. Please see the corresponding client implementation in [GraphNavClient](../cpp/bosdyn/client/graph_nav/graph_nav_client.cpp).
+
+### Bug Fixes and Improvements
+
+#### API
+
+Please see the [General Release Notes](https://dev.bostondynamics.com/docs/release_notes) for a description of the API changes included in release 4.1.0.
+
+#### SDK
+
+Math & Frame Helpers
+
+- A new reference frame, "feet_center", has been added. Please see the [General Release Notes](https://dev.bostondynamics.com/docs/release_notes) for more information.
+
+- The supplied `z_height` argument in the `SafeInflate` method is now actually used. Previously, the `z_height` argument was not passed to the inner method, `Inflate`, and hence defaulted to `0.0`, regardless of its value, thereby leading to an incorrect z-coordinate in the returned `SE3Pose`.
+
+### Deprecations
+
+Please see the [General Release Notes](https://dev.bostondynamics.com/docs/release_notes) for a description of the API deprecations included in release 4.1.0.
+
+### Spot Sample Code
+
+#### Updated
+
+- Updated the [basic_robot_command.cpp](../cpp/examples/basic_robot_command/basic_robot_command.cpp) example to use the [RobotCommandFeedback](../protos/bosdyn/api/robot_command_service.proto#robotcommandfeedback) RPC instead of sleeping for an arbitrary amount of time.
+
+## Spot C++ SDK version 4.0.3 BETA
+
+No changes from 4.0.2.
+
 ## Spot C++ SDK version 4.0.2 BETA
 
-Please see the Release Notes in https://dev.bostondynamics.com for a description of the API changes included in release 4.0.2.
+Please see the [General Release Notes](https://dev.bostondynamics.com/docs/release_notes) for a description of the API changes included in release 4.0.2.
 
 ### New Features
 
@@ -22,7 +58,7 @@ The Joint Control API allows for low-level control of the robot's joints. Note t
 
 #### API
 
-Please see the Release Notes in https://dev.bostondynamics.com for a description of the API changes included in release 4.0.2.
+Please see the [General Release Notes](https://dev.bostondynamics.com/docs/release_notes) for a description of the API changes included in release 4.0.2.
 
 #### SDK
 
@@ -34,7 +70,7 @@ Please see the Release Notes in https://dev.bostondynamics.com for a description
 
 - Added helpers for the Joint Control API to [joint_api_helper.cpp](../cpp/examples/joint_control/joint_api_helper.cpp).
 
-- Added `BlockUntilStandComplete` function to [robot_command_helpers.cpp](../cpp/bosdyn/client/robot_command/robot_command_helpers.cpp)
+- Added `BlockUntilStandComplete` and `BlockUntilSE2TrajectoryComplete` functions to [robot_command_helpers.cpp](../cpp/bosdyn/client/robot_command/robot_command_helpers.cpp)
 
 ### Deprecations
 
@@ -52,7 +88,7 @@ Please see the Release Notes in https://dev.bostondynamics.com for a description
 
 ## Spot C++ SDK version 4.0.1 BETA
 
-Please see the Release Notes in https://dev.bostondynamics.com for a description of the API changes included in release 4.0.1.
+Please see the [General Release Notes](https://dev.bostondynamics.com/docs/release_notes) for a description of the API changes included in release 4.0.1.
 
 In addition to that, there are no changes in 4.0.1 except the following:
 
@@ -75,7 +111,7 @@ The following fields and services have been **removed**.
 
 #### API
 
-Please see the Release Notes in https://dev.bostondynamics.com for a description of the API changes included in release 4.0.0.
+Please see the [General Release Notes](https://dev.bostondynamics.com/docs/release_notes) for a description of the API changes included in release 4.0.0.
 
 #### SDK
 
@@ -105,7 +141,7 @@ Power Client
 
 SpotCam Compositor Client
 
-- Now sets both the `coords` (deprecated in v3.3) and `meter` fields for backwards compability purposes in the corresponding methods.
+- Now sets both the `coords` (deprecated in v3.3) and `meter` fields for backwards compatibility purposes in the corresponding methods.
 
 Math & Frame Helpers
 
@@ -122,7 +158,7 @@ Autowalk Player
 
 ### Deprecations
 
-Please see the Release Notes in https://dev.bostondynamics.com for a description of the API deprecations included in release 4.0.0.
+Please see the [General Release Notes](https://dev.bostondynamics.com/docs/release_notes) for a description of the API deprecations included in release 4.0.0.
 
 ### Dependencies
 
@@ -154,7 +190,7 @@ Added `InverseKinematics` client to support corresponding proto additions.
 
 #### API
 
-Please see the Release Notes in https://dev.bostondynamics.com for a description of the API changes included in release 3.3.0.
+Please see the [General Release Notes](https://dev.bostondynamics.com/docs/release_notes) for a description of the API changes included in release 3.3.0.
 
 #### SDK
 
@@ -202,7 +238,7 @@ Added `EigenFromApiProto/EigenToApiProto`, `FromRoll/ToRoll`, `FromPitch/ToPitch
 
 ### Deprecations
 
-Please see the Release Notes in https://dev.bostondynamics.com for a description of the API deprecations included in release 3.3.0.
+Please see the [General Release Notes](https://dev.bostondynamics.com/docs/release_notes) for a description of the API deprecations included in release 3.3.0.
 
 ### Breaking Changes
 
@@ -257,7 +293,7 @@ This enables integration with the [Graph Nav](concepts/autonomy/graphnav_service
 
 #### API
 
-Please see the Release Notes in https://dev.bostondynamics.com for a description of the API changes included in release 3.2.0.
+Please see the [General Release Notes](https://dev.bostondynamics.com/docs/release_notes) for a description of the API changes included in release 3.2.0.
 
 #### SDK
 
@@ -281,7 +317,7 @@ Added `Is` helper function in `Status` class to check if this `Status` matches a
 
 ### Deprecations
 
-Please see the Release Notes in https://dev.bostondynamics.com for a description of the API deprecations included in release 3.2.0.
+Please see the [General Release Notes](https://dev.bostondynamics.com/docs/release_notes) for a description of the API deprecations included in release 3.2.0.
 
 ### Breaking Changes
 

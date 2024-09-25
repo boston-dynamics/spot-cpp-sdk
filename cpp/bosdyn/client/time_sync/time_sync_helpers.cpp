@@ -9,9 +9,9 @@
 
 #include "time_sync_helpers.h"
 
-#include "bosdyn/common/time.h"
 #include "bosdyn/client/error_codes/time_sync_helper_error_code.h"
 #include "bosdyn/common/assert_precondition.h"
+#include "bosdyn/common/time.h"
 
 namespace bosdyn {
 
@@ -21,8 +21,8 @@ namespace client {
 TimeSyncEndpoint::TimeSyncEndpoint(TimeSyncClient* client) {
     m_client = client;
     std::lock_guard<std::mutex> lock(m_mutex);
-    m_locked_previous_result.status =
-        ::bosdyn::common::Status(RobotTimeSyncErrorCode::PreviousTimeSyncUnavailableYet, "Result not yet populated");
+    m_locked_previous_result.status = ::bosdyn::common::Status(
+        RobotTimeSyncErrorCode::PreviousTimeSyncUnavailableYet, "Result not yet populated");
 }
 
 TimeSyncUpdateResultType TimeSyncEndpoint::GetResult() {
@@ -54,11 +54,11 @@ StringResultType TimeSyncEndpoint::GetClockIdentifier() {
     StringResultType result;
     std::lock_guard<std::mutex> lock(m_mutex);
     if (m_locked_clock_identifier.empty()) {
-        result.status =
-            ::bosdyn::common::Status(TimeSyncHelperErrorCode::ClockIdentifierUnset, "Clock identifier cannot be empty.");
+        result.status = ::bosdyn::common::Status(TimeSyncHelperErrorCode::ClockIdentifierUnset,
+                                                 "Clock identifier cannot be empty.");
     } else {
         result = {::bosdyn::common::Status(SDKErrorCode::Success),
-                    std::make_shared<std::string>(m_locked_clock_identifier)};
+                  std::make_shared<std::string>(m_locked_clock_identifier)};
     }
     return result;
 }
@@ -72,8 +72,9 @@ DurationResultType TimeSyncEndpoint::GetClockSkew() {
         return result;
     }
     if (update_result.response.state().status() != ::bosdyn::api::TimeSyncState::STATUS_OK) {
-        result.status = ::bosdyn::common::Status(update_result.response.state().status(),
-                               "GetClockSkew: Clock synchronization not yet achieved.");
+        result.status =
+            ::bosdyn::common::Status(update_result.response.state().status(),
+                                     "GetClockSkew: Clock synchronization not yet achieved.");
         return result;
     }
     result = {::bosdyn::common::Status(SDKErrorCode::Success),
@@ -121,8 +122,8 @@ bool TimeSyncEndpoint::EstablishTimeSync(int max_samples, bool break_on_success)
 
 ::bosdyn::common::RobotTimeConverter TimeSyncEndpoint::GetRobotTimeConverter() const {
     std::lock_guard<std::mutex> lock(m_mutex);
-    return ::bosdyn::common::RobotTimeConverter(std::chrono::nanoseconds(
-        ::bosdyn::common::DurationToNsec(
+    return ::bosdyn::common::RobotTimeConverter(
+        std::chrono::nanoseconds(::bosdyn::common::DurationToNsec(
             m_locked_previous_result.response.state().best_estimate().clock_skew())));
 }
 
@@ -202,8 +203,9 @@ bool TimeSyncThread::WaitForSync(::bosdyn::common::Duration timeout) {
 DurationResultType TimeSyncThread::GetRobotClockSkew(::bosdyn::common::Duration time_sync_timeout) {
     DurationResultType result;
     if (!WaitForSync(time_sync_timeout)) {
-        result.status = ::bosdyn::common::Status(EstablishTimeSyncErrorCode::UnableToEstablishTimeSync,
-                               "GetRobotClockSkew: Timed out waiting for time synchronization.");
+        result.status = ::bosdyn::common::Status(
+            EstablishTimeSyncErrorCode::UnableToEstablishTimeSync,
+            "GetRobotClockSkew: Timed out waiting for time synchronization.");
         return result;
     }
     result = {::bosdyn::common::Status(SDKErrorCode::Success),
@@ -216,8 +218,9 @@ DurationResultType TimeSyncThread::GetRobotClockSkew(::bosdyn::common::Duration 
     ::bosdyn::common::Duration timeout) {
     ::bosdyn::common::RobotTimeConverterResultType result;
     if (!WaitForSync(timeout)) {
-        result.status = ::bosdyn::common::Status(EstablishTimeSyncErrorCode::UnableToEstablishTimeSync,
-                               "GetRobotTimeConverter: Failed to establish timesync.");
+        result.status =
+            ::bosdyn::common::Status(EstablishTimeSyncErrorCode::UnableToEstablishTimeSync,
+                                     "GetRobotTimeConverter: Failed to establish timesync.");
         return result;
     }
     ::bosdyn::common::RobotTimeConverter robot_time_converter =
@@ -227,13 +230,14 @@ DurationResultType TimeSyncThread::GetRobotClockSkew(::bosdyn::common::Duration 
     return result;
 }
 
-TimestampResultType TimeSyncThread::RobotTimestampFromLocal(::bosdyn::common::TimePoint local_time) {
+TimestampResultType TimeSyncThread::RobotTimestampFromLocal(
+    ::bosdyn::common::TimePoint local_time) {
     TimestampResultType result;
     ::bosdyn::common::RobotTimeConverterResultType get_robot_time_converter_result =
         GetRobotTimeConverter();
     if (!get_robot_time_converter_result.status) {
-        result.status = result.status.Chain(
-            "RobotTimestampFromLocal: Failed to get robot time converter.");
+        result.status =
+            result.status.Chain("RobotTimestampFromLocal: Failed to get robot time converter.");
         return result;
     }
     result = {::bosdyn::common::Status(SDKErrorCode::Success),

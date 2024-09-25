@@ -25,8 +25,9 @@ class CommonResponseProcessor : public ResponseProcessor {
     CommonResponseProcessor() = default;
     ~CommonResponseProcessor() = default;
 
-    ::bosdyn::common::Status Process(const grpc::Status& status, const ::bosdyn::api::ResponseHeader& response_header,
-                           const ::google::protobuf::Message& full_response) override;
+    ::bosdyn::common::Status Process(const grpc::Status& status,
+                                     const ::bosdyn::api::ResponseHeader& response_header,
+                                     const ::google::protobuf::Message& full_response) override;
 };
 
 }  // namespace client

@@ -45,8 +45,8 @@ std::shared_future<PowerCommandResultType> PowerClient::PowerCommandAsync(
         InitiateAsyncCall<::bosdyn::api::PowerCommandRequest, ::bosdyn::api::PowerCommandResponse,
                           ::bosdyn::api::PowerCommandResponse>(
             request,
-            std::bind(&::bosdyn::api::PowerService::Stub::AsyncPowerCommand, m_stub.get(), _1, _2,
-                      _3),
+            std::bind(&::bosdyn::api::PowerService::StubInterface::AsyncPowerCommand, m_stub.get(),
+                      _1, _2, _3),
             std::bind(&PowerClient::OnPowerCommandComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
@@ -87,8 +87,8 @@ std::shared_future<PowerCommandFeedbackResultType> PowerClient::PowerCommandFeed
                                                       ::bosdyn::api::PowerCommandFeedbackResponse,
                                                       ::bosdyn::api::PowerCommandFeedbackResponse>(
         request,
-        std::bind(&::bosdyn::api::PowerService::Stub::AsyncPowerCommandFeedback, m_stub.get(), _1,
-                  _2, _3),
+        std::bind(&::bosdyn::api::PowerService::StubInterface::AsyncPowerCommandFeedback,
+                  m_stub.get(), _1, _2, _3),
         std::bind(&PowerClient::OnPowerCommandFeedbackComplete, this, _1, _2, _3, _4, _5),
         std::move(response), parameters);
 
@@ -139,8 +139,8 @@ std::shared_future<FanPowerCommandResultType> PowerClient::FanPowerCommandAsync(
                                                       ::bosdyn::api::FanPowerCommandResponse,
                                                       ::bosdyn::api::FanPowerCommandResponse>(
         request,
-        std::bind(&::bosdyn::api::PowerService::Stub::AsyncFanPowerCommand, m_stub.get(), _1, _2,
-                  _3),
+        std::bind(&::bosdyn::api::PowerService::StubInterface::AsyncFanPowerCommand, m_stub.get(),
+                  _1, _2, _3),
         std::bind(&PowerClient::OnFanPowerCommandComplete, this, _1, _2, _3, _4, _5),
         std::move(response), parameters);
 
@@ -182,7 +182,7 @@ std::shared_future<FanPowerCommandFeedbackResultType> PowerClient::FanPowerComma
                           ::bosdyn::api::FanPowerCommandFeedbackResponse,
                           ::bosdyn::api::FanPowerCommandFeedbackResponse>(
             request,
-            std::bind(&::bosdyn::api::PowerService::Stub::AsyncFanPowerCommandFeedback,
+            std::bind(&::bosdyn::api::PowerService::StubInterface::AsyncFanPowerCommandFeedback,
                       m_stub.get(), _1, _2, _3),
             std::bind(&PowerClient::OnFanPowerCommandFeedbackComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
@@ -233,8 +233,8 @@ std::shared_future<ResetSafetyStopResultType> PowerClient::ResetSafetyStopAsync(
                                                       ::bosdyn::api::ResetSafetyStopResponse,
                                                       ::bosdyn::api::ResetSafetyStopResponse>(
         request,
-        std::bind(&::bosdyn::api::PowerService::Stub::AsyncResetSafetyStop, m_stub.get(), _1, _2,
-                  _3),
+        std::bind(&::bosdyn::api::PowerService::StubInterface::AsyncResetSafetyStop, m_stub.get(),
+                  _1, _2, _3),
         std::bind(&PowerClient::OnResetSafetyStopComplete, this, _1, _2, _3, _4, _5),
         std::move(response), parameters);
 

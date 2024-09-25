@@ -11,8 +11,8 @@
 
 #include <bosdyn/api/lease.pb.h>
 #include "lease.h"
-#include "bosdyn/client/service_client/result.h"
 #include "bosdyn/client/error_codes/lease_wallet_error_code.h"
+#include "bosdyn/client/service_client/result.h"
 #include "bosdyn/common/status.h"
 
 #include <mutex>
@@ -44,7 +44,8 @@ class LeaseWallet {
     void RemoveLease(const std::string& resource);
 
     // Update the lease state based on result of using the lease.
-    ::bosdyn::common::Status OnLeaseUseResult(const ::bosdyn::api::LeaseUseResult& lease_use_result);
+    ::bosdyn::common::Status OnLeaseUseResult(
+        const ::bosdyn::api::LeaseUseResult& lease_use_result);
 
     // Fail the current lease for a resource, based on server response in LeaseUseResult.
     // If 'lease' is the same as the current lease in the wallet, record why the Lease failed and

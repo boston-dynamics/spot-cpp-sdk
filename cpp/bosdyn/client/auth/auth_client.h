@@ -22,7 +22,7 @@ namespace client {
 
 // This typedef needs to be a std::shared_ptr to satisfy the InitiateCall templatized method in
 // ServiceClient
-    typedef Result<::bosdyn::api::GetAuthTokenResponse> AuthResultType;
+typedef Result<::bosdyn::api::GetAuthTokenResponse> AuthResultType;
 
 class AuthClient : public ServiceClient {
  public:
@@ -36,17 +36,16 @@ class AuthClient : public ServiceClient {
         const RPCParameters& parameters = RPCParameters());
 
     // Synchronous method to get an auth token for username/password combination.
-    AuthResultType GetAuthToken(
-        const std::string& username, const std::string& password,
-        const RPCParameters& parameters = RPCParameters());
+    AuthResultType GetAuthToken(const std::string& username, const std::string& password,
+                                const RPCParameters& parameters = RPCParameters());
 
     // Asynchronous method to get an auth token for provided token.
     std::shared_future<AuthResultType> GetAuthTokenAsync(
         const std::string& token, const RPCParameters& parameters = RPCParameters());
 
     // Synchronous method to get an auth token for provided token.
-    AuthResultType GetAuthToken(
-        const std::string& token, const RPCParameters& parameters = RPCParameters());
+    AuthResultType GetAuthToken(const std::string& token,
+                                const RPCParameters& parameters = RPCParameters());
 
     // Start of ServiceClient overrides.
     QualityOfService GetQualityOfService() const override;
@@ -65,12 +64,12 @@ class AuthClient : public ServiceClient {
     static std::string GetServiceType() { return s_service_type; }
 
  private:
-    void OnGetAuthTokenComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::GetAuthTokenRequest& request,
-        ::bosdyn::api::GetAuthTokenResponse&& response, const grpc::Status& status,
-        std::promise<AuthResultType> promise);
+    void OnGetAuthTokenComplete(MessagePumpCallBase* call,
+                                const ::bosdyn::api::GetAuthTokenRequest& request,
+                                ::bosdyn::api::GetAuthTokenResponse&& response,
+                                const grpc::Status& status, std::promise<AuthResultType> promise);
 
-    std::unique_ptr<::bosdyn::api::AuthService::Stub> m_stub;
+    std::unique_ptr<::bosdyn::api::AuthService::StubInterface> m_stub;
 
     // Default service name for the Auth service.
     static const char* s_default_service_name;

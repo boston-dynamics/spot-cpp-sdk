@@ -40,8 +40,9 @@ std::shared_future<GetStreamParamsResultType> StreamQualityClient::GetStreamPara
                           ::bosdyn::api::spot_cam::GetStreamParamsResponse,
                           ::bosdyn::api::spot_cam::GetStreamParamsResponse>(
             request,
-            std::bind(&::bosdyn::api::spot_cam::StreamQualityService::Stub::AsyncGetStreamParams,
-                      m_stub.get(), _1, _2, _3),
+            std::bind(
+                &::bosdyn::api::spot_cam::StreamQualityService::StubInterface::AsyncGetStreamParams,
+                m_stub.get(), _1, _2, _3),
             std::bind(&StreamQualityClient::OnGetStreamParamsComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
@@ -181,8 +182,9 @@ std::shared_future<SetStreamParamsResultType> StreamQualityClient::SetStreamPara
                           ::bosdyn::api::spot_cam::SetStreamParamsResponse,
                           ::bosdyn::api::spot_cam::SetStreamParamsResponse>(
             request,
-            std::bind(&::bosdyn::api::spot_cam::StreamQualityService::Stub::AsyncSetStreamParams,
-                      m_stub.get(), _1, _2, _3),
+            std::bind(
+                &::bosdyn::api::spot_cam::StreamQualityService::StubInterface::AsyncSetStreamParams,
+                m_stub.get(), _1, _2, _3),
             std::bind(&StreamQualityClient::OnSetStreamParamsComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
@@ -229,9 +231,9 @@ StreamQualityClient::EnableCongestionControlAsync(
                           ::bosdyn::api::spot_cam::EnableCongestionControlResponse,
                           ::bosdyn::api::spot_cam::EnableCongestionControlResponse>(
             request,
-            std::bind(
-                &::bosdyn::api::spot_cam::StreamQualityService::Stub::AsyncEnableCongestionControl,
-                m_stub.get(), _1, _2, _3),
+            std::bind(&::bosdyn::api::spot_cam::StreamQualityService::StubInterface::
+                          AsyncEnableCongestionControl,
+                      m_stub.get(), _1, _2, _3),
             std::bind(&StreamQualityClient::OnEnableCongestionControlComplete, this, _1, _2, _3, _4,
                       _5),
             std::move(response), parameters);

@@ -9,8 +9,8 @@
 
 #pragma once
 
-#include "bosdyn/client/service_client/service_client.h"
 #include "bosdyn/client/directory_registration/directory_registration_error_codes.h"
+#include "bosdyn/client/service_client/service_client.h"
 
 #include <bosdyn/api/directory_registration_service.grpc.pb.h>
 #include <bosdyn/api/directory_registration_service.pb.h>
@@ -36,19 +36,16 @@ class DirectoryRegistrationClient : public ServiceClient {
         const RPCParameters& parameters = RPCParameters());
 
     // Synchronous method to register a service.
-    RegisterServiceResultType RegisterService(
-        ::bosdyn::api::RegisterServiceRequest& request,
-        const RPCParameters& parameters = RPCParameters());
+    RegisterServiceResultType RegisterService(::bosdyn::api::RegisterServiceRequest& request,
+                                              const RPCParameters& parameters = RPCParameters());
 
     // Asynchronous method to unregister a service.
     std::shared_future<UnregisterServiceResultType> UnregisterServiceAsync(
-        const std::string& service_name,
-        const RPCParameters& parameters = RPCParameters());
+        const std::string& service_name, const RPCParameters& parameters = RPCParameters());
 
     // Synchronous method to unregister a service.
     UnregisterServiceResultType UnregisterService(
-        const std::string& service_name,
-        const RPCParameters& parameters = RPCParameters());
+        const std::string& service_name, const RPCParameters& parameters = RPCParameters());
 
     // Asynchronous method to update a service.
     std::shared_future<UpdateServiceResultType> UpdateServiceAsync(
@@ -56,9 +53,8 @@ class DirectoryRegistrationClient : public ServiceClient {
         const RPCParameters& parameters = RPCParameters());
 
     // Synchronous method to update a service.
-    UpdateServiceResultType UpdateService(
-        ::bosdyn::api::UpdateServiceRequest& request,
-        const RPCParameters& parameters = RPCParameters());
+    UpdateServiceResultType UpdateService(::bosdyn::api::UpdateServiceRequest& request,
+                                          const RPCParameters& parameters = RPCParameters());
 
     // Start of ServiceClient overrides.
     QualityOfService GetQualityOfService() const override;
@@ -73,29 +69,33 @@ class DirectoryRegistrationClient : public ServiceClient {
     // directory with.
     static std::string GetDefaultServiceAuthority() { return s_default_service_authority; }
 
-    // Get the default service type for the DirectoryRegistration service that will be registered in the directory.
+    // Get the default service type for the DirectoryRegistration service that will be registered in
+    // the directory.
     static std::string GetServiceType() { return s_service_type; }
 
  private:
     // Callback function registered for the asynchronous calls to register a service.
-    void OnRegisterServiceComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::RegisterServiceRequest& request,
-        ::bosdyn::api::RegisterServiceResponse&& response, const grpc::Status& status,
-        std::promise<RegisterServiceResultType> promise);
+    void OnRegisterServiceComplete(MessagePumpCallBase* call,
+                                   const ::bosdyn::api::RegisterServiceRequest& request,
+                                   ::bosdyn::api::RegisterServiceResponse&& response,
+                                   const grpc::Status& status,
+                                   std::promise<RegisterServiceResultType> promise);
 
     // Callback function registered for the asynchronous calls to unregister a service.
-    void OnUnregisterServiceComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::UnregisterServiceRequest& request,
-        ::bosdyn::api::UnregisterServiceResponse&& response, const grpc::Status& status,
-        std::promise<UnregisterServiceResultType> promise);
+    void OnUnregisterServiceComplete(MessagePumpCallBase* call,
+                                     const ::bosdyn::api::UnregisterServiceRequest& request,
+                                     ::bosdyn::api::UnregisterServiceResponse&& response,
+                                     const grpc::Status& status,
+                                     std::promise<UnregisterServiceResultType> promise);
 
     // Callback function registered for the asynchronous calls to update a service.
-    void OnUpdateServiceComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::UpdateServiceRequest& request,
-        ::bosdyn::api::UpdateServiceResponse&& response, const grpc::Status& status,
-        std::promise<UpdateServiceResultType> promise);
+    void OnUpdateServiceComplete(MessagePumpCallBase* call,
+                                 const ::bosdyn::api::UpdateServiceRequest& request,
+                                 ::bosdyn::api::UpdateServiceResponse&& response,
+                                 const grpc::Status& status,
+                                 std::promise<UpdateServiceResultType> promise);
 
-    std::unique_ptr<::bosdyn::api::DirectoryRegistrationService::Stub> m_stub;
+    std::unique_ptr<::bosdyn::api::DirectoryRegistrationService::StubInterface> m_stub;
 
     // Default service name for the DirectoryRegistration service.
     static const char* s_default_service_name;

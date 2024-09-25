@@ -18,10 +18,10 @@
 #include <bosdyn/api/lease.pb.h>
 
 #include "bosdyn/client/error_codes/lease_wallet_error_code.h"
-#include "bosdyn/common/status.h"
 #include "bosdyn/client/lease/lease_client.h"
 #include "bosdyn/client/lease/lease_resources.h"
 #include "bosdyn/client/lease/lease_wallet.h"
+#include "bosdyn/common/status.h"
 
 namespace bosdyn {
 
@@ -41,8 +41,10 @@ typedef ::bosdyn::api::Lease LeaseProto;
  *    LeaseUseResult::Status,
  *    LeaseWalletErrorCode::ResourceNotInWalletError
  */
-template<class LeaseKeepAliveClass>
-using OnRetainLeaseFailure = std::function<void(const Result<::bosdyn::api::RetainLeaseResponse>& retain_lease_result, LeaseKeepAliveClass* lease_keep_alive)>;
+template <class LeaseKeepAliveClass>
+using OnRetainLeaseFailure =
+    std::function<void(const Result<::bosdyn::api::RetainLeaseResponse>& retain_lease_result,
+                       LeaseKeepAliveClass* lease_keep_alive)>;
 
 // LeaseKeepAlive issues lease liveness checks on a background thread.
 // The robot's lease system expects lease holders to check in at a regular

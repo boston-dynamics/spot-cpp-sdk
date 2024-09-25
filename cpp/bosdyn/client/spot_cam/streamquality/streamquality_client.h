@@ -143,7 +143,7 @@ class StreamQualityClient : public ServiceClient {
         ::bosdyn::api::spot_cam::EnableCongestionControlResponse&& response,
         const grpc::Status& status, std::promise<EnableCongestionControlResultType> promise);
 
-    std::unique_ptr<::bosdyn::api::spot_cam::StreamQualityService::Stub> m_stub;
+    std::unique_ptr<::bosdyn::api::spot_cam::StreamQualityService::StubInterface> m_stub;
 
     // Default service name for the spotcam streamquality service.
     static const char* s_default_service_name;

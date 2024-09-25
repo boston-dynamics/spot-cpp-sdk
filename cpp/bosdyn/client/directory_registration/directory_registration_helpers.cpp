@@ -48,8 +48,9 @@ void DirectoryRegistrationKeepAlive::Start(const std::vector<std::string>& fault
     m_registration_fault_active = false;
     if (m_fault_client) {
         auto clear_result = m_fault_client->ClearServiceFault(m_service_fault.fault_id());
-        if (!clear_result && clear_result.response.status() !=
-            ::bosdyn::api::ClearServiceFaultResponse::STATUS_FAULT_NOT_ACTIVE) {
+        if (!clear_result &&
+            clear_result.response.status() !=
+                ::bosdyn::api::ClearServiceFaultResponse::STATUS_FAULT_NOT_ACTIVE) {
             m_registration_fault_active = true;
         }
     }

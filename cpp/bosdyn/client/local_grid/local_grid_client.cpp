@@ -7,6 +7,8 @@
  */
 
 
+// Boston Dynamics, Inc. Confidential Information.
+// Copyright 2024. All Rights Reserved.
 #include "bosdyn/client/local_grid/local_grid_client.h"
 
 #include <memory>
@@ -32,20 +34,19 @@ std::shared_future<LocalGridTypesResultType> LocalGridClient::GetLocalGridTypesA
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
 
     ::bosdyn::api::GetLocalGridTypesRequest request;
-    MessagePumpCallBase* one_time =
-        InitiateAsyncCall<::bosdyn::api::GetLocalGridTypesRequest, ::bosdyn::api::GetLocalGridTypesResponse,
-                          ::bosdyn::api::GetLocalGridTypesResponse>(
-            request,
-            std::bind(&::bosdyn::api::LocalGridService::Stub::AsyncGetLocalGridTypes, m_stub.get(), _1, _2,
-                      _3),
-            std::bind(&LocalGridClient::OnGetLocalGridTypesComplete, this, _1, _2, _3, _4, _5),
-            std::move(response), parameters);
+    MessagePumpCallBase* one_time = InitiateAsyncCall<::bosdyn::api::GetLocalGridTypesRequest,
+                                                      ::bosdyn::api::GetLocalGridTypesResponse,
+                                                      ::bosdyn::api::GetLocalGridTypesResponse>(
+        request,
+        std::bind(&::bosdyn::api::LocalGridService::StubInterface::AsyncGetLocalGridTypes,
+                  m_stub.get(), _1, _2, _3),
+        std::bind(&LocalGridClient::OnGetLocalGridTypesComplete, this, _1, _2, _3, _4, _5),
+        std::move(response), parameters);
 
     return future;
 }
 
-LocalGridTypesResultType LocalGridClient::GetLocalGridTypes(
-    const RPCParameters& parameters) {
+LocalGridTypesResultType LocalGridClient::GetLocalGridTypes(const RPCParameters& parameters) {
     return GetLocalGridTypesAsync(parameters).get();
 }
 
@@ -53,20 +54,20 @@ void LocalGridClient::OnGetLocalGridTypesComplete(
     MessagePumpCallBase* call, const ::bosdyn::api::GetLocalGridTypesRequest& request,
     ::bosdyn::api::GetLocalGridTypesResponse&& response, const grpc::Status& status,
     std::promise<LocalGridTypesResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::GetLocalGridTypesResponse>(
-        status, response, SDKErrorCode::Success);
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::GetLocalGridTypesResponse>(
+            status, response, SDKErrorCode::Success);
     promise.set_value({ret_status, std::move(response)});
 }
 
 std::shared_future<LocalGridsResultType> LocalGridClient::GetLocalGridsAsync(
-    const std::vector<std::string>& local_grid_names,
-    const RPCParameters& parameters) {
+    const std::vector<std::string>& local_grid_names, const RPCParameters& parameters) {
     std::promise<LocalGridsResultType> response;
     std::shared_future<LocalGridsResultType> future = response.get_future();
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
 
     ::bosdyn::api::GetLocalGridsRequest request;
-    for (const std::string name : local_grid_names) {
+    for (const std::string& name : local_grid_names) {
         ::bosdyn::api::LocalGridRequest* req = request.add_local_grid_requests();
         req->set_local_grid_type_name(name);
     }
@@ -75,7 +76,8 @@ std::shared_future<LocalGridsResultType> LocalGridClient::GetLocalGridsAsync(
         InitiateAsyncCall<::bosdyn::api::GetLocalGridsRequest, ::bosdyn::api::GetLocalGridsResponse,
                           ::bosdyn::api::GetLocalGridsResponse>(
             request,
-            std::bind(&::bosdyn::api::LocalGridService::Stub::AsyncGetLocalGrids, m_stub.get(), _1, _2, _3),
+            std::bind(&::bosdyn::api::LocalGridService::StubInterface::AsyncGetLocalGrids,
+                      m_stub.get(), _1, _2, _3),
             std::bind(&LocalGridClient::OnGetLocalGridsComplete, this, _1, _2, _3, _4, _5),
             std::move(response), parameters);
 
@@ -83,17 +85,18 @@ std::shared_future<LocalGridsResultType> LocalGridClient::GetLocalGridsAsync(
 }
 
 LocalGridsResultType LocalGridClient::GetLocalGrids(
-    const std::vector<std::string>& local_grid_names,
-    const RPCParameters& parameters) {
+    const std::vector<std::string>& local_grid_names, const RPCParameters& parameters) {
     return GetLocalGridsAsync(local_grid_names, parameters).get();
 }
 
-void LocalGridClient::OnGetLocalGridsComplete(
-    MessagePumpCallBase*, const ::bosdyn::api::GetLocalGridsRequest&,
-    ::bosdyn::api::GetLocalGridsResponse&& response, const grpc::Status& status,
-    std::promise<LocalGridsResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::GetLocalGridsResponse>(
-        status, response, SDKErrorCode::Success);
+void LocalGridClient::OnGetLocalGridsComplete(MessagePumpCallBase*,
+                                              const ::bosdyn::api::GetLocalGridsRequest&,
+                                              ::bosdyn::api::GetLocalGridsResponse&& response,
+                                              const grpc::Status& status,
+                                              std::promise<LocalGridsResultType> promise) {
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::GetLocalGridsResponse>(
+            status, response, SDKErrorCode::Success);
 
     if (!ret_status) {
         promise.set_value({ret_status, std::move(response)});
@@ -104,8 +107,8 @@ void LocalGridClient::OnGetLocalGridsComplete(
     for (const auto& grid_response : response.local_grid_responses()) {
         std::error_code code = grid_response.status();
         if (code != SuccessCondition::Success) {
-            std::cerr << "[[[[[ LOCAL GRID RESPONSE ERROR CODE = " << code << " ]]]]]" << std::endl;
-            promise.set_value({::bosdyn::common::Status(code, "LocalGridResponse ::bosdyn::common::Status unsuccessful"),
+            promise.set_value({::bosdyn::common::Status(
+                                   code, "LocalGridResponse ::bosdyn::common::Status unsuccessful"),
                                std::move(response)});
             return;
         }

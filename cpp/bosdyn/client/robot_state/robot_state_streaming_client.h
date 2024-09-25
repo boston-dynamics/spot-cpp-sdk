@@ -53,7 +53,7 @@ class RobotStateStreamingClient : public ServiceClient {
 
  private:
     // The stub for the robot state client to communicate it's rpc with (and pass to the robot).
-    std::unique_ptr<::bosdyn::api::RobotStateStreamingService::Stub> m_stub;
+    std::unique_ptr<::bosdyn::api::RobotStateStreamingService::StubInterface> m_stub;
 
     // Default service name for the RobotStateStreaming service.
     static const char* s_default_service_name;
@@ -64,7 +64,7 @@ class RobotStateStreamingClient : public ServiceClient {
     // The ClientContext
     ::grpc::ClientContext m_context;
 
-    std::unique_ptr<::grpc::ClientReader<::bosdyn::api::RobotStateStreamResponse>>
+    std::unique_ptr<::grpc::ClientReaderInterface<::bosdyn::api::RobotStateStreamResponse>>
         m_response_reader;
 };
 

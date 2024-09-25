@@ -27,16 +27,16 @@ std::shared_future<InverseKinematicsResultType> InverseKinematicsClient::Inverse
     std::shared_future<InverseKinematicsResultType> future = response.get_future();
     BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
 
-    MessagePumpCallBase* one_time =
-        InitiateAsyncCall<::bosdyn::api::spot::InverseKinematicsRequest,
-                          ::bosdyn::api::spot::InverseKinematicsResponse,
-                          ::bosdyn::api::spot::InverseKinematicsResponse>(
-            request,
-            std::bind(&::bosdyn::api::spot::InverseKinematicsService::Stub::AsyncInverseKinematics,
-                      m_stub.get(), _1, _2, _3),
-            std::bind(&InverseKinematicsClient::OnInverseKinematicsComplete, this, _1, _2, _3, _4,
-                      _5),
-            std::move(response), parameters);
+    MessagePumpCallBase* one_time = InitiateAsyncCall<
+        ::bosdyn::api::spot::InverseKinematicsRequest,
+        ::bosdyn::api::spot::InverseKinematicsResponse,
+        ::bosdyn::api::spot::InverseKinematicsResponse>(
+        request,
+        std::bind(
+            &::bosdyn::api::spot::InverseKinematicsService::StubInterface::AsyncInverseKinematics,
+            m_stub.get(), _1, _2, _3),
+        std::bind(&InverseKinematicsClient::OnInverseKinematicsComplete, this, _1, _2, _3, _4, _5),
+        std::move(response), parameters);
 
     return future;
 }

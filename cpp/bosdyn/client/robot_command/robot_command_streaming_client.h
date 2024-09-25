@@ -50,7 +50,7 @@ class RobotCommandStreamingClient : public ServiceClient {
     static std::string GetServiceType() { return s_service_type; }
 
  private:
-    std::unique_ptr<::bosdyn::api::RobotCommandStreamingService::Stub> m_stub;
+    std::unique_ptr<::bosdyn::api::RobotCommandStreamingService::StubInterface> m_stub;
 
     // Default service name for the robot command service.
     static const char* s_default_service_name;
@@ -62,7 +62,7 @@ class RobotCommandStreamingClient : public ServiceClient {
 
     ::grpc::ClientContext m_context;
 
-    std::unique_ptr<::grpc::ClientWriter<::bosdyn::api::JointControlStreamRequest>>
+    std::unique_ptr<::grpc::ClientWriterInterface<::bosdyn::api::JointControlStreamRequest>>
         m_request_writer;
 };
 

@@ -30,13 +30,14 @@ std::shared_future<TriggerServiceFaultResultType> FaultClient::TriggerServiceFau
 
     ::bosdyn::api::TriggerServiceFaultRequest request;
     *request.mutable_fault() = service_fault;
-    MessagePumpCallBase* one_time =
-        InitiateAsyncCall<::bosdyn::api::TriggerServiceFaultRequest, ::bosdyn::api::TriggerServiceFaultResponse,
-                          ::bosdyn::api::TriggerServiceFaultResponse>(
-            request,
-            std::bind(&::bosdyn::api::FaultService::Stub::AsyncTriggerServiceFault, m_stub.get(), _1, _2, _3),
-            std::bind(&FaultClient::OnTriggerServiceFaultComplete, this, _1, _2, _3, _4, _5),
-            std::move(response), parameters);
+    MessagePumpCallBase* one_time = InitiateAsyncCall<::bosdyn::api::TriggerServiceFaultRequest,
+                                                      ::bosdyn::api::TriggerServiceFaultResponse,
+                                                      ::bosdyn::api::TriggerServiceFaultResponse>(
+        request,
+        std::bind(&::bosdyn::api::FaultService::StubInterface::AsyncTriggerServiceFault,
+                  m_stub.get(), _1, _2, _3),
+        std::bind(&FaultClient::OnTriggerServiceFaultComplete, this, _1, _2, _3, _4, _5),
+        std::move(response), parameters);
 
     return future;
 }
@@ -46,16 +47,16 @@ void FaultClient::OnTriggerServiceFaultComplete(
     MessagePumpCallBase* call, const ::bosdyn::api::TriggerServiceFaultRequest& request,
     ::bosdyn::api::TriggerServiceFaultResponse&& response, const grpc::Status& status,
     std::promise<TriggerServiceFaultResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::TriggerServiceFaultResponse>(
-        status, response, response.status());
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::TriggerServiceFaultResponse>(
+            status, response, response.status());
 
     promise.set_value({ret_status, std::move(response)});
 }
 
 // Synchronous method to trigger a ServiceFault through the robot.
 TriggerServiceFaultResultType FaultClient::TriggerServiceFault(
-    const ::bosdyn::api::ServiceFault& service_fault,
-    const RPCParameters& parameters) {
+    const ::bosdyn::api::ServiceFault& service_fault, const RPCParameters& parameters) {
     return this->TriggerServiceFaultAsync(service_fault, parameters).get();
 }
 
@@ -74,13 +75,14 @@ std::shared_future<ClearServiceFaultResultType> FaultClient::ClearServiceFaultAs
     } else if (clear_group == CLEAR_ALL_FOR_PAYLOAD_GUID) {
         request.set_clear_all_payload_faults(true);
     }
-    MessagePumpCallBase* one_time =
-        InitiateAsyncCall<::bosdyn::api::ClearServiceFaultRequest, ::bosdyn::api::ClearServiceFaultResponse,
-                          ::bosdyn::api::ClearServiceFaultResponse>(
-            request,
-            std::bind(&::bosdyn::api::FaultService::Stub::AsyncClearServiceFault, m_stub.get(), _1, _2, _3),
-            std::bind(&FaultClient::OnClearServiceFaultComplete, this, _1, _2, _3, _4, _5),
-            std::move(response), parameters);
+    MessagePumpCallBase* one_time = InitiateAsyncCall<::bosdyn::api::ClearServiceFaultRequest,
+                                                      ::bosdyn::api::ClearServiceFaultResponse,
+                                                      ::bosdyn::api::ClearServiceFaultResponse>(
+        request,
+        std::bind(&::bosdyn::api::FaultService::StubInterface::AsyncClearServiceFault, m_stub.get(),
+                  _1, _2, _3),
+        std::bind(&FaultClient::OnClearServiceFaultComplete, this, _1, _2, _3, _4, _5),
+        std::move(response), parameters);
 
     return future;
 }
@@ -90,8 +92,9 @@ void FaultClient::OnClearServiceFaultComplete(
     MessagePumpCallBase* call, const ::bosdyn::api::ClearServiceFaultRequest& request,
     ::bosdyn::api::ClearServiceFaultResponse&& response, const grpc::Status& status,
     std::promise<ClearServiceFaultResultType> promise) {
-    ::bosdyn::common::Status ret_status = ProcessResponseAndGetFinalStatus<::bosdyn::api::ClearServiceFaultResponse>(
-        status, response, response.status());
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::ClearServiceFaultResponse>(
+            status, response, response.status());
 
     promise.set_value({ret_status, std::move(response)});
 }

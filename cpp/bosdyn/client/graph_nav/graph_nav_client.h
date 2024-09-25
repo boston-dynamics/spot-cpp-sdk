@@ -14,9 +14,9 @@
 
 #include <future>
 
+#include "bosdyn/client/graph_nav/graph_nav_error_codes.h"
 #include "bosdyn/client/service_client/service_client.h"
 #include "bosdyn/common/status.h"
-#include "bosdyn/client/graph_nav/graph_nav_error_codes.h"
 
 namespace bosdyn {
 
@@ -48,7 +48,8 @@ typedef Result<::bosdyn::api::graph_nav::DownloadGraphResponse> DownloadGraphRes
 typedef Result<::bosdyn::api::graph_nav::UploadGraphResponse> UploadGraphResultType;
 
 // Return type for the UploadWaypointSnapshot method.
-typedef Result<::bosdyn::api::graph_nav::UploadWaypointSnapshotResponse> UploadWaypointSnapshotResultType;
+typedef Result<::bosdyn::api::graph_nav::UploadWaypointSnapshotResponse>
+    UploadWaypointSnapshotResultType;
 
 // Return type for the UploadEdgeSnapshot method.
 typedef Result<::bosdyn::api::graph_nav::UploadEdgeSnapshotResponse> UploadEdgeSnapshotResultType;
@@ -85,9 +86,8 @@ class GraphNavClient : public ServiceClient {
         const RPCParameters& parameters = RPCParameters());
 
     // Synchronous method to execute a NavigateRoute request.
-    NavigateRouteResultType NavigateRoute(
-        ::bosdyn::api::graph_nav::NavigateRouteRequest& request,
-        const RPCParameters& parameters = RPCParameters());
+    NavigateRouteResultType NavigateRoute(::bosdyn::api::graph_nav::NavigateRouteRequest& request,
+                                          const RPCParameters& parameters = RPCParameters());
 
     // Asynchronous method to execute a NavigateTo request.
     std::shared_future<NavigateToResultType> NavigateToAsync(
@@ -95,19 +95,16 @@ class GraphNavClient : public ServiceClient {
         const RPCParameters& parameters = RPCParameters());
 
     // Synchronous method to execute a NavigateTo request.
-    NavigateToResultType NavigateTo(
-        ::bosdyn::api::graph_nav::NavigateToRequest& request,
-        const RPCParameters& parameters = RPCParameters());
+    NavigateToResultType NavigateTo(::bosdyn::api::graph_nav::NavigateToRequest& request,
+                                    const RPCParameters& parameters = RPCParameters());
 
     // Asynchronous method to execute a NavigationFeedback request.
     std::shared_future<NavigationFeedbackResultType> NavigationFeedbackAsync(
-        unsigned int command_id,
-        const RPCParameters& parameters = RPCParameters());
+        unsigned int command_id, const RPCParameters& parameters = RPCParameters());
 
     // Synchronous method to execute a NavigationFeedback request.
     NavigationFeedbackResultType NavigationFeedback(
-        unsigned int command_id,
-        const RPCParameters& parameters = RPCParameters());
+        unsigned int command_id, const RPCParameters& parameters = RPCParameters());
 
     // Asynchronous method to execute a GetLocalizationState request.
     std::shared_future<GetLocalizationStateResultType> GetLocalizationStateAsync(
@@ -124,16 +121,14 @@ class GraphNavClient : public ServiceClient {
         const RPCParameters& parameters = RPCParameters());
 
     // Synchronous method to execute a ClearGraph request.
-    ClearGraphResultType ClearGraph(
-        const RPCParameters& parameters = RPCParameters());
+    ClearGraphResultType ClearGraph(const RPCParameters& parameters = RPCParameters());
 
     // Asynchronous method to execute a DownloadGraph request.
     std::shared_future<DownloadGraphResultType> DownloadGraphAsync(
         const RPCParameters& parameters = RPCParameters());
 
     // Synchronous method to execute a DownloadGraph request.
-    DownloadGraphResultType DownloadGraph(
-        const RPCParameters& parameters = RPCParameters());
+    DownloadGraphResultType DownloadGraph(const RPCParameters& parameters = RPCParameters());
 
     // Asynchronous method to execute a UploadGraph request.
     std::shared_future<UploadGraphResultType> UploadGraphAsync(
@@ -141,7 +136,24 @@ class GraphNavClient : public ServiceClient {
         const RPCParameters& parameters = RPCParameters());
 
     // Synchronous method to execute a UploadGraph request.
-    UploadGraphResultType UploadGraph(
+    UploadGraphResultType UploadGraph(::bosdyn::api::graph_nav::UploadGraphRequest& request,
+                                      const RPCParameters& parameters = RPCParameters());
+
+    // Asynchronous method to execute a DownloadGraph request using the streaming method.
+    std::shared_future<DownloadGraphResultType> DownloadGraphStreamingAsync(
+        const RPCParameters& parameters = RPCParameters());
+
+    // Synchronous method to execute a DownloadGraph request using the streaming method.
+    DownloadGraphResultType DownloadGraphStreaming(
+        const RPCParameters& parameters = RPCParameters());
+
+    // Asynchronous method to execute a UploadGraph request using the streaming method.
+    std::shared_future<UploadGraphResultType> UploadGraphStreamingAsync(
+        ::bosdyn::api::graph_nav::UploadGraphRequest& request,
+        const RPCParameters& parameters = RPCParameters());
+
+    // Synchronous method to execute an UploadGraph request using the streaming method.
+    UploadGraphResultType UploadGraphStreaming(
         ::bosdyn::api::graph_nav::UploadGraphRequest& request,
         const RPCParameters& parameters = RPCParameters());
 
@@ -195,16 +207,14 @@ class GraphNavClient : public ServiceClient {
 
     // Convenience methods to download an edge snapshot with just an id.
     std::shared_future<DownloadEdgeSnapshotResultType> DownloadEdgeSnapshotAsync(
-        const std::string& edge_snapshot_id,
-        const RPCParameters& parameters = RPCParameters()) {
+        const std::string& edge_snapshot_id, const RPCParameters& parameters = RPCParameters()) {
         ::bosdyn::api::graph_nav::DownloadEdgeSnapshotRequest request;
         request.set_edge_snapshot_id(edge_snapshot_id);
         return DownloadEdgeSnapshotAsync(request, parameters);
     }
 
     DownloadEdgeSnapshotResultType DownloadEdgeSnapshot(
-        const std::string& edge_snapshot_id,
-        const RPCParameters& parameters = RPCParameters()) {
+        const std::string& edge_snapshot_id, const RPCParameters& parameters = RPCParameters()) {
         ::bosdyn::api::graph_nav::DownloadEdgeSnapshotRequest request;
         request.set_edge_snapshot_id(edge_snapshot_id);
         return DownloadEdgeSnapshot(request, parameters);
@@ -228,12 +238,13 @@ class GraphNavClient : public ServiceClient {
     // Get the default service name the GraphNav service will be registered in the directory with.
     static std::string GetDefaultServiceName() { return s_default_service_name; }
 
-    // Get the default service type for the GraphNav service that will be registered in the directory.
+    // Get the default service type for the GraphNav service that will be registered in the
+    // directory.
     static std::string GetServiceType() { return s_service_type; }
 
  private:
     // The stub for the GraphNav client to communicate it's rpc with (and pass to the robot).
-    std::unique_ptr<::bosdyn::api::graph_nav::GraphNavService::Stub> m_stub;
+    std::unique_ptr<::bosdyn::api::graph_nav::GraphNavService::StubInterface> m_stub;
 
     // Default service name for the GraphNav service.
     static const char* s_default_service_name;
@@ -246,67 +257,75 @@ class GraphNavClient : public ServiceClient {
 
     // Callback that will return the SetLocalizationResponse message after SetLocalization rpc
     // returns to the client.
-    void OnSetLocalizationComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::graph_nav::SetLocalizationRequest& request,
-        ::bosdyn::api::graph_nav::SetLocalizationResponse&& response, const grpc::Status& status,
-        std::promise<SetLocalizationResultType> promise);
+    void OnSetLocalizationComplete(MessagePumpCallBase* call,
+                                   const ::bosdyn::api::graph_nav::SetLocalizationRequest& request,
+                                   ::bosdyn::api::graph_nav::SetLocalizationResponse&& response,
+                                   const grpc::Status& status,
+                                   std::promise<SetLocalizationResultType> promise);
 
     // Callback that will return the NavigateRouteResponse message after NavigateRoute rpc
     // returns to the client.
-    void OnNavigateRouteComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::graph_nav::NavigateRouteRequest& request,
-        ::bosdyn::api::graph_nav::NavigateRouteResponse&& response, const grpc::Status& status,
-        std::promise<NavigateRouteResultType> promise);
+    void OnNavigateRouteComplete(MessagePumpCallBase* call,
+                                 const ::bosdyn::api::graph_nav::NavigateRouteRequest& request,
+                                 ::bosdyn::api::graph_nav::NavigateRouteResponse&& response,
+                                 const grpc::Status& status,
+                                 std::promise<NavigateRouteResultType> promise);
 
     // Callback that will return the NavigateToResponse message after NavigateTo rpc
     // returns to the client.
-    void OnNavigateToComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::graph_nav::NavigateToRequest& request,
-        ::bosdyn::api::graph_nav::NavigateToResponse&& response, const grpc::Status& status,
-        std::promise<NavigateToResultType> promise);
+    void OnNavigateToComplete(MessagePumpCallBase* call,
+                              const ::bosdyn::api::graph_nav::NavigateToRequest& request,
+                              ::bosdyn::api::graph_nav::NavigateToResponse&& response,
+                              const grpc::Status& status,
+                              std::promise<NavigateToResultType> promise);
 
     // Callback that will return the NavigationFeedbackResponse message after NavigationFeedback rpc
     // returns to the client.
     void OnNavigationFeedbackComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::graph_nav::NavigationFeedbackRequest& request,
+        MessagePumpCallBase* call,
+        const ::bosdyn::api::graph_nav::NavigationFeedbackRequest& request,
         ::bosdyn::api::graph_nav::NavigationFeedbackResponse&& response, const grpc::Status& status,
         std::promise<NavigationFeedbackResultType> promise);
 
     // Callback that will return the GetLocalizationStateResponse message after GetLocalizationState
     // rpc returns to the client.
     void OnGetLocalizationStateComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::graph_nav::GetLocalizationStateRequest& request,
-        ::bosdyn::api::graph_nav::GetLocalizationStateResponse&& response, const grpc::Status& status,
-        std::promise<GetLocalizationStateResultType> promise);
+        MessagePumpCallBase* call,
+        const ::bosdyn::api::graph_nav::GetLocalizationStateRequest& request,
+        ::bosdyn::api::graph_nav::GetLocalizationStateResponse&& response,
+        const grpc::Status& status, std::promise<GetLocalizationStateResultType> promise);
 
     // Callback that will return the ClearGraphResponse message after ClearGraph rpc
     // returns to the client.
-    void OnClearGraphComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::graph_nav::ClearGraphRequest& request,
-        ::bosdyn::api::graph_nav::ClearGraphResponse&& response, const grpc::Status& status,
-        std::promise<ClearGraphResultType> promise);
+    void OnClearGraphComplete(MessagePumpCallBase* call,
+                              const ::bosdyn::api::graph_nav::ClearGraphRequest& request,
+                              ::bosdyn::api::graph_nav::ClearGraphResponse&& response,
+                              const grpc::Status& status,
+                              std::promise<ClearGraphResultType> promise);
 
     // Callback that will return the DownloadGraphResponse message after DownloadGraph rpc
     // returns to the client.
-    void OnDownloadGraphComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::graph_nav::DownloadGraphRequest& request,
-        ::bosdyn::api::graph_nav::DownloadGraphResponse&& response, const grpc::Status& status,
-        std::promise<DownloadGraphResultType> promise);
+    void OnDownloadGraphComplete(MessagePumpCallBase* call,
+                                 const ::bosdyn::api::graph_nav::DownloadGraphRequest& request,
+                                 ::bosdyn::api::graph_nav::DownloadGraphResponse&& response,
+                                 const grpc::Status& status,
+                                 std::promise<DownloadGraphResultType> promise);
 
     // Callback that will return the UploadGraphResponse message after UploadGraph rpc
     // returns to the client.
-    void OnUploadGraphComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::graph_nav::UploadGraphRequest& request,
-        ::bosdyn::api::graph_nav::UploadGraphResponse&& response, const grpc::Status& status,
-        std::promise<UploadGraphResultType> promise);
+    void OnUploadGraphComplete(MessagePumpCallBase* call,
+                               const ::bosdyn::api::graph_nav::UploadGraphRequest& request,
+                               ::bosdyn::api::graph_nav::UploadGraphResponse&& response,
+                               const grpc::Status& status,
+                               std::promise<UploadGraphResultType> promise);
 
     // Callback that will return the UploadWaypointSnapshotResponse message after
     // UploadWaypointSnapshot rpc returns to the client.
     void OnUploadWaypointSnapshotComplete(
         MessagePumpCallBase* call,
         const std::vector<::bosdyn::api::graph_nav::UploadWaypointSnapshotRequest>&& request,
-        ::bosdyn::api::graph_nav::UploadWaypointSnapshotResponse&& response, const grpc::Status& status,
-        std::promise<UploadWaypointSnapshotResultType> promise);
+        ::bosdyn::api::graph_nav::UploadWaypointSnapshotResponse&& response,
+        const grpc::Status& status, std::promise<UploadWaypointSnapshotResultType> promise);
 
     // Callback that will return the UploadEdgeSnapshotResponse message after UploadEdgeSnapshot rpc
     // returns to the client.
@@ -319,17 +338,32 @@ class GraphNavClient : public ServiceClient {
     // Callback that will return the DownloadWaypointSnapshotResponse message after
     // DownloadWaypointSnapshot rpc returns to the client.
     void OnDownloadWaypointSnapshotComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::graph_nav::DownloadWaypointSnapshotRequest& request,
+        MessagePumpCallBase* call,
+        const ::bosdyn::api::graph_nav::DownloadWaypointSnapshotRequest& request,
         std::vector<::bosdyn::api::graph_nav::DownloadWaypointSnapshotResponse>&& response,
         const grpc::Status& status, std::promise<DownloadWaypointSnapshotResultType> promise);
 
     // Callback that will return the DownloadEdgeSnapshotResponse message after DownloadEdgeSnapshot
     // rpc returns to the client.
     void OnDownloadEdgeSnapshotComplete(
-        MessagePumpCallBase* call, const ::bosdyn::api::graph_nav::DownloadEdgeSnapshotRequest& request,
+        MessagePumpCallBase* call,
+        const ::bosdyn::api::graph_nav::DownloadEdgeSnapshotRequest& request,
         std::vector<::bosdyn::api::graph_nav::DownloadEdgeSnapshotResponse>&& response,
         const grpc::Status& status, std::promise<DownloadEdgeSnapshotResultType> promise);
 
+    // Callback that will return the UploadGraphStreaming message after
+    // UploadGraphStreaming rpc returns to the client.
+    void OnUploadGraphStreamingComplete(
+        MessagePumpCallBase* call,
+        const std::vector<::bosdyn::api::graph_nav::UploadGraphStreamingRequest>&& request,
+        ::bosdyn::api::graph_nav::UploadGraphResponse&& response, const grpc::Status& status,
+        std::promise<UploadGraphResultType> promise);
+    // Callback that will return the DownloadGraphResponse message after
+    // DownloadGraphStreaming rpc returns to the client.
+    void OnDownloadGraphStreamingComplete(
+        MessagePumpCallBase* call, const ::bosdyn::api::graph_nav::DownloadGraphRequest& request,
+        std::vector<::bosdyn::api::graph_nav::DownloadGraphStreamingResponse>&& response,
+        const grpc::Status& status, std::promise<DownloadGraphResultType> promise);
 };
 
 }  // namespace client

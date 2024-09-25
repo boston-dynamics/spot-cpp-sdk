@@ -8,8 +8,8 @@
 
 
 #include "bosdyn/client/error_codes/docking_helper_error_code.h"
-#include "bosdyn/client/error_codes/sdk_error_code.h"
 #include "bosdyn/client/error_codes/error_type_condition.h"
+#include "bosdyn/client/error_codes/sdk_error_code.h"
 #include "bosdyn/common/success_condition.h"
 
 namespace {  // anonymous namespace
@@ -21,12 +21,14 @@ struct DockingHelperErrorCodeCategory : std::error_category {
 };
 
 bool DockingHelperErrorCodeCategory::equivalent(int valcode,
-                                      const std::error_condition& cond) const noexcept {
+                                                const std::error_condition& cond) const noexcept {
     if (cond == ErrorTypeCondition::SDKError) return true;
     return false;
 }
 
-const char* DockingHelperErrorCodeCategory::name() const noexcept { return "DockingHelperErrorCode"; }
+const char* DockingHelperErrorCodeCategory::name() const noexcept {
+    return "DockingHelperErrorCode";
+}
 
 std::string DockingHelperErrorCodeCategory::message(int value) const {
     switch (static_cast<DockingHelperErrorCode>(value)) {

@@ -13,18 +13,17 @@ namespace bosdyn {
 
 namespace client {
 
-void StringToDataChunks(const std::string& data,
-                        std::vector<::bosdyn::api::DataChunk>* chunks) {
+void StringToDataChunks(const std::string& data, std::vector<::bosdyn::api::DataChunk>* chunks) {
     int chunk_size = 2 * 1024 * 1024;
     int start_index = 0;
     int left;
     const char* buffer = data.c_str();
 
     int total_size = data.length();
-    while(true) {
+    while (true) {
         ::bosdyn::api::DataChunk chunk;
         left = total_size - start_index;
-        if ( left < chunk_size) {
+        if (left < chunk_size) {
             chunk.set_data(buffer + start_index, left);
             chunk.set_total_size(total_size);
             chunks->emplace_back(std::move(chunk));
@@ -48,14 +47,18 @@ Result<std::string> StringFromDataChunks(
     full_data.reserve(reported_total_size);
     for (auto chunk : data_chunks) {
         if (chunk->total_size() != reported_total_size) {
-            return {::bosdyn::common::Status(SDKErrorCode::GenericSDKError,
-                           "Mismatch in reported total size in vector of data chunks"), ""};
+            return {::bosdyn::common::Status(
+                        SDKErrorCode::GenericSDKError,
+                        "Mismatch in reported total size in vector of data chunks"),
+                    ""};
         }
         full_data.append(chunk->data());
     }
 
     if (full_data.length() != reported_total_size) {
-        return {::bosdyn::common::Status(SDKErrorCode::GenericSDKError, "Size mismatch in StringFromDataChunks"), ""};
+        return {::bosdyn::common::Status(SDKErrorCode::GenericSDKError,
+                                         "Size mismatch in StringFromDataChunks"),
+                ""};
     }
 
     return {::bosdyn::common::Status(SDKErrorCode::Success), std::move(full_data)};
