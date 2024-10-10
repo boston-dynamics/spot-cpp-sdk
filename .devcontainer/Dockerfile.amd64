@@ -12,6 +12,7 @@ RUN apt-get update --fix-missing \
 	g++ \
 	pkg-config \
 	protobuf-compiler \
+	protobuf-compiler-grpc \	
 	python3 \
 	curl \
 	ninja-build \
