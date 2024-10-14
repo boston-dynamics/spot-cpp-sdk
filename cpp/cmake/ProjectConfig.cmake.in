@@ -11,6 +11,7 @@ find_dependency(PkgConfig CONFIG REQUIRED)
 pkg_check_modules(GRPC REQUIRED grpc)
 pkg_check_modules(GRPCPP REQUIRED grpc++)
 find_dependency(Threads REQUIRED)
+find_dependency(CLI11 REQUIRED)
 # Pick up the auto-generated file which knows how to add the library targets
 # This will mean that we do not have to supply full paths for the libraries
 set(exports_file "${CMAKE_CURRENT_LIST_DIR}/@EXPORTS_FILE@")

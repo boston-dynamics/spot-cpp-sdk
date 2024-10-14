@@ -17,8 +17,10 @@ find_package(PkgConfig REQUIRED)
 pkg_check_modules(GRPC REQUIRED grpc)
 pkg_check_modules(GRPCPP REQUIRED grpc++)
 find_program(GRPC_CPP_PLUGIN_LOCATION grpc_cpp_plugin REQUIRED)
-
+find_package(CLI11 REQUIRED)
 find_package(Threads REQUIRED)
+
+include_directories(SYSTEM $<TARGET_PROPERTY:CLI11::CLI11,INTERFACE_INCLUDE_DIRECTORIES>)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS true)
 
@@ -195,8 +197,7 @@ include(CMakePackageConfigHelpers)
 
 ### EXAMPLE EXECUTABLES ###
 if(BUILD_EXAMPLES)
-find_package(CLI11 REQUIRED)
-	
+
 link_directories(
   ${PROTOBUF_LIB_DIR}
 )
@@ -205,7 +206,6 @@ target_compile_features(arm_grasp_carry_overrides PUBLIC cxx_std_17)
 target_include_directories(arm_grasp_carry_overrides PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${PROTOBUF_INCLUDE_DIR}
-  $<TARGET_PROPERTY:CLI11::CLI11,INTERFACE_INCLUDE_DIRECTORIES>
 )
 target_link_libraries(arm_grasp_carry_overrides PUBLIC bosdyn_client_static)
 install(TARGETS arm_grasp_carry_overrides DESTINATION ${CMAKE_INSTALL_BINDIR})
@@ -223,7 +223,6 @@ target_compile_features(basic_robot_command PUBLIC cxx_std_17)
 target_include_directories(basic_robot_command PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${PROTOBUF_INCLUDE_DIR}
-  $<TARGET_PROPERTY:CLI11::CLI11,INTERFACE_INCLUDE_DIRECTORIES>
 )
 target_link_libraries(basic_robot_command PUBLIC bosdyn_client_static)
 install(TARGETS basic_robot_command DESTINATION ${CMAKE_INSTALL_BINDIR})
@@ -232,7 +231,6 @@ target_compile_features(get_image PUBLIC cxx_std_17)
 target_include_directories(get_image PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${PROTOBUF_INCLUDE_DIR}
-  $<TARGET_PROPERTY:CLI11::CLI11,INTERFACE_INCLUDE_DIRECTORIES>
 )
 target_link_libraries(get_image PUBLIC bosdyn_client_static)
 install(TARGETS get_image DESTINATION ${CMAKE_INSTALL_BINDIR})
@@ -241,7 +239,6 @@ target_compile_features(hello_spot PUBLIC cxx_std_17)
 target_include_directories(hello_spot PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${PROTOBUF_INCLUDE_DIR}
-  $<TARGET_PROPERTY:CLI11::CLI11,INTERFACE_INCLUDE_DIRECTORIES>
 )
 target_link_libraries(hello_spot PUBLIC bosdyn_client_static)
 install(TARGETS hello_spot DESTINATION ${CMAKE_INSTALL_BINDIR})
@@ -250,7 +247,6 @@ target_compile_features(inverse_kinematics_reachability PUBLIC cxx_std_17)
 target_include_directories(inverse_kinematics_reachability PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${PROTOBUF_INCLUDE_DIR}
-  $<TARGET_PROPERTY:CLI11::CLI11,INTERFACE_INCLUDE_DIRECTORIES>
 )
 target_link_libraries(inverse_kinematics_reachability PUBLIC bosdyn_client_static)
 install(TARGETS inverse_kinematics_reachability DESTINATION ${CMAKE_INSTALL_BINDIR})
@@ -259,7 +255,6 @@ target_compile_features(spot_cam PUBLIC cxx_std_17)
 target_include_directories(spot_cam PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${PROTOBUF_INCLUDE_DIR}
-  $<TARGET_PROPERTY:CLI11::CLI11,INTERFACE_INCLUDE_DIRECTORIES>
 )
 target_link_libraries(spot_cam PUBLIC bosdyn_client_static)
 install(TARGETS spot_cam DESTINATION ${CMAKE_INSTALL_BINDIR})
