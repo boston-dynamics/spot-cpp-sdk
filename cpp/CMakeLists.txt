@@ -278,7 +278,6 @@ install(
 
 # Define Variables needed by package config file
 set(PACKAGE_INSTALL_PREFIX /opt/spot-cpp-sdk)
-set(DEP_INSTALL_PATH ${PACKAGE_INSTALL_PREFIX}/external)
 
 #this generates a relocatable config file for install, but it gets invoked at build time,
 #so the output has to be saved in a way that will not conflict with the export config
@@ -327,6 +326,5 @@ if (UNIX)
   set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/../LICENSE")
   set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
   set(CPACK_PACKAGING_INSTALL_PREFIX "${PACKAGE_INSTALL_PREFIX}")
-  set(CPACK_INSTALLED_DIRECTORIES "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/;${DEP_INSTALL_PATH}/")
   include(CPack)
 endif()
