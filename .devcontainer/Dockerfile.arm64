@@ -1,29 +1,33 @@
 FROM arm64v8/ubuntu:22.04
-SHELL ["/bin/bash", "-c"]
 
-RUN apt-get update --fix-missing &&\
-    apt-get install -y --no-install-recommends build-essential ca-certificates cmake git g++ pkg-config python3 curl ninja-build tar zip unzip zlib1g-dev libssl-dev wget &&\
-    apt-get autoclean &&\
-    apt-get autoremove &&\
-    apt-get clean &&\
-    rm -rf /var/lib/apt/lists/*
+RUN apt-get update --fix-missing \
+    && apt-get install -y --no-install-recommends \
+	build-essential \
+	ca-certificates \
+	cmake \
+	git \
+	libcli11-dev \
+	libeigen3-dev \
+	libgrpc++-dev \
+	libprotobuf-dev \
+	g++ \
+	pkg-config \
+	protobuf-compiler \
+	protobuf-compiler-grpc \	
+	python3 \
+	curl \
+	ninja-build \
+	tar \
+	zip \
+	unzip \
+	zlib1g-dev \
+	libssl-dev \
+	wget \
+    && apt-get autoclean \
+    && apt-get autoremove \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN update-ca-certificates
 
-RUN wget https://github.com/Kitware/CMake/releases/download/v3.28.3/cmake-3.28.3.tar.gz &&\
-    tar -xzf cmake-3.28.3.tar.gz &&\
-    cd cmake-3.28.3 &&\
-    ./configure &&\
-    make install &&\
-    cd .. &&\
-    rm cmake-3.28.3.tar.gz &&\
-    rm -r cmake-3.28.3
-
-RUN git clone https://github.com/microsoft/vcpkg &&\
-    cd vcpkg &&\
-    git checkout 3b213864579b6fa686e38715508f7cd41a50900f &&\
-    export VCPKG_FORCE_SYSTEM_BINARIES=arm &&\
-    ./bootstrap-vcpkg.sh -disableMetrics &&\
-    ./vcpkg install grpc:arm64-linux &&\
-    ./vcpkg install eigen3:arm64-linux &&\
-    ./vcpkg install cli11:arm64-linux
+COPY entrypoint.sh .
