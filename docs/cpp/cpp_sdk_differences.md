@@ -11,10 +11,11 @@ Development Kit License (20191101-BDSDK-SL).
 This document describes the key differences between the Spot C++ SDK and the Spot Python SDK.
 
 <!--ts-->
-  * [RPC method return types](#rpc-method-return-types)
-  * [Error checking](#error-checking)
-  * [Object ownership](#object-ownership)
-  * [Client-Server asynchronous communication](#client-service-asynchronous-communication)
+
+- [RPC method return types](#rpc-method-return-types)
+- [Error checking](#error-checking)
+- [Object ownership](#object-ownership)
+- [Client-Server asynchronous communication](#client-service-asynchronous-communication)
 <!--te-->
 
 ## RPC method return types
@@ -23,9 +24,10 @@ This document describes the key differences between the Spot C++ SDK and the Spo
 
 The C++ client classes do not throw exceptions for any errors detected during the gRPC communication or internal errors. Instead, methods return `Status` objects that include successful and failure return types. The `Status` class is described in the section below.
 
-### Status class and error codes 
+### Status class and error codes
 
 The `Status` class is used in the Spot C++ SDK as the return type for methods that need to return a success condition with additional error information. It contains an `std::error_code` field and a string message. The string message field contains a human-readable message to be used for logging and additional details for failure returns. The `std::error_code` field specifies a code for success or failures. There are two types of `std::error_code` defined in the C++ SDK:
+
 - Manually defined: These are `std::error_code` definitions that do not depend on protobuf definitions in the Spot API. Examples of this type of `std::error_code` in the SDK are: `RPCErrorCode` used for gRPC return types, `LeaseWalletErrorCode` used for lease wallet return types, and many more.
 - Auto-generated from protobuf Status enumerations. These are all associated in the `ResponseError` condition described below.
 
@@ -48,6 +50,7 @@ SDK methods that need to return a `Status` value as well as an object do so by r
 The `Result` and `Status` objects defined in the section above contain an overloaded bool operator. So, developers can easily check for successful returns by the SDK methods:
 
 `Result` return example that creates a `Robot` object from a `ClientSDK` object:
+
 ```
 Result<std::unique_ptr<Robot>> robot_result = client_sdk->CreateRobot("spot_robot");
 if (!robot_result) {
@@ -58,6 +61,7 @@ std::unique_ptr<Robot> robot = robot_result.move();
 ```
 
 `Status` return example that authenticates the `Robot` object created in the code above:
+
 ```
 Status status = robot->Authenticate("username", "password");
 if (!status) {
@@ -67,12 +71,13 @@ if (!status) {
 ```
 
 The hierarchy of error handling in the C++ SDK is as follows:
+
 - `Result` bool operator simply returns the `Status` field in it, calling the `Status` bool operator.
 - `Status` bool operator returns the value of `m_code == SuccessCondition::Success`, comparing its `std::error_code` to the `Success` `std::error_condition` described in the section [above](#status-class-and-error-codes).
 - All `std::error_code` defined in the C++ SDK implement the `equivalent` method that returns success for the right enumeration value(s) that represent the success criteria. This process is described in more details below.
 
-
 The `RPCErrorCode` defined for handling gRPC error codes contains this implementation of the `equivalent` method:
+
 ```
 bool RPCErrorCodeCategory::equivalent(int valcode,
                                       const std::error_condition& cond) const noexcept {
@@ -100,6 +105,7 @@ There are two main object ownership levels in the Spot C++ SDK:
 - The `ClientSDK` class is at the highest level, and it is used to generate one or many instances of the `Robot` class, with each representing a connection to a specific robot. The `ClientSDK` instance can be discarded after the `Robot` instances are created.
 
 - The `Robot` class provides functionality to communicate with a specific robot. It is used to create client instances that communicate with specific gRPC services registered in the robot system. The recommended way to create a `Robot` instance in an application is to use the static method in the `ClientSDK` class:
+
 ```
 Result<std::unique_ptr<::bosdyn::client::Robot>> CreateRobot(
     const std::string& network_address,
@@ -107,15 +113,18 @@ Result<std::unique_ptr<::bosdyn::client::Robot>> CreateRobot(
     ::bosdyn::common::Duration timeout = kRPCTimeoutNotSpecified,
     std::shared_ptr<MessagePump> message_pump = nullptr);
 ```
+
 That method returns a std::unique_ptr, so the application owns the `Robot` instance. This instance cannot go out-of-scope in the application while the service clients described below are still needed.
 
 - The `ServiceClient` classes provide functionality to communicate with a specific service registered on a specific robot. The Spot C++ SDK contains a client implementation class derived from `ServiceClient` for each service defined in the Spot API. Each `ServiceClient` derived class implements the RPC methods corresponding to that service type. The recommended way to create `ServiceClient` instances in an application is to use the `EnsureServiceClient` methods in the `Robot` class:
+
 ```
 Result<T*> EnsureServiceClient(
     const std::string& service_name,
     std::shared_ptr<grpc::ChannelInterface> channel = nullptr,
     std::shared_ptr<MessagePump> message_pump = nullptr);
 ```
+
 For example, to create a `RobotIdClient` object in the application in order to communicate with the `RobotId` service running on the robot, simply call:
 `Result<RobotIdClient*> robot_id_client_result = robot->EnsureServiceClient<::bosdyn::client::RobotIdClient>();`
 

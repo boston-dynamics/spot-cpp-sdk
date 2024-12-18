@@ -35,7 +35,7 @@ This guide will help you set up your programming environment to successfully com
 
 The Boston Dynamics Spot C++ SDK works with most operating systems including:
 
-- Linux Ubuntu 18.04 LTS
+- Linux Ubuntu 22.04 LTS
   - gcc version 7+
 - Windows 10
   - Microsoft Visual Studio 2017+

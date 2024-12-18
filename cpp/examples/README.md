@@ -14,7 +14,7 @@ Boston Dynamics recommends completing the [QuickStart guide](../../docs/cpp/quic
 
 ## Contents
 
-* [Hello Spot Example](hello_spot/README.md)
-* [Basic Robot Command Example](basic_robot_command/README.md)
-* [Get Image Example](get_image/README.md)
-* [SpotCAM PTZ Example](spot_cam/README.md)
+- [Hello Spot Example](hello_spot/README.md)
+- [Basic Robot Command Example](basic_robot_command/README.md)
+- [Get Image Example](get_image/README.md)
+- [SpotCAM PTZ Example](spot_cam/README.md)

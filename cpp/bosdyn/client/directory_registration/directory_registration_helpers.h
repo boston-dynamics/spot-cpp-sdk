@@ -13,8 +13,8 @@
 #include <thread>
 
 #include "directory_registration_client.h"
-#include "bosdyn/client/service_client/common_result_types.h"
 #include "bosdyn/client/fault/fault_client.h"
+#include "bosdyn/client/service_client/common_result_types.h"
 
 #include <bosdyn/api/directory.pb.h>
 

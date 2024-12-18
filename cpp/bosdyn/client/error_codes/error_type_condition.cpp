@@ -9,9 +9,9 @@
 
 #include <iostream>
 
+#include "bosdyn/client/error_codes/error_type_condition.h"
 #include "bosdyn/client/error_codes/rpc_error_code.h"
 #include "bosdyn/client/error_codes/sdk_error_code.h"
-#include "bosdyn/client/error_codes/error_type_condition.h"
 
 namespace {  // anonymous namespace
 

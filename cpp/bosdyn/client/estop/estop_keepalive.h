@@ -18,9 +18,9 @@
 
 #include <bosdyn/api/estop.pb.h>
 
-#include "bosdyn/common/status.h"
 #include "bosdyn/client/estop/estop_client.h"
 #include "bosdyn/client/estop/estop_endpoint.h"
+#include "bosdyn/common/status.h"
 
 namespace bosdyn {
 

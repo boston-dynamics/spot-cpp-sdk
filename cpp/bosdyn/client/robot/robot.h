@@ -235,6 +235,9 @@ class Robot {
      */
     void SetRPCParameters(const RPCParameters& parameters);
 
+    // Create a new GRPC channel.
+    std::shared_ptr<grpc::ChannelInterface> CreateSecureChannel(const std::string& authority);
+
 
     Result<::bosdyn::api::RobotIdResponse> GetId(
         const std::string& id_service_name =

@@ -7,6 +7,6 @@
  */
 
 
-#include <bosdyn/api/spot_cam/logging.pb.h>
 #include <bosdyn/api/spot_cam/camera.pb.h>
+#include <bosdyn/api/spot_cam/logging.pb.h>
 #include "bosdyn/client/error_codes/proto_enum_to_stderror_macro.h"

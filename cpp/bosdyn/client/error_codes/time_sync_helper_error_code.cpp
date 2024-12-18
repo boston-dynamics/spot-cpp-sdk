@@ -8,8 +8,8 @@
 
 
 #include "bosdyn/client/error_codes/time_sync_helper_error_code.h"
-#include "bosdyn/client/error_codes/sdk_error_code.h"
 #include "bosdyn/client/error_codes/error_type_condition.h"
+#include "bosdyn/client/error_codes/sdk_error_code.h"
 #include "bosdyn/common/success_condition.h"
 
 namespace bosdyn {
@@ -25,13 +25,15 @@ struct TimeSyncHelperErrorCodeCategory : std::error_category {
 };
 
 bool TimeSyncHelperErrorCodeCategory::equivalent(int valcode,
-                                      const std::error_condition& cond) const noexcept {
+                                                 const std::error_condition& cond) const noexcept {
     if (cond == SuccessCondition::Success) return (valcode == 0);
     if (cond == ErrorTypeCondition::SDKError) return true;
     return false;
 }
 
-const char* TimeSyncHelperErrorCodeCategory::name() const noexcept { return "TimeSyncHelperErrorCode"; }
+const char* TimeSyncHelperErrorCodeCategory::name() const noexcept {
+    return "TimeSyncHelperErrorCode";
+}
 
 std::string TimeSyncHelperErrorCodeCategory::message(int value) const {
     switch (static_cast<TimeSyncHelperErrorCode>(value)) {
@@ -43,21 +45,22 @@ std::string TimeSyncHelperErrorCodeCategory::message(int value) const {
 
 const TimeSyncHelperErrorCodeCategory TimeSyncHelperErrorCodeCategory_category{};
 
-
 struct EstablishTimeSyncErrorCodeCategory : std::error_category {
     const char* name() const noexcept override;
     std::string message(int ev) const override;
     bool equivalent(int valcode, const std::error_condition& cond) const noexcept override;
 };
 
-bool EstablishTimeSyncErrorCodeCategory::equivalent(int valcode,
-                                      const std::error_condition& cond) const noexcept {
+bool EstablishTimeSyncErrorCodeCategory::equivalent(
+    int valcode, const std::error_condition& cond) const noexcept {
     if (cond == SuccessCondition::Success) return (valcode == 0);
     if (cond == ErrorTypeCondition::SDKError) return true;
     return false;
 }
 
-const char* EstablishTimeSyncErrorCodeCategory::name() const noexcept { return "EstablishTimeSyncErrorCode"; }
+const char* EstablishTimeSyncErrorCodeCategory::name() const noexcept {
+    return "EstablishTimeSyncErrorCode";
+}
 
 std::string EstablishTimeSyncErrorCodeCategory::message(int value) const {
     switch (static_cast<EstablishTimeSyncErrorCode>(value)) {
@@ -76,13 +79,15 @@ struct RobotTimeSyncErrorCodeCategory : std::error_category {
 };
 
 bool RobotTimeSyncErrorCodeCategory::equivalent(int valcode,
-                                      const std::error_condition& cond) const noexcept {
+                                                const std::error_condition& cond) const noexcept {
     if (cond == SuccessCondition::Success) return (valcode == 0);
     if (cond == ErrorTypeCondition::SDKError) return true;
     return false;
 }
 
-const char* RobotTimeSyncErrorCodeCategory::name() const noexcept { return "RobotTimeSyncErrorCode"; }
+const char* RobotTimeSyncErrorCodeCategory::name() const noexcept {
+    return "RobotTimeSyncErrorCode";
+}
 
 std::string RobotTimeSyncErrorCodeCategory::message(int value) const {
     switch (static_cast<RobotTimeSyncErrorCode>(value)) {
@@ -94,7 +99,7 @@ std::string RobotTimeSyncErrorCodeCategory::message(int value) const {
 
 const RobotTimeSyncErrorCodeCategory RobotTimeSyncErrorCodeCategory_category{};
 
-} // anonymous namespace
+}  // anonymous namespace
 
 std::error_code make_error_code(RobotTimeSyncErrorCode value) {
     return {static_cast<int>(value), RobotTimeSyncErrorCodeCategory_category};

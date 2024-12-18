@@ -9,8 +9,8 @@
 
 #include "directory_helpers.h"
 
-#include "bosdyn/client/sdk/client_sdk.h"
 #include "bosdyn/client/error_codes/directory_helper_error_code.h"
+#include "bosdyn/client/sdk/client_sdk.h"
 
 namespace bosdyn {
 

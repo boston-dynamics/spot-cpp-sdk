@@ -209,13 +209,19 @@ Result<std::shared_ptr<grpc::ChannelInterface>> Robot::EnsureChannel(
 
             authority_iter = m_authorities_by_name.find(service_name);
             if (authority_iter == m_authorities_by_name.end()) {
-                return {::bosdyn::common::Status(SDKErrorCode::GenericSDKError,
+                return {::bosdyn::common::Status(ClientCreationErrorCode::UnregisteredService,
                                                  "Could not find authority for " + service_name),
                         nullptr};
             }
         }
     }
     return EnsureSecureChannel((*authority_iter).second);
+}
+
+std::shared_ptr<grpc::ChannelInterface> Robot::CreateSecureChannel(const std::string& authority) {
+    std::shared_ptr<grpc::ChannelCredentials> creds =
+        Channel::CreateSecureChannelCreds(m_cert, std::bind(&Robot::GetUserToken, this));
+    return Channel::CreateSecureChannel(m_network_address, m_secure_channel_port, creds, authority);
 }
 
 Result<std::shared_ptr<grpc::ChannelInterface>> Robot::EnsureSecureChannel(
@@ -227,12 +233,7 @@ Result<std::shared_ptr<grpc::ChannelInterface>> Robot::EnsureSecureChannel(
     }
 
     // Secure Channel doesn't exist, so create it.
-    std::shared_ptr<grpc::ChannelCredentials> creds =
-        Channel::CreateSecureChannelCreds(m_cert, std::bind(&Robot::GetUserToken, this));
-
-    std::shared_ptr<grpc::ChannelInterface> channel =
-        Channel::CreateSecureChannel(m_network_address, m_secure_channel_port, creds, authority);
-
+    std::shared_ptr<grpc::ChannelInterface> channel = CreateSecureChannel(authority);
     m_channels[authority] = channel;
     return {::bosdyn::common::Status(SDKErrorCode::Success), channel};
 }

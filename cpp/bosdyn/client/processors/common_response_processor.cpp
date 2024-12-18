@@ -8,8 +8,8 @@
 
 
 #include "common_response_processor.h"
-#include "bosdyn/client/error_codes/sdk_error_code.h"
 #include "bosdyn/client/error_codes/header_error_code.h"
+#include "bosdyn/client/error_codes/sdk_error_code.h"
 
 namespace bosdyn {
 

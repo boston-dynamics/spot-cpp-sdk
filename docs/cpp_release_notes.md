@@ -8,6 +8,24 @@ Development Kit License (20191101-BDSDK-SL).
 
 # Spot C++ SDK Release Notes
 
+## Spot C++ SDK version 4.1.1 BETA
+
+### Compatibility
+
+The recommended Ubuntu version is now Linux Ubuntu 22.04 LTS (formerly 18.04 LTS). Please see the [quickstart](cpp/quickstart.md#system-requirements) for more information.
+
+### Bug Fixes and Improvements
+
+#### API
+
+Please see the [General Release Notes](https://dev.bostondynamics.com/docs/release_notes) for a description of the API changes included in release 4.1.1.
+
+#### SDK
+
+### Deprecations
+
+Please see the [General Release Notes](https://dev.bostondynamics.com/docs/release_notes) for a description of the API deprecations included in release 4.1.1.
+
 ## Spot C++ SDK version 4.1.0 BETA
 
 ### New Features

@@ -31,8 +31,8 @@ std::error_code make_error_code(TimeSyncHelperErrorCode);
 std::error_code make_error_code(EstablishTimeSyncErrorCode);
 std::error_code make_error_code(RobotTimeSyncErrorCode);
 
-}  // client namespace
-}  // bosdyn namespace
+}  // namespace client
+}  // namespace bosdyn
 
 namespace std {
 template <>
