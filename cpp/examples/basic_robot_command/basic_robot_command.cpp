@@ -170,7 +170,7 @@ int main(int argc, char** argv) {
         return traj_block_res.status.Chain("Trajectory command failed");
     }
 
-    // Stand up the robot.
+    // Safely power-off the robot.
     bosdyn::api::RobotCommand poweroff_command = ::bosdyn::client::SafePowerOffCommand();
     auto poweroff_res = robot_command_client->RobotCommand(poweroff_command);
     if (!poweroff_res.status) {
