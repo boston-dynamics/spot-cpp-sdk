@@ -37,17 +37,19 @@ class LinearInterpolator {
     }
 
     struct Return {
+        Return() = delete;
+        Return(float _pos_des, float _vel_des) : pos_des(_pos_des), vel_des(_vel_des) {}
+
         float pos_des = 0.0f;
         float vel_des = 0.0f;
-
-        Return() = delete;
     };
+
     Return calculate_command(int64_t time) {
         float pos = m_init_pos + (m_target_pos - m_init_pos) * static_cast<float>(time) /
                                      static_cast<float>(m_duration);
         float vel = (m_target_pos - m_init_pos) / m_duration;
 
-        return Return{pos, vel};
+        return Return(pos, vel);
     }
 
  private:

@@ -10,6 +10,7 @@
 #pragma once
 
 #include <string>
+#include <system_error>
 
 #include <google/protobuf/message.h>
 
@@ -40,4 +41,37 @@ bool ParseMessageFromFile(const std::string& filename, google::protobuf::Message
 bool WriteMessageToFile(const std::string& filename, const google::protobuf::Message& message,
                         WriteOptions options = WriteOptions());
 
+enum class ReadError {
+    kSuccess = 0,
+    kParseError,  // Message failed to parse.
+    kEmptyFile,   // File was empty.
+};
+
+// Parse a file into the provided message.  Returns an error_code of what went wrong.
+// The error code will either be a std::errc or a ReadError.
+std::error_code ParseMessageFromFileWithError(const std::string& filename,
+                                              google::protobuf::Message* message,
+                                              ParseOptions options = ParseOptions());
+
+enum class WriteError {
+    kSuccess = 0,
+    kSerializationError,  // Message failed to serialize.
+};
+
+// Serialize a message to disk.  Returns an error_code of what went wrong.
+// The error code will either be a std::errc or a WriteError.
+std::error_code WriteMessageToFileWithError(const std::string& filename,
+                                            const google::protobuf::Message& message,
+                                            WriteOptions options = WriteOptions());
+
+std::error_code make_error_code(ReadError e);
+std::error_code make_error_code(WriteError e);
+
 }  // namespace bosdyn::common
+
+namespace std {
+template <>
+struct is_error_code_enum<bosdyn::common::ReadError> : true_type {};
+template <>
+struct is_error_code_enum<bosdyn::common::WriteError> : true_type {};
+}  // namespace std

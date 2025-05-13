@@ -8,6 +8,47 @@ Development Kit License (20191101-BDSDK-SL).
 
 # Spot C++ SDK Release Notes
 
+## Spot C++ SDK version 5.0.0 BETA
+
+### Bug Fixes and Improvements
+
+#### API
+
+Please see the [General Release Notes](https://dev.bostondynamics.com/docs/release_notes) for a description of the API changes included in release 5.0.0.
+
+#### SDK
+
+**Clients**
+
+- Added [NetworkComputeBridgeClient](../cpp/bosdyn/client/network_compute_bridge/network_compute_bridge_client.cpp) client to support preexisting proto definitions.
+
+- Added `SetGripperCameraCalib`, `SetGripperCameraCalibAsync`, `GetGripperCameraCalib`, and `GetGripperCameraCalibAsync` methods to [GripperCameraParamClient](../cpp/bosdyn/client/gripper_camera_param/gripper_camera_param_client.cpp).
+
+**Helper Functions**
+
+- Added a helper function, `NSecToDuration`, to [time.cpp](../cpp/bosdyn/common/time.cpp) that simplifies the creation of `::google::protobuf::Duration` objects from nanosecond inputs.
+
+- Added two helper functions, `EigenToApiProto` and `CreateVec2`, [proto_math.cpp](../cpp/bosdyn/math/proto_math.cpp) to streamline the creation of API-compatible math messages.
+
+  - `EigenToApiProto` converts the input `Eigen::Quaternion` object to a `::bosdyn::api::Quaternion` object.
+  - `CreateVec2` returns a `::bosdyn::api::Vec2` object based upon the input `x` and `y`.
+
+- Added two file helper functions, `ParseMessageFromFileWithError` and `WriteMessageToFileWithError`, in [proto_file.cpp](../cpp/bosdyn/common/proto_file.cpp) that return an error code to provide specific details about read/write failures, supplementing the existing boolean success indicators. Use the new functions for more granular error handling.
+
+**Miscellaneous**
+
+- The preprocessor directive responsible for verifying the GNU Compiler Collection (GCC) version now handles environments where `__GNUC__` is undefined.
+
+### Spot Sample Code
+
+#### Updated
+
+- The joint control example now includes a [CMakeLists.txt](../cpp/examples/joint_control/CMakeLists.txt) file, enabling its compilation using the CMake build system for improved ease and correctness.
+
+### Deprecations
+
+Please see the [General Release Notes](https://dev.bostondynamics.com/docs/release_notes) for a description of the API deprecations included in release 5.0.0.
+
 ## Spot C++ SDK version 4.1.1 BETA
 
 ### Compatibility
@@ -19,8 +60,6 @@ The recommended Ubuntu version is now Linux Ubuntu 22.04 LTS (formerly 18.04 LTS
 #### API
 
 Please see the [General Release Notes](https://dev.bostondynamics.com/docs/release_notes) for a description of the API changes included in release 4.1.1.
-
-#### SDK
 
 ### Deprecations
 
@@ -258,12 +297,6 @@ Added `EigenFromApiProto/EigenToApiProto`, `FromRoll/ToRoll`, `FromPitch/ToPitch
 
 Please see the [General Release Notes](https://dev.bostondynamics.com/docs/release_notes) for a description of the API deprecations included in release 3.3.0.
 
-### Breaking Changes
-
-### Dependencies
-
-### Known Issues
-
 ### Sample Code
 
 #### New
@@ -305,7 +338,7 @@ Enables API clients to specify high level autonomous behaviors for Spot using an
 #### Graph Nav – Area Callbacks
 
 Enables users to register a callback that is called in certain areas of the map during navigation. These “Area Callbacks” can instruct the robot to wait until the area is safe to cross (such as a crosswalk), take control of the robot and perform an action (such as opening a door), or perform a background action while in a certain area of the map (such as flashing lights or playing sounds).
-This enables integration with the [Graph Nav](concepts/autonomy/graphnav_service.md) navigation system to extend its capabilities in terms of safety and new actions while navigating. See the [Area Callback](concepts/autonomy/area_callbacks.md) documentation for more details.
+This enables integration with the [Graph Nav](concepts/autonomy/graphnav_service.md) navigation system to extend its capabilities in terms of safety and new actions while navigating. See the [Area Callback](concepts/autonomy/graphnav_area_callbacks.md) documentation for more details.
 
 ### Bug Fixes and Improvements
 

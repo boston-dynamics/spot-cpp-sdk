@@ -60,6 +60,7 @@ class PointCloudClient : public ServiceClient {
     GetPointCloudResultType GetPointCloud(::bosdyn::api::GetPointCloudRequest& request,
                                           const RPCParameters& parameters = RPCParameters());
 
+
     // Start of ServiceClient overrides.
     QualityOfService GetQualityOfService() const override;
     void SetComms(const std::shared_ptr<grpc::ChannelInterface>& channel) override;

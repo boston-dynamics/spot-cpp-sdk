@@ -131,6 +131,7 @@ void PointCloudClient::OnGetPointCloudComplete(MessagePumpCallBase*,
     promise.set_value({ret_status, std::move(response)});
 }
 
+
 void PointCloudClient::BuildPointCloudRequest(const std::string& point_cloud_source_name,
                                               ::bosdyn::api::PointCloudRequest* request) {
     request->set_point_cloud_source_name(point_cloud_source_name);

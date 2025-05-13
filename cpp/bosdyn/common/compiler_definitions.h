@@ -15,7 +15,7 @@
 #    define BOSDYN_UNUSED
 #endif
 
-#if defined(__GNUC__) && (__GNUC__ > 2) || ((__GNUC__ == 2) && (__GNUC_MINOR__ > 4)) || \
+#if defined(__GNUC__) && ((__GNUC__ > 2) || ((__GNUC__ == 2) && (__GNUC_MINOR__ > 4))) || \
     defined(__clang__)
 #    define BOSDYN_CHECK_PRINTF_FORMAT(X) __attribute__((format(printf, (X), 1 + (X))))
 #else
@@ -23,7 +23,7 @@
 #    define BOSDYN_CHECK_PRINTF_FORMAT(X)
 #endif
 
-#if defined(__GNUC__) && (__GNUC__ > 3) || ((__GNUC__ == 3) && (__GNUC_MINOR__ > 2)) || \
+#if defined(__GNUC__) && ((__GNUC__ > 3) || ((__GNUC__ == 3) && (__GNUC_MINOR__ > 2))) || \
     defined(__clang__)
 #    define BOSDYN_NONNULL(...) __attribute__((nonnull __VA_ARGS__))
 #else

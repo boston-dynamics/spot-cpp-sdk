@@ -263,6 +263,10 @@ Eigen::Quaterniond EigenFromApiProto(const ::bosdyn::api::Quaternion& q) {
     return make_quat(q.w(), q.x(), q.y(), q.z());
 }
 
+::bosdyn::api::Quaternion EigenToApiProto(const Eigen::Quaternionf& q) {
+    return make_quat(q.w(), q.x(), q.y(), q.z());
+}
+
 ::bosdyn::api::Vec3 operator*(const ::bosdyn::api::Quaternion& q, const ::bosdyn::api::Vec3& p) {
     ::bosdyn::api::Quaternion q2 = make_quat(0, p.x(), p.y(), p.z());
     q2 = q2 * ~q;
@@ -598,6 +602,13 @@ double ToAngle(const ::bosdyn::api::SE3Pose& a_T_b) { return ToAngle(a_T_b.rotat
     EigenToMatrix(ident, out.mutable_matrix());
     SetDeprecatedFields(&out);
     return out;
+}
+
+::bosdyn::api::Vec2 CreateVec2(double x, double y) {
+    ::bosdyn::api::Vec2 v;
+    v.set_x(x);
+    v.set_y(y);
+    return v;
 }
 
 ::bosdyn::api::Vec3 CreateVec3(double x, double y, double z) {

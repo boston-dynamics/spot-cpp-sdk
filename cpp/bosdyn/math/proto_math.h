@@ -67,6 +67,7 @@ bool ToMatrix(const ::bosdyn::api::Quaternion& q, Eigen::Matrix<double, 3, 3>* r
 Eigen::Matrix<double, 2, 2> ToMatrix(const double& angle);
 Eigen::Quaterniond EigenFromApiProto(const ::bosdyn::api::Quaternion& q);
 ::bosdyn::api::Quaternion EigenToApiProto(const Eigen::Quaterniond& q);
+::bosdyn::api::Quaternion EigenToApiProto(const Eigen::Quaternionf& q);
 
 // SE3Pose Operators
 ::bosdyn::api::Vec3 operator*(const ::bosdyn::api::SE3Pose& a_T_b, const ::bosdyn::api::Vec3& p);
@@ -148,6 +149,7 @@ double DotProduct(const ::bosdyn::api::Vec3& a, const ::bosdyn::api::Vec3& b);
 double DotProduct(const ::bosdyn::api::Quaternion& a, const ::bosdyn::api::Quaternion& b);
 ::bosdyn::api::Quaternion Normalize(const ::bosdyn::api::Quaternion& q);
 
+::bosdyn::api::Vec2 CreateVec2(double x = 0, double y = 0);
 ::bosdyn::api::Vec3 CreateVec3(double x = 0, double y = 0, double z = 0);
 ::bosdyn::api::Quaternion CreateQuaternion(double w = 1, double x = 0, double y = 0, double z = 0);
 ::bosdyn::api::Quaternion CreateRotationX(double angle);

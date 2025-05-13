@@ -22,6 +22,10 @@ namespace client {
 
 typedef Result<::bosdyn::api::GripperCameraParamResponse> GripperCameraSetParamResponseType;
 typedef Result<::bosdyn::api::GripperCameraGetParamResponse> GripperCameraGetParamResponseType;
+typedef Result<::bosdyn::api::SetGripperCameraCalibrationResponse>
+    SetGripperCameraCalibResponseType;
+typedef Result<::bosdyn::api::GetGripperCameraCalibrationResponse>
+    GetGripperCameraCalibrationResponseType;
 
 // GripperCameraParamClient is the GRPC client for the gripper camera parameter service defined in
 // gripper_camera_param_service.proto.
@@ -47,6 +51,24 @@ class GripperCameraParamClient : public ServiceClient {
 
     // Asynchronous method to request current gripper camera parameters.
     std::shared_future<GripperCameraGetParamResponseType> GetGripperCameraParamsAsync(
+        const RPCParameters& parameters = RPCParameters());
+
+    // Synchronous method to request to set gripper camera calibration.
+    SetGripperCameraCalibResponseType SetGripperCameraCalib(
+        ::bosdyn::api::SetGripperCameraCalibrationRequest& request,
+        const RPCParameters& parameters = RPCParameters());
+
+    // Asynchronous method to request to set gripper camera calibration.
+    std::shared_future<SetGripperCameraCalibResponseType> SetGripperCameraCalibAsync(
+        ::bosdyn::api::SetGripperCameraCalibrationRequest& request,
+        const RPCParameters& parameters = RPCParameters());
+
+    // Synchronous method to request to get gripper camera calibration.
+    GetGripperCameraCalibrationResponseType GetGripperCameraCalib(
+        const RPCParameters& parameters = RPCParameters());
+
+    // Asynchronous method to request to get gripper camera calibration.
+    std::shared_future<GetGripperCameraCalibrationResponseType> GetGripperCameraCalibAsync(
         const RPCParameters& parameters = RPCParameters());
 
     // Start of ServiceClient overrides.
@@ -85,6 +107,20 @@ class GripperCameraParamClient : public ServiceClient {
         MessagePumpCallBase* call, const ::bosdyn::api::GripperCameraGetParamRequest& request,
         ::bosdyn::api::GripperCameraGetParamResponse&& response, const grpc::Status& status,
         std::promise<GripperCameraGetParamResponseType> promise);
+
+    // Callback that will return SetGripperCameraCalibrationResponse message after
+    // SetGripperCameraCalib rpc returns to the client.
+    void OnSetGripperCameraCalibComplete(
+        MessagePumpCallBase* call, const ::bosdyn::api::SetGripperCameraCalibrationRequest& request,
+        ::bosdyn::api::SetGripperCameraCalibrationResponse&& response, const grpc::Status& status,
+        std::promise<SetGripperCameraCalibResponseType> promise);
+
+    // Callback that will return GetGripperCameraCalibrationResponse message after
+    // GetGripperCameraCalib rpc returns to the client.
+    void OnGetGripperCameraCalibComplete(
+        MessagePumpCallBase* call, const ::bosdyn::api::GetGripperCameraCalibrationRequest& request,
+        ::bosdyn::api::GetGripperCameraCalibrationResponse&& response, const grpc::Status& status,
+        std::promise<GetGripperCameraCalibrationResponseType> promise);
 
     std::unique_ptr<::bosdyn::api::GripperCameraParamService::StubInterface> m_stub;
 

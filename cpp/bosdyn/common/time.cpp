@@ -119,6 +119,10 @@ double DurationToSec(const ::google::protobuf::Duration& duration) {
     return google::protobuf::util::TimeUtil::NanosecondsToDuration(seconds * 1e9);
 }
 
+::google::protobuf::Duration NSecToDuration(int64_t nanos) {
+    return google::protobuf::util::TimeUtil::NanosecondsToDuration(nanos);
+}
+
 bool DurationIsLessThan(const ::google::protobuf::Duration& d1,
                         const ::google::protobuf::Duration& d2) {
     if (d1.seconds() < d2.seconds()) {

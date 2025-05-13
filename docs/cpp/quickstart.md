@@ -149,7 +149,13 @@ The `cmake` command can also overwrite the following variables by passing them t
 Build the SDK using the `make` command below.
 
 ```
-make -j6 install
+make -j6
+```
+
+To additionally install the SDK, use the command below.
+
+```
+make -j6 install package
 ```
 
 The `make` command generates a lot of deprecation warnings during the compiling of the classes generated from the protobuf definitions. This is expected as the protobuf definitions contain `deprecated` flags for fields that will not be supported in future versions of the SDK.

@@ -7,6 +7,8 @@
  */
 
 
+// Boston Dynamics, Inc. Confidential Information.
+// Copyright 2025. All Rights Reserved.
 #include "bosdyn/client/auth/auth_client.h"
 #include "bosdyn/client/auto_return/auto_return_client.h"
 #include "bosdyn/client/data_acquisition/data_acquisition_client.h"

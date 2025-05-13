@@ -80,12 +80,87 @@ GripperCameraParamClient::GetGripperCameraParamsAsync(const RPCParameters& param
     return future;
 }
 
+SetGripperCameraCalibResponseType GripperCameraParamClient::SetGripperCameraCalib(
+    ::bosdyn::api::SetGripperCameraCalibrationRequest& request, const RPCParameters& parameters) {
+    return SetGripperCameraCalibAsync(request, parameters).get();
+}
+
+std::shared_future<SetGripperCameraCalibResponseType>
+GripperCameraParamClient::SetGripperCameraCalibAsync(
+    ::bosdyn::api::SetGripperCameraCalibrationRequest& request, const RPCParameters& parameters) {
+    std::promise<SetGripperCameraCalibResponseType> response;
+    std::shared_future<SetGripperCameraCalibResponseType> future = response.get_future();
+    BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
+
+    MessagePumpCallBase* one_time =
+        InitiateAsyncCall<::bosdyn::api::SetGripperCameraCalibrationRequest,
+                          ::bosdyn::api::SetGripperCameraCalibrationResponse,
+                          ::bosdyn::api::SetGripperCameraCalibrationResponse>(
+            request,
+            std::bind(&::bosdyn::api::GripperCameraParamService::StubInterface::AsyncSetCamCalib,
+                      m_stub.get(), _1, _2, _3),
+            std::bind(&GripperCameraParamClient::OnSetGripperCameraCalibComplete, this, _1, _2, _3,
+                      _4, _5),
+            std::move(response), parameters);
+
+    return future;
+}
+
+void GripperCameraParamClient::OnSetGripperCameraCalibComplete(
+    MessagePumpCallBase* call, const ::bosdyn::api::SetGripperCameraCalibrationRequest& request,
+    ::bosdyn::api::SetGripperCameraCalibrationResponse&& response, const grpc::Status& status,
+    std::promise<SetGripperCameraCalibResponseType> promise) {
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::SetGripperCameraCalibrationResponse>(
+            status, response, SDKErrorCode::Success);
+
+    promise.set_value({ret_status, std::move(response)});
+}
+
 void GripperCameraParamClient::OnGetGripperCameraParamsComplete(
     MessagePumpCallBase* call, const ::bosdyn::api::GripperCameraGetParamRequest& request,
     ::bosdyn::api::GripperCameraGetParamResponse&& response, const grpc::Status& status,
     std::promise<GripperCameraGetParamResponseType> promise) {
     ::bosdyn::common::Status ret_status =
         ProcessResponseAndGetFinalStatus<::bosdyn::api::GripperCameraGetParamResponse>(
+            status, response, SDKErrorCode::Success);
+
+    promise.set_value({ret_status, std::move(response)});
+}
+
+GetGripperCameraCalibrationResponseType GripperCameraParamClient::GetGripperCameraCalib(
+    const RPCParameters& parameters) {
+    return GetGripperCameraCalibAsync(parameters).get();
+}
+
+std::shared_future<GetGripperCameraCalibrationResponseType>
+GripperCameraParamClient::GetGripperCameraCalibAsync(const RPCParameters& parameters) {
+    std::promise<GetGripperCameraCalibrationResponseType> response;
+    std::shared_future<GetGripperCameraCalibrationResponseType> future = response.get_future();
+    BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
+
+    ::bosdyn::api::GetGripperCameraCalibrationRequest request;
+
+    MessagePumpCallBase* one_time =
+        InitiateAsyncCall<::bosdyn::api::GetGripperCameraCalibrationRequest,
+                          ::bosdyn::api::GetGripperCameraCalibrationResponse,
+                          ::bosdyn::api::GetGripperCameraCalibrationResponse>(
+            request,
+            std::bind(&::bosdyn::api::GripperCameraParamService::StubInterface::AsyncGetCamCalib,
+                      m_stub.get(), _1, _2, _3),
+            std::bind(&GripperCameraParamClient::OnGetGripperCameraCalibComplete, this, _1, _2, _3,
+                      _4, _5),
+            std::move(response), parameters);
+
+    return future;
+}
+
+void GripperCameraParamClient::OnGetGripperCameraCalibComplete(
+    MessagePumpCallBase* call, const ::bosdyn::api::GetGripperCameraCalibrationRequest& request,
+    ::bosdyn::api::GetGripperCameraCalibrationResponse&& response, const grpc::Status& status,
+    std::promise<GetGripperCameraCalibrationResponseType> promise) {
+    ::bosdyn::common::Status ret_status =
+        ProcessResponseAndGetFinalStatus<::bosdyn::api::GetGripperCameraCalibrationResponse>(
             status, response, SDKErrorCode::Success);
 
     promise.set_value({ret_status, std::move(response)});

@@ -18,7 +18,7 @@ To run the example, set BOSDYN_CLIENT_USERNAME and BOSDYN_CLIENT_PASSWORD enviro
 ./query_autowalk_status {ROBOT_IP} --autowalk_mission={Path to Autowalk Mission Folder}
 ```
 
-To see a list a full command line arguements run:
+To see a list a full command line arguments run:
 
 ```
 ./query_autowalk_status --help
