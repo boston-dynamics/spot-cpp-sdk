@@ -263,6 +263,7 @@ void Robot::UpdateTokenCache(const std::string& username) {
     if (!m_token_manager) {
         TokenManager* raw_token_manager = new TokenManager(this);
         m_token_manager = std::unique_ptr<TokenManager>(raw_token_manager);
+        m_token_manager->SetTokenRefreshErrorCallback(m_token_refresh_error_callback);
     }
 
     if (!username.empty()) m_current_user = username;
@@ -497,6 +498,14 @@ void Robot::SetUserToken(const std::string& user_token) {
 std::string Robot::GetUserToken() {
     std::lock_guard<std::mutex> lock(m_token_mutex);
     return m_user_token;
+}
+
+void Robot::SetTokenRefreshErrorCallback(
+    std::function<ErrorCallbackResult(const ::bosdyn::common::Status&)> callback) {
+    m_token_refresh_error_callback = callback;
+    if (m_token_manager) {
+        m_token_manager->SetTokenRefreshErrorCallback(callback);
+    }
 }
 
 void Robot::SetRPCParameters(const RPCParameters& parameters) {

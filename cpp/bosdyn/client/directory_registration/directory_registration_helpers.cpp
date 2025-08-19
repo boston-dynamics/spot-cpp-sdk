@@ -20,14 +20,20 @@ namespace client {
 DirectoryRegistrationKeepAlive::DirectoryRegistrationKeepAlive(
     DirectoryRegistrationClient* directory_registration_client,
     const ::bosdyn::api::ServiceEntry& service_entry, const ::bosdyn::api::Endpoint& endpoint,
-    ::bosdyn::common::Duration rpc_interval, FaultClient* fault_client)
+    ::bosdyn::common::Duration rpc_interval, FaultClient* fault_client,
+    std::function<ErrorCallbackResult(const ::bosdyn::common::Status&)> error_callback,
+    ::bosdyn::common::Duration registration_initial_retry_interval)
     : m_directory_registration_client(directory_registration_client),
       m_service_entry(service_entry),
       m_endpoint(endpoint),
       m_registration_interval(rpc_interval),
+      m_registration_initial_retry_interval(registration_initial_retry_interval),
       m_thread(),
+      m_periodic_thread_helper(std::make_unique<PeriodicThreadHelper>()),
       m_thread_stopped(true),
-      m_fault_client(fault_client) {}
+      m_fault_client(fault_client),
+      m_error_callback(error_callback) {}
+
 
 DirectoryRegistrationKeepAlive::~DirectoryRegistrationKeepAlive() {
     Shutdown();
@@ -35,7 +41,6 @@ DirectoryRegistrationKeepAlive::~DirectoryRegistrationKeepAlive() {
 }
 
 void DirectoryRegistrationKeepAlive::Start(const std::vector<std::string>& fault_attributes) {
-    m_should_exit = false;
     m_thread_stopped = false;
 
     // Populate the registration fault with default values.
@@ -61,8 +66,10 @@ void DirectoryRegistrationKeepAlive::Start(const std::vector<std::string>& fault
 bool DirectoryRegistrationKeepAlive::IsAlive() const { return !m_thread_stopped; }
 
 void DirectoryRegistrationKeepAlive::Shutdown() {
-    m_should_exit = true;
-    m_thread.join();
+    m_periodic_thread_helper->Stop();
+    if (m_thread.joinable()) {
+        m_thread.join();
+    }
 }
 
 UnregisterServiceResultType DirectoryRegistrationKeepAlive::Unregister() {
@@ -70,7 +77,9 @@ UnregisterServiceResultType DirectoryRegistrationKeepAlive::Unregister() {
 }
 
 void DirectoryRegistrationKeepAlive::PeriodicReregisterThreadMethod() {
-    bool first_time = true;
+
+    ::bosdyn::common::Duration retry_interval = m_registration_initial_retry_interval;
+    ::bosdyn::common::Duration wait_interval = m_registration_interval;
 
     // Set up register and update requests
     ::bosdyn::api::RegisterServiceRequest register_service_request;
@@ -81,12 +90,7 @@ void DirectoryRegistrationKeepAlive::PeriodicReregisterThreadMethod() {
     update_service_request.mutable_service_entry()->CopyFrom(m_service_entry);
 
     // Continually attempt to register and update the service.
-    while (!m_should_exit) {
-        if (!first_time) {
-            std::this_thread::sleep_for(m_registration_interval);
-        }
-        first_time = false;
-
+    do {
         // Register service.
         auto res_register =
             m_directory_registration_client->RegisterService(register_service_request);
@@ -94,6 +98,7 @@ void DirectoryRegistrationKeepAlive::PeriodicReregisterThreadMethod() {
         // by the directory registration service.
         if (res_register) {
             m_registration_fault_active = false;
+            wait_interval = m_registration_interval;
             continue;
         }
         // If registration failed in a bad way.
@@ -101,6 +106,27 @@ void DirectoryRegistrationKeepAlive::PeriodicReregisterThreadMethod() {
             ::bosdyn::api::RegisterServiceResponse::STATUS_ALREADY_EXISTS) {
             if (m_fault_client && m_fault_client->TriggerServiceFault(m_service_fault)) {
                 m_registration_fault_active = true;
+            }
+            auto action = ErrorCallbackResult::kResumeNormalOperation;
+            if (m_error_callback) {
+                try {
+                    action = m_error_callback(res_register.status);
+                } catch (const std::exception& e) {
+                    std::cerr << "Exception thrown in error callback: " << e.what() << std::endl;
+                }
+            }
+            if (action == ErrorCallbackResult::kAbort) {
+                break;
+            }
+            if (action == ErrorCallbackResult::kRetryImmediately) {
+                wait_interval = std::chrono::seconds(0);
+            } else if (action == ErrorCallbackResult::kRetryWithExponentialBackOff) {
+                // Exponentially increase the retry interval.
+                wait_interval = retry_interval;
+                retry_interval = std::min(retry_interval * 2, m_registration_interval);
+            } else {
+                // Default action is to continue with the next iteration.
+                wait_interval = m_registration_interval;
             }
             continue;
         }
@@ -112,6 +138,27 @@ void DirectoryRegistrationKeepAlive::PeriodicReregisterThreadMethod() {
             if (m_fault_client && m_fault_client->TriggerServiceFault(m_service_fault)) {
                 m_registration_fault_active = true;
             }
+            auto action = ErrorCallbackResult::kResumeNormalOperation;
+            if (m_error_callback) {
+                try {
+                    action = m_error_callback(res_register.status);
+                } catch (const std::exception& e) {
+                    std::cerr << "Exception thrown in error callback: " << e.what() << std::endl;
+                }
+            }
+            if (action == ErrorCallbackResult::kAbort) {
+                break;
+            }
+            if (action == ErrorCallbackResult::kRetryImmediately) {
+                wait_interval = std::chrono::seconds(0);
+            } else if (action == ErrorCallbackResult::kRetryWithExponentialBackOff) {
+                // Exponentially increase the retry interval.
+                wait_interval = retry_interval;
+                retry_interval = std::min(retry_interval * 2, m_registration_interval);
+            } else {
+                // Default action is to continue with the next iteration.
+                wait_interval = m_registration_interval;
+            }
             continue;
         }
 
@@ -121,9 +168,12 @@ void DirectoryRegistrationKeepAlive::PeriodicReregisterThreadMethod() {
                 m_registration_fault_active = false;
             }
         }
-    }
+        wait_interval = m_registration_interval;
+        retry_interval = m_registration_initial_retry_interval;
+    } while (m_periodic_thread_helper->WaitForInterval(wait_interval));
 
     m_thread_stopped = true;
+    m_periodic_thread_helper->Stop();
 }
 
 }  // namespace client

@@ -21,7 +21,7 @@ The official Spot SDK documentation also contains information relevant to the C+
 - [Payload developer documentation](https://dev.bostondynamics.com/docs/payload/readme). Payloads add additional sensing, communication, and control capabilities beyond what the base platform provides. The Payload ICD covers the mechanical, electrical, and software interfaces that Spot supports.
 - [Spot API protocol definition](https://dev.bostondynamics.com/docs/protos/readme). This reference guide covers the details of the protocol applications used to communicate to Spot. Application developers who wish to use a language other than Python can implement clients that speak the protocol.
 
-This is version 5.0.0 of the C++ SDK. Please review the [Release Notes](docs/cpp_release_notes.md) to see what has changed.
+This is version 5.0.1 of the C++ SDK. Please review the [Release Notes](docs/cpp_release_notes.md) to see what has changed.
 
 ## Contents
 

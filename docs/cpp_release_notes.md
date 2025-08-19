@@ -8,6 +8,14 @@ Development Kit License (20191101-BDSDK-SL).
 
 # Spot C++ SDK Release Notes
 
+## Spot C++ SDK version 5.0.1 BETA
+
+### Bug Fixes and Improvements
+
+#### SDK
+
+- Enhanced error handling and client notification for authentication token expiration and directory registration failures in long-running Spot API clients and services has been addressed. This was a long-standing issue that would occur if an API client was unable to refresh its authentication token for an extended period of time (due to e.g., prolonged network connectivity issues, issues with the robot's services), which would result in the token expiring without any clear indication to client code. Since most payload services are intended to run continuously, this would result in silent failures and loss of service functionality. To take advantage of this new functionality, register a error callback on the `Robot` class instance by calling `SetTokenRefreshErrorCallback` with the callback to invoke on error. For `DirectoryRegistrationKeepAlive` and `PayloadRegistrationKeepAlive`, these callbacks are supplied in the constructor.
+
 ## Spot C++ SDK version 5.0.0 BETA
 
 ### Bug Fixes and Improvements

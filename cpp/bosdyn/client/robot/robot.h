@@ -10,8 +10,11 @@
 #pragma once
 
 #include <bosdyn/api/geometry.pb.h>
+#include <functional>
+#include <memory>
 #include <string>
 #include "bosdyn/client/directory/directory_client.h"
+#include "bosdyn/client/error_callback/error_callback_result.h"
 #include "bosdyn/client/error_codes/client_creation_error_code.h"
 #include "bosdyn/client/lease/lease_wallet.h"
 #include "bosdyn/client/processors/request_processor.h"
@@ -154,6 +157,9 @@ class Robot {
     void SetUserToken(const std::string& user_token);
 
     std::string GetUserToken();
+
+    void SetTokenRefreshErrorCallback(
+        std::function<ErrorCallbackResult(const ::bosdyn::common::Status&)> callback);
 
     // Set certificate in the robot.
     void SetRobotCert(const std::string& cert) { m_cert = cert; }
@@ -337,6 +343,9 @@ class Robot {
     std::string m_current_user;
     std::unique_ptr<TokenCache> m_token_cache;
     std::string m_serial_number;
+
+    std::function<ErrorCallbackResult(const ::bosdyn::common::Status&)>
+        m_token_refresh_error_callback;
 
     // Map with bootstrapped authorities for the services we need to communicate with before
     // getting the full list from the Directory service. Key in the map represents the service

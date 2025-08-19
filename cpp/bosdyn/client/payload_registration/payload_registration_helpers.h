@@ -9,14 +9,17 @@
 
 #pragma once
 
+#include <memory>
 #include <mutex>
 #include <thread>
 
 #include <bosdyn/api/payload.pb.h>
 
 #include "payload_registration_client.h"
+#include "bosdyn/client/error_callback/error_callback_result.h"
 #include "bosdyn/client/robot/robot.h"
 #include "bosdyn/client/service_client/common_result_types.h"
+#include "bosdyn/client/util/periodic_thread_helper.h"
 
 namespace bosdyn {
 
@@ -33,12 +36,12 @@ class PayloadRegistrationKeepAlive {
     PayloadRegistrationKeepAlive(
         PayloadRegistrationClient* payload_registration_client,
         const ::bosdyn::api::Payload& payload, const std::string& secret,
-        ::bosdyn::common::Duration rpc_interval = std::chrono::seconds(30));
+        ::bosdyn::common::Duration rpc_interval = std::chrono::seconds(30),
+        std::function<ErrorCallbackResult(const ::bosdyn::common::Status&)> error_callback = {},
+        ::bosdyn::common::Duration registration_initial_retry_interval = std::chrono::seconds(1));
+
 
     ~PayloadRegistrationKeepAlive();
-
-    // Start the thread if it is not yet running.
-    void Start();
 
     // Return true if the thread is running.
     bool IsAlive() const;
@@ -71,11 +74,20 @@ class PayloadRegistrationKeepAlive {
 
     std::thread m_thread;
 
+    // Object used to coordinate the lifecycle and timing of the periodic thread.
+    std::unique_ptr<PeriodicThreadHelper> m_periodic_thread_helper;
+
     // Time to wait between checking if exit has been requested.
     ::bosdyn::common::Duration m_wait_time = std::chrono::seconds(1);
 
     // Limit on how frequently an error should be logged.
     ::bosdyn::common::Duration m_log_limit = std::chrono::seconds(3);
+
+    // Initial retry interval for registration.
+    ::bosdyn::common::Duration m_registration_initial_retry_interval = std::chrono::seconds(1);
+
+    // Callback to invoke in the event of a periodic reregistration failure.
+    std::function<ErrorCallbackResult(const ::bosdyn::common::Status&)> m_error_callback;
 
     // Thread should exit.
     bool m_should_exit;
