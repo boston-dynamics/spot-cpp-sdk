@@ -24,6 +24,7 @@ bool StartsWith(const std::string& str, const std::string& start);
 /// If str ends with suffix, return the part preceding, otherwise the original value of str.
 std::string RemoveSuffix(const std::string& str, const std::string& suffix);
 
+
 }  // namespace common
 
 }  // namespace bosdyn

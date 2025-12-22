@@ -8,6 +8,26 @@ Development Kit License (20191101-BDSDK-SL).
 
 # Spot C++ SDK Release Notes
 
+## Spot C++ SDK version 5.1.0 BETA
+
+### Bug Fixes and Improvements
+
+#### API
+
+Please see the [General Release Notes](https://dev.bostondynamics.com/docs/release_notes) for a description of the API changes included in release 5.1.0.
+
+#### SDK
+
+**Clients**
+
+- Fixed a potential segmentation fault when calling `ListServices()` on a `Robot` instance from multiple threads. Previously, while client creation and client objects were thread-safe, the internal updates to the robot's maps of authorities and endpoints were not. This could result in a crash if two threads called `ListServices()` concurrently.
+
+- Added `UploadSnapshots` and `UploadSnapshotsAsync` methods to [GraphNavClient](../cpp/bosdyn/client/graph_nav/graph_nav_client.cpp).
+
+**Helper Functions**
+
+- Added `EigenFromApiProto(const ::bosdyn::api::SE2Pose&)` to [proto_math.cpp](../cpp/bosdyn/math/proto_math.cpp). This function converts a `::bosdyn::api::SE2Pose` proto message into an `Eigen::Isometry2d`, constructing the corresponding 2D transformation matrix from the proto's angle and position fields.
+
 ## Spot C++ SDK version 5.0.1.2 BETA
 
 There have been no changes in the C++ SDK between 5.0.1.1 and this version.

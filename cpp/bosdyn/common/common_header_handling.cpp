@@ -37,7 +37,7 @@ void PrepareResponseHeader(const ::bosdyn::api::RequestHeader& request_header,
 
 void StripLargeByteFields(::google::protobuf::Message* proto_message) {
     // Operates on Request and Response messages.
-    const std::string message_type = proto_message->GetTypeName();
+    const std::string& message_type = proto_message->GetTypeName();
     const auto& whitelist_map = ::bosdyn::common::strip_messages::kWhitelistedBytesFieldsMap;
     auto strip_message_func = whitelist_map.find(message_type);
     if (strip_message_func != whitelist_map.end()) {

@@ -548,6 +548,74 @@ void GraphNavClient::OnUploadEdgeSnapshotComplete(
     promise.set_value({ret_status, std::move(response)});
 }
 
+std::shared_future<UploadSnapshotsResultType> GraphNavClient::UploadSnapshotsAsync(
+    ::bosdyn::api::graph_nav::UploadSnapshotsRequest::Snapshots& input_request,
+    const RPCParameters& parameters) {
+    std::promise<UploadSnapshotsResultType> response;
+    std::shared_future<UploadSnapshotsResultType> future = response.get_future();
+    BOSDYN_ASSERT_PRECONDITION(m_stub != nullptr, "Stub for service is unset!");
+
+    std::vector<::bosdyn::api::DataChunk> chunks;
+    std::vector<::bosdyn::api::graph_nav::UploadSnapshotsRequest> requests;
+    ::bosdyn::common::Status status =
+        MessageToDataChunks<::bosdyn::api::graph_nav::UploadSnapshotsRequest::Snapshots>(
+            input_request, &chunks);
+    if (!status) {
+        response.set_value({status, {}});
+        return future;
+    }
+
+    for (auto& chunk : chunks) {
+        ::bosdyn::api::graph_nav::UploadSnapshotsRequest request;
+
+        auto request_chunk = request.mutable_chunk();
+        *request_chunk = std::move(chunk);
+
+        // For each request, apply the lease processor to automatically include a lease.
+        auto lease_status = ProcessRequestWithLease(&request, m_lease_wallet.get(),
+                                                    ::bosdyn::client::kBodyResource);
+        if (!lease_status) {
+            // Failed to set a lease with the lease wallet. Return early since the request will fail
+            // without a lease.
+            response.set_value({lease_status, {}});
+            return future;
+        }
+
+        requests.emplace_back(std::move(request));
+    }
+
+    MessagePumpCallBase* one_time =
+        InitiateRequestStreamAsyncCall<::bosdyn::api::graph_nav::UploadSnapshotsRequest,
+                                       ::bosdyn::api::graph_nav::UploadSnapshotsResponse,
+                                       ::bosdyn::api::graph_nav::UploadSnapshotsResponse>(
+            std::move(requests),
+            std::bind(
+                &::bosdyn::api::graph_nav::GraphNavService::StubInterface::AsyncUploadSnapshots,
+                m_stub.get(), _1, _2, _3, _4),
+            std::bind(&GraphNavClient::OnUploadSnapshotsComplete, this, _1, _2, _3, _4, _5),
+            std::move(response), parameters);
+
+    return future;
+}
+
+UploadSnapshotsResultType GraphNavClient::UploadSnapshots(
+    ::bosdyn::api::graph_nav::UploadSnapshotsRequest::Snapshots& input_request,
+    const RPCParameters& parameters) {
+    return UploadSnapshotsAsync(input_request, parameters).get();
+}
+
+void GraphNavClient::OnUploadSnapshotsComplete(
+    MessagePumpCallBase* call,
+    const std::vector<::bosdyn::api::graph_nav::UploadSnapshotsRequest>&& request,
+    ::bosdyn::api::graph_nav::UploadSnapshotsResponse&& response, const grpc::Status& status,
+    std::promise<UploadSnapshotsResultType> promise) {
+    ::bosdyn::common::Status ret_status = ProcessResponseWithLeaseAndGetFinalStatus<
+        ::bosdyn::api::graph_nav::UploadSnapshotsResponse>(status, response, SDKErrorCode::Success,
+                                                           m_lease_wallet.get());
+
+    promise.set_value({ret_status, std::move(response)});
+}
+
 std::shared_future<DownloadWaypointSnapshotResultType>
 GraphNavClient::DownloadWaypointSnapshotAsync(
     ::bosdyn::api::graph_nav::DownloadWaypointSnapshotRequest& request,

@@ -84,6 +84,7 @@ bosdyn::api::SE3Pose EigenToApiProto(const Eigen::Isometry3d& a_T_b);
                                  const ::bosdyn::api::SE2Pose& b_T_c);
 bool operator==(const ::bosdyn::api::SE2Pose& a_T_b, const ::bosdyn::api::SE2Pose& b_T_c);
 ::bosdyn::api::Vec2 operator*(const ::bosdyn::api::SE2Pose& a_T_b, const ::bosdyn::api::Vec2& p);
+Eigen::Isometry2d EigenFromApiProto(const ::bosdyn::api::SE2Pose& a_T_b);
 
 // SE(2) Velocity Helpers
 bool operator==(const ::bosdyn::api::SE2Velocity& vel_a, const ::bosdyn::api::SE2Velocity& vel_b);

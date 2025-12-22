@@ -24,6 +24,7 @@ std::map<std::string, bool (&)(google::protobuf::Message*)> kWhitelistedBytesFie
     {"bosdyn.api.GetPointCloudResponse", StripPointCloudResponse},
     {"bosdyn.api.graph_nav.UploadWaypointSnapshotRequest", StripUploadWaypointRequest},
     {"bosdyn.api.graph_nav.UploadEdgeSnapshotRequest", StripUploadEdgeRequest},
+    {"bosdyn.api.graph_nav.UploadSnapshotsRequest", StripUploadSnapshotsRequest},
     {"bosdyn.api.graph_nav.DownloadWaypointSnapshotResponse", StripDownloadWaypointResponse},
     {"bosdyn.api.graph_nav.DownloadEdgeSnapshotResponse", StripDownloadEdgeResponse},
     {"bosdyn.api.RecordDataBlobsRequest", StripRecordDataBlobsRequest},
@@ -78,6 +79,15 @@ bool StripUploadWaypointRequest(::google::protobuf::Message* proto_message) {
 bool StripUploadEdgeRequest(::google::protobuf::Message* proto_message) {
     if (auto* upload_msg =
             dynamic_cast<::bosdyn::api::graph_nav::UploadEdgeSnapshotRequest*>(proto_message)) {
+        upload_msg->mutable_chunk()->clear_data();
+        return true;
+    }
+    return false;
+}
+
+bool StripUploadSnapshotsRequest(::google::protobuf::Message* proto_message) {
+    if (auto* upload_msg =
+            dynamic_cast<::bosdyn::api::graph_nav::UploadSnapshotsRequest*>(proto_message)) {
         upload_msg->mutable_chunk()->clear_data();
         return true;
     }

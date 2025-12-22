@@ -54,6 +54,9 @@ typedef Result<::bosdyn::api::graph_nav::UploadWaypointSnapshotResponse>
 // Return type for the UploadEdgeSnapshot method.
 typedef Result<::bosdyn::api::graph_nav::UploadEdgeSnapshotResponse> UploadEdgeSnapshotResultType;
 
+// Return type for the UploadSnapshots method.
+typedef Result<::bosdyn::api::graph_nav::UploadSnapshotsResponse> UploadSnapshotsResultType;
+
 // Return type for the DownloadWaypointSnapshot method.
 typedef Result<::bosdyn::api::graph_nav::WaypointSnapshot> DownloadWaypointSnapshotResultType;
 
@@ -175,6 +178,16 @@ class GraphNavClient : public ServiceClient {
     // Synchronous method to execute a UploadEdgeSnapshot request.
     UploadEdgeSnapshotResultType UploadEdgeSnapshot(
         ::bosdyn::api::graph_nav::EdgeSnapshot& request,
+        const RPCParameters& parameters = RPCParameters());
+
+    // Asynchronous method to execute a UploadSnapshots request.
+    std::shared_future<UploadSnapshotsResultType> UploadSnapshotsAsync(
+        ::bosdyn::api::graph_nav::UploadSnapshotsRequest::Snapshots& request,
+        const RPCParameters& parameters = RPCParameters());
+
+    // Synchronous method to execute a UploadSnapshots request.
+    UploadSnapshotsResultType UploadSnapshots(
+        ::bosdyn::api::graph_nav::UploadSnapshotsRequest::Snapshots& request,
         const RPCParameters& parameters = RPCParameters());
 
     // Asynchronous method to execute a DownloadWaypointSnapshot request. Only one response
@@ -334,6 +347,14 @@ class GraphNavClient : public ServiceClient {
         const std::vector<::bosdyn::api::graph_nav::UploadEdgeSnapshotRequest>&& request,
         ::bosdyn::api::graph_nav::UploadEdgeSnapshotResponse&& response, const grpc::Status& status,
         std::promise<UploadEdgeSnapshotResultType> promise);
+
+    // Callback that will return the UploadSnapshotsResponse message after UploadSnapshots rpc
+    // returns to the client.
+    void OnUploadSnapshotsComplete(
+        MessagePumpCallBase* call,
+        const std::vector<::bosdyn::api::graph_nav::UploadSnapshotsRequest>&& request,
+        ::bosdyn::api::graph_nav::UploadSnapshotsResponse&& response, const grpc::Status& status,
+        std::promise<UploadSnapshotsResultType> promise);
 
     // Callback that will return the DownloadWaypointSnapshotResponse message after
     // DownloadWaypointSnapshot rpc returns to the client.
