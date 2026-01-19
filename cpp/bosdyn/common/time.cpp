@@ -12,7 +12,11 @@
 
 #include <google/protobuf/util/time_util.h>
 
+#include <atomic>
 #include <chrono>
+#include <memory>
+#include <mutex>
+#include <shared_mutex>
 #include <string>
 
 #include "bosdyn/common/numbers.h"
@@ -28,18 +32,29 @@ namespace {
         ::std::chrono::system_clock::now().time_since_epoch());
 }
 
-ClockFn _clock_fn = _default_clock_fn;
+std::shared_ptr<ClockFn>& clock_fn() {
+    // Using a static _local_ variable here avoids the static initialization order fiasco.
+    // See https://isocpp.org/wiki/faq/ctors#static-init-order-on-first-use.
+    static auto ret = std::make_shared<ClockFn>(_default_clock_fn);
+    return ret;
+}
 
 }  // namespace
 
 using TimeUtil = google::protobuf::util::TimeUtil;
 
 /// Set a clock function which overrides default functionality of NowNsec.
-void SetClock(const ClockFn& fn) { _clock_fn = fn; }
+void SetClock(const ClockFn& fn) {
+    auto fn_shared = std::make_shared<ClockFn>(fn);
+    std::atomic_store_explicit(&clock_fn(), fn_shared, std::memory_order_release);
+}
 
-void RestoreDefaultClock() { _clock_fn = _default_clock_fn; }
+void RestoreDefaultClock() { SetClock(_default_clock_fn); }
 
-std::chrono::nanoseconds NsecSinceEpoch() { return _clock_fn(); }
+std::chrono::nanoseconds NsecSinceEpoch() {
+    auto fn_shared = std::atomic_load_explicit(&clock_fn(), std::memory_order_acquire);
+    return (*fn_shared)();
+}
 
 std::chrono::seconds SecSinceEpoch() {
     return ::std::chrono::duration_cast<::std::chrono::seconds>(NsecSinceEpoch());

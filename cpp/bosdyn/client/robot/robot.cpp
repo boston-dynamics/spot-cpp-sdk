@@ -166,14 +166,17 @@ Result<std::shared_ptr<grpc::ChannelInterface>> Robot::EnsureChannel(
         std::map<std::string, Endpoint>::const_iterator endpoint_iter =
             m_bootstrap_endpoints_by_name.find(service_name);
         if (endpoint_iter == m_bootstrap_endpoints_by_name.end()) {
+            std::unique_lock<std::mutex> lock(m_authorities_and_endpoints_mutex);
             endpoint_iter = m_endpoints_by_name.find(service_name);
             if (endpoint_iter == m_endpoints_by_name.end()) {
                 // Sync with Directory to get the endpoints.
+                lock.unlock();
                 Result<std::vector<::bosdyn::api::ServiceEntry>> services_result = ListServices();
                 if (!services_result.status) {
                     return {services_result.status, nullptr};
                 }
 
+                lock.lock();
                 endpoint_iter = m_endpoints_by_name.find(service_name);
                 if (endpoint_iter == m_endpoints_by_name.end()) {
                     return {::bosdyn::common::Status(ClientCreationErrorCode::UnregisteredService,
@@ -199,14 +202,17 @@ Result<std::shared_ptr<grpc::ChannelInterface>> Robot::EnsureChannel(
     std::map<std::string, std::string>::const_iterator authority_iter =
         m_bootstrap_authorities_by_name.find(service_name);
     if (authority_iter == m_bootstrap_authorities_by_name.end()) {
+        std::unique_lock<std::mutex> lock(m_authorities_and_endpoints_mutex);
         authority_iter = m_authorities_by_name.find(service_name);
         if (authority_iter == m_authorities_by_name.end()) {
             // Sync with Directory to get the authorities.
+            lock.unlock();
             Result<std::vector<::bosdyn::api::ServiceEntry>> services_result = ListServices();
             if (!services_result.status) {
                 return {services_result.status, nullptr};
             }
 
+            lock.lock();
             authority_iter = m_authorities_by_name.find(service_name);
             if (authority_iter == m_authorities_by_name.end()) {
                 return {::bosdyn::common::Status(ClientCreationErrorCode::UnregisteredService,
@@ -331,10 +337,13 @@ Result<std::vector<::bosdyn::api::ServiceEntry>> Robot::UpdateInformationFromLis
         return {result.status, {}};
     }
 
-    m_authorities_by_name.clear();
-    for (const auto& entry : result.response.service_entries()) {
-        service_list.push_back(entry);
-        m_authorities_by_name[entry.name()] = entry.authority();
+    {
+        std::lock_guard<std::mutex> lock(m_authorities_and_endpoints_mutex);
+        m_authorities_by_name.clear();
+        for (const auto& entry : result.response.service_entries()) {
+            service_list.push_back(entry);
+            m_authorities_by_name[entry.name()] = entry.authority();
+        }
     }
 
     return {::bosdyn::common::Status(SDKErrorCode::Success), std::move(service_list)};

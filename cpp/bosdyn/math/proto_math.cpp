@@ -329,6 +329,13 @@ bool Equals(const ::bosdyn::api::SE3Pose& a_T_b, const ::bosdyn::api::SE3Pose& b
     return (a_eq_b || a_eq_negative_b);
 }
 
+Eigen::Isometry2d EigenFromApiProto(const ::bosdyn::api::SE2Pose& a_T_b) {
+    Eigen::Matrix<double, 3, 3> ret = Eigen::Matrix<double, 3, 3>::Identity();
+    ret.block<2, 2>(0, 0) = ToMatrix(a_T_b.angle());
+    ret.block<2, 1>(0, 2) = EigenFromApiProto(a_T_b.position());
+    return Eigen::Isometry2d(ret);
+}
+
 Eigen::Isometry3d EigenFromApiProto(const ::bosdyn::api::SE3Pose& a_T_b) {
     Eigen::Matrix<double, 4, 4> ret = Eigen::Matrix<double, 4, 4>::Identity();
     ret.block<3, 3>(0, 0) = EigenFromApiProto(a_T_b.rotation()).toRotationMatrix();

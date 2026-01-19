@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "google/protobuf/io/coded_stream.h"
+#include "google/protobuf/io/zero_copy_stream_impl_lite.h"
 #include "bosdyn/client/error_codes/sdk_error_code.h"
 #include "bosdyn/client/service_client/result.h"
 
@@ -42,8 +44,12 @@ Result<T> MessageFromDataChunks(const std::vector<const ::bosdyn::api::DataChunk
         return {result.status, {}};
     }
 
+    google::protobuf::io::ArrayInputStream array_input(result.response.data(),
+                                                       result.response.size());
+    google::protobuf::io::CodedInputStream coded_input(&array_input);
+    coded_input.SetRecursionLimit(500);
     T output;
-    if (!output.ParseFromString(result.response)) {
+    if (!output.ParseFromCodedStream(&coded_input)) {
         return {::bosdyn::common::Status(SDKErrorCode::GenericSDKError,
                                          "Could not deserialize concatenated chunks into message"),
                 {}};

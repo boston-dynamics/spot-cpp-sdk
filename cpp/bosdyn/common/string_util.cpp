@@ -9,6 +9,7 @@
 
 #include "string_util.h"
 
+#include <algorithm>
 #include <string>
 
 namespace bosdyn {
@@ -31,6 +32,7 @@ bool StartsWith(const std::string& str, const std::string& start) {
 std::string RemoveSuffix(const std::string& str, const std::string& suffix) {
     return EndsWith(str, suffix) ? str.substr(0, str.length() - suffix.length()) : str;
 }
+
 
 }  // namespace common
 

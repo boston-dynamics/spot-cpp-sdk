@@ -352,6 +352,9 @@ class Robot {
     // name and value represents the authority.
     const std::map<std::string, std::string> m_bootstrap_authorities_by_name;
 
+    // Protect access to the authorities and endpoints maps.
+    std::mutex m_authorities_and_endpoints_mutex;
+
     // Map to store authorities for the services as received from the Directory service. Key in the
     // map represents the service name and value represents the authority.
     std::map<std::string, std::string> m_authorities_by_name;

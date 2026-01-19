@@ -39,6 +39,7 @@ bool StripLocalGridResponse(::google::protobuf::Message* proto_message);
 bool StripPointCloudResponse(::google::protobuf::Message* proto_message);
 bool StripUploadWaypointRequest(::google::protobuf::Message* proto_message);
 bool StripUploadEdgeRequest(::google::protobuf::Message* proto_message);
+bool StripUploadSnapshotsRequest(::google::protobuf::Message* proto_message);
 bool StripDownloadWaypointResponse(::google::protobuf::Message* proto_message);
 bool StripDownloadEdgeResponse(::google::protobuf::Message* proto_message);
 bool StripRecordDataBlobsRequest(::google::protobuf::Message* proto_message);
